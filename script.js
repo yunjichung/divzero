@@ -2,6 +2,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 const line1 = document.getElementById("manifesto-line1");
 const line2 = document.getElementById("manifesto-line2");
 const caretEl = document.getElementById("manifesto-caret");
+const returnEl = document.getElementById("manifesto-return");
 const thesisEl = document.getElementById("manifesto-thesis");
 const text1 = line1.textContent;
 const text2 = line2.textContent;
@@ -14,17 +15,36 @@ function finishHeadline() {
 }
 
 function typeInto(el, text, onDone) {
+  caretEl.classList.add("is-typing");
   let i = 0;
   const step = () => {
     i++;
     el.textContent = text.slice(0, i);
     if (i >= text.length) {
+      caretEl.classList.remove("is-typing");
       onDone();
       return;
     }
     setTimeout(step, text[i] === " " ? rand(430, 560) : rand(50, 100));
   };
   step();
+}
+
+// FLIP: move the caret to the next line and let it glide there
+function dropCaret(afterEl) {
+  const from = caretEl.getBoundingClientRect();
+  afterEl.after(caretEl);
+  const to = caretEl.getBoundingClientRect();
+  caretEl.style.transition = "none";
+  caretEl.style.transform = "translate(" + (from.left - to.left) + "px, " + (from.top - to.top) + "px)";
+  requestAnimationFrame(() => {
+    caretEl.style.transition = "transform .5s cubic-bezier(.16,1,.3,1)";
+    caretEl.style.transform = "";
+  });
+  setTimeout(() => {
+    caretEl.style.transition = "";
+    caretEl.style.transform = "";
+  }, 550);
 }
 
 if (reducedMotion) {
@@ -35,13 +55,19 @@ if (reducedMotion) {
   thesisEl.classList.add("is-waiting");
   setTimeout(() => {
     typeInto(line1, text1, () => {
-      // the visible "enter": hold, then the caret drops to the empty next line
+      // finish the word, breathe once
       setTimeout(() => {
-        line2.after(caretEl);
+        // the enter: the return glyph appears...
+        returnEl.classList.add("is-shown");
         setTimeout(() => {
-          typeInto(line2, text2, () => setTimeout(finishHeadline, 600));
-        }, 380);
-      }, 520);
+          // ...and as it fades, the caret glides down to the empty line
+          returnEl.classList.remove("is-shown");
+          dropCaret(line2);
+          setTimeout(() => {
+            typeInto(line2, text2, () => setTimeout(finishHeadline, 700));
+          }, 560);
+        }, 620);
+      }, 480);
     });
   }, 800);
 }
