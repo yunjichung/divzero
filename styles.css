@@ -41,7 +41,7 @@ h1, h2, p { margin: 0; }
 }
 .card {
   width: min(660px, 92vw);
-  padding: 52px 48px 40px;
+  padding: 64px 48px 40px;
   border: 1px solid rgba(255,255,255,.15);
   border-radius: 28px;
   background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.008) 55%, rgba(255,255,255,0));
@@ -331,7 +331,7 @@ img.photo {
 }
 .photo--opening { object-position: center 78%; }
 @media (max-width: 700px) {
-  .card { padding: 36px 24px 36px; }
+  .card { padding: 44px 24px 36px; }
   .ask { margin-top: 44px; }
   .message { font-size: clamp(26px, 7vw, 34px); }
   .bar { height: 52px; padding: 0 20px; width: 92vw; }
