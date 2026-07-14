@@ -1,8 +1,10 @@
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const typedEl = document.getElementById("manifesto-text");
+const line1 = document.getElementById("manifesto-line1");
+const line2 = document.getElementById("manifesto-line2");
 const caretEl = document.getElementById("manifesto-caret");
 const thesisEl = document.getElementById("manifesto-thesis");
-const headline = typedEl.textContent;
+const text1 = line1.textContent;
+const text2 = line2.textContent;
 
 function rand(min, max) { return min + Math.random() * (max - min); }
 
@@ -11,23 +13,37 @@ function finishHeadline() {
   caretEl.classList.add("is-done");
 }
 
+function typeInto(el, text, onDone) {
+  let i = 0;
+  const step = () => {
+    i++;
+    el.textContent = text.slice(0, i);
+    if (i >= text.length) {
+      onDone();
+      return;
+    }
+    setTimeout(step, text[i] === " " ? rand(430, 560) : rand(50, 100));
+  };
+  step();
+}
+
 if (reducedMotion) {
   caretEl.classList.add("is-done");
 } else {
-  typedEl.textContent = "";
+  line1.textContent = "";
+  line2.textContent = "";
   thesisEl.classList.add("is-waiting");
-  let i = 0;
-  const typeHeadline = () => {
-    i++;
-    typedEl.textContent = headline.slice(0, i);
-    if (i >= headline.length) {
-      setTimeout(finishHeadline, 600);
-      return;
-    }
-    const next = headline[i];
-    setTimeout(typeHeadline, next === " " ? rand(130, 230) : rand(50, 100));
-  };
-  setTimeout(typeHeadline, 800);
+  setTimeout(() => {
+    typeInto(line1, text1, () => {
+      // the visible "enter": hold, then the caret drops to the empty next line
+      setTimeout(() => {
+        line2.after(caretEl);
+        setTimeout(() => {
+          typeInto(line2, text2, () => setTimeout(finishHeadline, 600));
+        }, 380);
+      }, 520);
+    });
+  }, 800);
 }
 
 const events = document.querySelectorAll(".event");
