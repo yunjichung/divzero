@@ -2,7 +2,6 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 const line1 = document.getElementById("manifesto-line1");
 const line2 = document.getElementById("manifesto-line2");
 const caretEl = document.getElementById("manifesto-caret");
-const returnEl = document.getElementById("manifesto-return");
 const thesisEl = document.getElementById("manifesto-thesis");
 const text1 = line1.textContent;
 const text2 = line2.textContent;
@@ -55,19 +54,13 @@ if (reducedMotion) {
   thesisEl.classList.add("is-waiting");
   setTimeout(() => {
     typeInto(line1, text1, () => {
-      // finish the word, breathe once
+      // the enter: hold and breathe, then the caret glides down to the empty line
       setTimeout(() => {
-        // the enter: the return glyph appears...
-        returnEl.classList.add("is-shown");
+        dropCaret(line2);
         setTimeout(() => {
-          // ...and as it fades, the caret glides down to the empty line
-          returnEl.classList.remove("is-shown");
-          dropCaret(line2);
-          setTimeout(() => {
-            typeInto(line2, text2, () => setTimeout(finishHeadline, 700));
-          }, 560);
-        }, 620);
-      }, 480);
+          typeInto(line2, text2, () => setTimeout(finishHeadline, 700));
+        }, 560);
+      }, 900);
     });
   }, 800);
 }
