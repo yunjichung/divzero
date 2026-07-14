@@ -138,10 +138,10 @@ h1, h2, p { margin: 0; }
   height: 1.15em;
   margin-left: 3px;
   background: rgba(243,240,233,.55);
-  animation: blink 1.1s steps(2, start) infinite;
+  animation: breathe 1s ease-in-out infinite;
 }
 .ghost.is-typing .caret { animation: none; opacity: 1; }
-@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
 .return-key {
   position: absolute;
   right: 28px;
@@ -229,6 +229,7 @@ h1, h2, p { margin: 0; }
   text-wrap: pretty;
   text-align: justify;
   text-align-last: center;
+  hanging-punctuation: first allow-end;
 }
 .about-text + .about-text { margin-top: 18px; }
 .tagline {
@@ -237,6 +238,7 @@ h1, h2, p { margin: 0; }
   font-size: 16px;
   line-height: 1.7;
   letter-spacing: -.01em;
+  text-wrap: balance;
 }
 .ledger {
   width: 100%;
@@ -359,6 +361,11 @@ img.photo {
   .ledger .mon { width: 40px; }
   .detail-inner { padding-left: 40px; }
   .ledger .row { padding: 13px 0; }
+  .about-text {
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphenate-limit-chars: 7 4 4;
+  }
 }
 @media print {
   body::after { display: none; }
