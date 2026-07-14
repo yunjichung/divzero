@@ -2,6 +2,11 @@
 
 Static stakeholder preview site for DivZero.
 
+## Links
+
+- Live site: https://yunjichung.github.io/divzero/
+- Repository: https://github.com/yunjichung/divzero
+
 ## Files
 
 - `index.html` - page markup and metadata.
