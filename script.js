@@ -1,25 +1,25 @@
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const lfText = document.getElementById("lf-text");
-const lfCaret = document.getElementById("lf-caret");
-const lfThesis = document.getElementById("lf-thesis");
-const headline = lfText.textContent;
+const typedEl = document.getElementById("manifesto-text");
+const caretEl = document.getElementById("manifesto-caret");
+const thesisEl = document.getElementById("manifesto-thesis");
+const headline = typedEl.textContent;
 
 function rand(min, max) { return min + Math.random() * (max - min); }
 
 function finishHeadline() {
-  lfThesis.classList.remove("is-waiting");
-  lfCaret.classList.add("is-done");
+  thesisEl.classList.remove("is-waiting");
+  caretEl.classList.add("is-done");
 }
 
 if (reducedMotion) {
-  lfCaret.classList.add("is-done");
+  caretEl.classList.add("is-done");
 } else {
-  lfText.textContent = "";
-  lfThesis.classList.add("is-waiting");
+  typedEl.textContent = "";
+  thesisEl.classList.add("is-waiting");
   let i = 0;
   const typeHeadline = () => {
     i++;
-    lfText.textContent = headline.slice(0, i);
+    typedEl.textContent = headline.slice(0, i);
     if (i >= headline.length) {
       setTimeout(finishHeadline, 600);
       return;
