@@ -207,20 +207,6 @@ h1, h2, p { margin: 0; }
   letter-spacing: .18em;
   text-transform: uppercase;
 }
-.members {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px 30px;
-}
-.members span {
-  color: rgba(243,240,233,.6);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -.01em;
-  white-space: nowrap;
-}
-.credits.wide { width: min(640px, 100%); }
 .about-text {
   max-width: 100%;
   margin: 0 auto;
