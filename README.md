@@ -13,11 +13,10 @@ Static stakeholder preview site for DivZero.
 - `styles.css` - visual styling.
 - `script.js` - typewriter, form, reveal, and event accordion behavior.
 - `assets.json` - external image URL manifest for future asset hosting.
-- `2026-opening.jpg` - published image asset.
 
 ## Preview
 
-Open `index.html` directly in a browser, or use any static file server from this directory.
+Use any static file server from this directory. The page loads `assets.json` for external image URLs, so server preview is preferred over opening `index.html` directly.
 
 ## Publish
 

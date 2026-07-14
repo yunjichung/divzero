@@ -110,3 +110,20 @@ const observer = new IntersectionObserver((entries) => {
   }
 }, { threshold: 0.3 });
 document.querySelectorAll(".credits").forEach((el) => observer.observe(el));
+
+fetch("assets.json")
+  .then((response) => response.ok ? response.json() : null)
+  .then((assets) => {
+    if (!assets || !Array.isArray(assets.images)) return;
+    const imagesById = new Map(assets.images.map((image) => [image.id, image]));
+    document.querySelectorAll("[data-asset-id]").forEach((slot) => {
+      const image = imagesById.get(slot.dataset.assetId);
+      if (!image || !image.url) return;
+      const img = document.createElement("img");
+      img.className = "photo photo--opening";
+      img.src = image.url;
+      img.alt = image.alt || "";
+      slot.replaceWith(img);
+    });
+  })
+  .catch(() => {});
