@@ -36,7 +36,7 @@ h1, h2, p { margin: 0; }
     radial-gradient(ellipse 55% 42% at 50% 46%, rgba(255,255,255,.025), transparent 72%);
 }
 .manifesto-inner {
-  width: min(620px, 100%);
+  width: min(540px, 100%);
 }
 .manifesto-title {
   position: relative;
