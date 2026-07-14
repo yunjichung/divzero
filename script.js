@@ -13,12 +13,28 @@ function finishHeadline() {
   caretEl.classList.add("is-done");
 }
 
+const titleEl = document.querySelector(".manifesto-title");
+const GLIDE = "transform .6s cubic-bezier(.165,.84,.44,1)";
+const FADE = "opacity .9s ease .5s";
+
+// caret lives outside the text flow: it follows the line ends by measurement,
+// snapping per keystroke, gliding only on the enter
+function placeCaret(lineEl, glide) {
+  const t = titleEl.getBoundingClientRect();
+  const r = lineEl.getBoundingClientRect();
+  const x = r.right - t.left + 10;
+  const y = r.top - t.top + (r.height - caretEl.offsetHeight) / 2;
+  caretEl.style.transition = glide ? GLIDE + ", " + FADE : FADE;
+  caretEl.style.transform = "translate(" + x + "px, " + y + "px)";
+}
+
 function typeInto(el, text, onDone) {
   caretEl.classList.add("is-typing");
   let i = 0;
   const step = () => {
     i++;
     el.textContent = text.slice(0, i);
+    placeCaret(el, false);
     if (i >= text.length) {
       caretEl.classList.remove("is-typing");
       onDone();
@@ -29,37 +45,22 @@ function typeInto(el, text, onDone) {
   step();
 }
 
-// FLIP: move the caret to the next line and let it glide there
-function dropCaret(afterEl) {
-  const from = caretEl.getBoundingClientRect();
-  afterEl.after(caretEl);
-  const to = caretEl.getBoundingClientRect();
-  caretEl.style.transition = "none";
-  caretEl.style.transform = "translate(" + (from.left - to.left) + "px, " + (from.top - to.top) + "px)";
-  requestAnimationFrame(() => {
-    caretEl.style.transition = "transform .5s cubic-bezier(.16,1,.3,1)";
-    caretEl.style.transform = "";
-  });
-  setTimeout(() => {
-    caretEl.style.transition = "";
-    caretEl.style.transform = "";
-  }, 550);
-}
-
 if (reducedMotion) {
+  caretEl.style.display = "none";
   caretEl.classList.add("is-done");
 } else {
-  line1.textContent = "";
-  line2.textContent = "";
+  line1.textContent = "\u200B";
+  line2.textContent = "\u200B";
   thesisEl.classList.add("is-waiting");
+  placeCaret(line1, false);
   setTimeout(() => {
     typeInto(line1, text1, () => {
       // the enter: hold and breathe, then the caret glides down to the empty line
       setTimeout(() => {
-        dropCaret(line2);
+        placeCaret(line2, true);
         setTimeout(() => {
           typeInto(line2, text2, () => setTimeout(finishHeadline, 700));
-        }, 560);
+        }, 700);
       }, 900);
     });
   }, 800);
