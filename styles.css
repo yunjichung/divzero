@@ -8,10 +8,20 @@ html {
 }
 body {
   margin: 0;
-  background: #000;
+  background: transparent;
   color: #f3f0e9;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+/* lacquer, not screen: the black is layered — a breath of warmth lifts
+   the upper air of every view, settling to true black below */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(243,240,233,.013), rgba(243,240,233,0) 55%);
 }
 ::selection { background: rgba(243,240,233,.9); color: #000; }
 /* hanji: the grain tuned toward paper fiber — larger, softer, denser —
@@ -22,7 +32,11 @@ body::after {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: .042;
+  opacity: .05;
+  /* paper reads where light lives: the grain is fullest at the horizon's
+     height and thins into the dark above and below */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 35%, #000 60%, #000 76%, rgba(0,0,0,.55) 100%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 35%, #000 60%, #000 76%, rgba(0,0,0,.55) 100%);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 a { color: inherit; text-decoration: none; }
@@ -94,29 +108,38 @@ h1, h2, p { margin: 0; }
 /* the small figure standing on the horizon. touched, its name quietly
    becomes 디브제로 for a moment — the identity is bilingual only for
    those who reach for it. */
-.figure {
+/* the drawer: a clipping window whose bottom edge is the line itself.
+   the name rises through it fully opaque — tops of the letters first,
+   coming over the horizon — one overshoot, then rest. the figure is a
+   co-equal bilingual lockup: both scripts, always, neither a subtitle. */
+.figure-well {
   position: absolute;
-  top: calc(68vh - 27px);
+  top: calc(68vh - 46px);
+  height: 46px;
+  left: 0; right: 0;
+  overflow: hidden;
+  z-index: 300;
+}
+.figure {
+  position: relative;
+  top: 7px;
   width: 100%;
   display: grid;
   justify-items: center;
+  row-gap: 3px;
+}
+.figure .en {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: .01em;
-  color: rgba(243,240,233,.82);
+  color: rgba(243,240,233,.85);
 }
-.figure .en,
 .figure .ko {
-  grid-area: 1 / 1;
-  transition: opacity .45s ease;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  color: rgba(243,240,233,.5);
 }
-.figure .ko { opacity: 0; }
-@media (hover: hover) {
-  .figure:hover .en { opacity: 0; }
-  .figure:hover .ko { opacity: 1; }
-}
-.figure.hangul .en { opacity: 0; }
-.figure.hangul .ko { opacity: 1; }
 /* the horizon does not end — it leaves the frame on both sides.
    it is drawn as still water: straight at rest; when the taegeuk's
    S passes through it, the crest warms and the trough cools. */
@@ -163,6 +186,15 @@ h1, h2, p { margin: 0; }
 .credits {
   width: min(460px, 100%);
 }
+.credits.beat { width: min(600px, 100%); }
+.beat-tagline {
+  font-size: clamp(19px, 2.6vw, 30px);
+  font-weight: 420;
+  line-height: 1.5;
+  letter-spacing: -.018em;
+  color: rgba(243,240,233,.85);
+  text-wrap: balance;
+}
 .about-text {
   max-width: 100%;
   margin: 0 auto;
@@ -176,128 +208,64 @@ h1, h2, p { margin: 0; }
   hanging-punctuation: allow-end;
 }
 .about-text + .about-text { margin-top: 18px; }
-.tagline {
-  margin-top: 28px;
-  color: rgba(243,240,233,.7);
-  font-size: 16px;
-  line-height: 1.7;
-  letter-spacing: -.01em;
-  text-align: center;
-  text-wrap: balance;
-}
-.ledger {
-  width: 100%;
-  margin: 0 auto;
-  text-align: left;
-}
-.ledger .year {
-  margin: 44px 0 8px;
-  color: rgba(243,240,233,.45);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: .15em;
-}
-.ledger .year:first-child { margin-top: 0; }
-.ledger .row {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 24px;
-  padding: 11px 0;
-  border: 0;
-  background: none;
-  text-align: left;
-  font: inherit;
-  border-radius: 10px;
-}
-.ledger .row:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px #000, 0 0 0 4px rgba(255,255,255,.35);
-}
-.ledger .title {
-  flex: 1;
-  color: rgba(243,240,233,.7);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -.01em;
-  transition: color .16s cubic-bezier(.25,.46,.45,.94);
-}
-.event.open .title { color: rgba(243,240,233,.95); }
-@media (hover: hover) {
-  .ledger .row:hover .title { color: rgba(243,240,233,.95); }
-  .ledger .row:hover .plus { color: rgba(243,240,233,.6); }
-}
-.ledger .mon {
-  flex: none;
-  width: 46px;
-  color: rgba(243,240,233,.3);
-  font-size: 12px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.ledger .year,
-.ledger .mon { font-variant-numeric: tabular-nums; }
-.ledger .plus {
-  flex: none;
-  width: 14px;
-  color: rgba(243,240,233,.3);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1;
-  text-align: center;
-  transition: transform .55s cubic-bezier(.16,1,.3,1), color .16s cubic-bezier(.25,.46,.45,.94);
-}
-.event.open .plus {
-  transform: rotate(45deg);
-  color: rgba(243,240,233,.7);
-}
-.detail {
+/* the collection: each event a small crafted card — the atomix move,
+   the ledger as artifacts rather than rows. photos land inside the
+   cards when they exist; no placeholders ever render. */
+.cards {
   display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows .55s cubic-bezier(.16,1,.3,1);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  width: min(1020px, 100%);
 }
-.detail-inner { overflow: hidden; padding-left: 46px; }
-.event.open .detail { grid-template-rows: 1fr; }
-.detail p {
-  padding: 4px 0 2px;
-  color: rgba(243,240,233,.5);
-  font-size: 14px;
-  line-height: 1.65;
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 158px;
+  padding: 18px 18px 16px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  text-align: left;
+  background: linear-gradient(160deg, rgba(255,255,255,.016), transparent 60%);
+}
+.card .when {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: rgba(243,240,233,.35);
+}
+.card .card-title {
+  margin-top: 10px;
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  line-height: 1.35;
+  color: rgba(243,240,233,.88);
+}
+.card .card-desc {
+  margin-top: auto;
+  padding-top: 14px;
+  font-size: 13px;
+  line-height: 1.55;
   letter-spacing: -.005em;
+  color: rgba(243,240,233,.45);
   text-wrap: pretty;
 }
-.photo,
-img.photo {
+.card img.photo {
   width: 100%;
   aspect-ratio: 3 / 2;
-  margin: 14px 0 10px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 14px;
-}
-div.photo {
-  background: linear-gradient(160deg, #151515, #0b0b0b);
-  display: grid;
-  place-items: center;
-}
-div.photo::after {
-  content: "Photo";
-  color: rgba(243,240,233,.16);
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-img.photo {
   object-fit: cover;
-  filter: grayscale(.85) contrast(1.05) brightness(.88);
+  margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
 }
-.photo--opening { object-position: center 78%; }
+
 @media (max-width: 700px) {
   .section { min-height: 0; padding-top: 64px; padding-bottom: 64px; }
   .manifesto-thesis { font-size: 14.5px; }
-  .ledger .mon { width: 40px; }
-  .detail-inner { padding-left: 40px; }
-  .ledger .row { padding: 13px 0; }
+  .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card { min-height: 0; padding: 14px; }
   .about-text {
     hyphens: auto;
     -webkit-hyphens: auto;

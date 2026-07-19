@@ -133,12 +133,17 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
   function words(t) {
     const o1 = easeInOut(clamp01((t - 2200) / 2400));
-    const o2 = easeInOut(clamp01((t - 2900) / 1900));
+    // the drawer: the name rises from below the line, fully opaque,
+    // clipped by the well whose bottom edge is the horizon — tops of
+    // the letters first — one overshoot (~3px), then rest. 1.2s.
+    const u = clamp01((t - 3000) / 1200);
+    const c1 = 1.70158, c3 = c1 + 1;
+    const rise = u === 0 ? 0 : 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);
     const o3 = easeInOut(clamp01((t - 3300) / 2200));
     if (title) title.style.opacity = o1.toFixed(3);
     if (figure) {
-      figure.style.opacity = o2.toFixed(3);
-      figure.style.transform = "translateY(" + (3 * (1 - o2)).toFixed(2) + "px)";
+      figure.style.opacity = u > 0 ? "1" : "0";
+      figure.style.transform = "translateY(" + (40 * (1 - rise)).toFixed(2) + "px)";
     }
     if (thesis) thesis.style.opacity = o3.toFixed(3);
   }
@@ -175,25 +180,36 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 // the horizon is still water. touched, one damped pulse travels outward
 // from the point of contact — each point it passes rises then falls —
 // and the water settles back to mirror-stillness. at rest it is a
-// perfectly straight 1px line. this is the page's only motion.
-(function () {
-  const canvas = document.getElementById("water");
-  const reach = document.getElementById("reach");
+// perfectly straight 1px line. it appears twice: the horizon the page
+// opens on, and the line it closes on.
+function stillWater(canvas, reach) {
   if (!canvas || !reach) return;
   const ctx = canvas.getContext("2d");
   const MID = 40;
   let width = 0;
-  let ink = null;
+
+  // nacre, not pigment: the ink drifts through a few degrees of color,
+  // far too slowly to watch — mother-of-pearl held in the lacquer black
+  function inkColor() {
+    if (reducedMotion) return [243, 240, 233];
+    const t = performance.now();
+    return [
+      Math.round(243 + 5 * Math.sin(t / 23000)),
+      Math.round(240 + 4 * Math.sin(t / 31000 + 2)),
+      Math.round(233 + 7 * Math.sin(t / 17000 + 4)),
+    ];
+  }
 
   // the exhausted stroke: full-bodied at its center, the line's ends
   // fade at the frame edges like a brush running out of pigment
-  function inkGradient(context, w) {
-    const g = context.createLinearGradient(0, 0, w, 0);
-    g.addColorStop(0, "rgba(243,240,233,0)");
-    g.addColorStop(.07, "rgba(243,240,233,1)");
-    g.addColorStop(.93, "rgba(243,240,233,1)");
-    g.addColorStop(1, "rgba(243,240,233,0)");
-    return g;
+  function ink() {
+    const [r, g, b] = inkColor();
+    const g2 = ctx.createLinearGradient(0, 0, width, 0);
+    g2.addColorStop(0, "rgba(" + r + "," + g + "," + b + ",0)");
+    g2.addColorStop(.07, "rgba(" + r + "," + g + "," + b + ",1)");
+    g2.addColorStop(.93, "rgba(" + r + "," + g + "," + b + ",1)");
+    g2.addColorStop(1, "rgba(" + r + "," + g + "," + b + ",0)");
+    return g2;
   }
 
   function size() {
@@ -202,7 +218,6 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(80 * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ink = inkGradient(ctx, width);
     drawStill();
   }
 
@@ -211,7 +226,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     ctx.beginPath();
     path();
     ctx.globalAlpha = .34;
-    ctx.strokeStyle = ink;
+    ctx.strokeStyle = ink();
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.globalAlpha = 1;
@@ -262,49 +277,32 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   reach.addEventListener("pointerdown", (e) => touch(e.clientX));
   window.addEventListener("resize", size);
   size();
-})();
 
-// touch the figure and its name becomes 디브제로 for a moment
-const figureEl = document.getElementById("figure");
-if (figureEl) {
-  figureEl.addEventListener("pointerdown", () => {
-    figureEl.classList.add("hangul");
-    setTimeout(() => figureEl.classList.remove("hangul"), 1400);
-  });
+  // the drift needs no audience and almost no work: a few redraws a
+  // second, only while the page is visible and the water is at rest
+  if (!reducedMotion) {
+    setInterval(() => { if (!raf && !document.hidden) drawStill(); }, 400);
+  }
 }
 
-const events = document.querySelectorAll(".event");
-events.forEach((ev, i) => {
-  const row = ev.querySelector(".row");
-  const detail = ev.querySelector(".detail");
-  detail.id = "event-detail-" + i;
-  row.setAttribute("aria-controls", detail.id);
-  row.addEventListener("click", () => {
-    const wasOpen = ev.classList.contains("open");
-    events.forEach((other) => {
-      other.classList.remove("open");
-      other.querySelector(".row").setAttribute("aria-expanded", "false");
-    });
-    if (!wasOpen) {
-      ev.classList.add("open");
-      row.setAttribute("aria-expanded", "true");
-    }
-  });
-});
+stillWater(document.getElementById("water"), document.getElementById("reach"));
 
+// photos are proof: a card gains its documentary image only when a real
+// url exists in assets.json — no placeholder frames ever render
 fetch("assets.json")
   .then((response) => response.ok ? response.json() : null)
   .then((assets) => {
     if (!assets || !Array.isArray(assets.images)) return;
     const imagesById = new Map(assets.images.map((image) => [image.id, image]));
-    document.querySelectorAll("[data-asset-id]").forEach((slot) => {
-      const image = imagesById.get(slot.dataset.assetId);
+    document.querySelectorAll("[data-asset-id]").forEach((card) => {
+      const image = imagesById.get(card.dataset.assetId);
       if (!image || !image.url) return;
       const img = document.createElement("img");
-      img.className = "photo photo--opening";
+      img.className = "photo";
       img.src = image.url;
       img.alt = image.alt || "";
-      slot.replaceWith(img);
+      img.loading = "lazy";
+      card.prepend(img);
     });
   })
   .catch(() => {});
