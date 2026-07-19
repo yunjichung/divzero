@@ -312,30 +312,36 @@ stillWater(document.getElementById("water"), document.getElementById("reach"));
   let raf = null;
   let nextDrop = 0;
 
-  // a real ink blot is not a circle: its edge wanders (harmonics), the
-  // wash gathers dense at the rim, and the outer edge feathers like
-  // fiber bleed on hanji
+  // one drop, composed: a single fixed point below the sentence where
+  // ink is born, blooms as √t, fades, and is born again inside its own
+  // bloom — concentric generations, a slow heartbeat. one act of
+  // division, endless issue. rhythm instead of weather. each
+  // generation's edge wanders differently (harmonics), the wash
+  // gathering dense at the rim like ink on hanji.
+  const CYCLE = 5600;
   function spawn(now) {
     drops.push({
-      x: W * (.22 + .56 * Math.random()),
-      y: H * (.24 + .52 * Math.random()),
       t0: now,
-      k: 30 + 24 * Math.random(),
-      a0: .09 + .05 * Math.random(),
+      k: 34,
+      a0: .12,
       amp: [.05 + .05 * Math.random(), .04 + .05 * Math.random(), .03 + .04 * Math.random()],
       ph: [Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28],
     });
-    nextDrop = now + 2800 + Math.random() * 2600;
+    nextDrop = now + CYCLE;
   }
 
   const EDGE = 48;
   function frame(now) {
     if (now >= nextDrop && drops.length < 4) spawn(now);
     ctx.clearRect(0, 0, W, H);
+    const cx = W * .5;
+    const cy = H * .62;
     drops = drops.filter((d) => {
+      d.x = cx;
+      d.y = cy;
       const t = (now - d.t0) / 1000;
-      const a = d.a0 * Math.exp(-t / 12);
-      if (a < .004) return false;
+      const a = d.a0 * Math.exp(-t / 9);
+      if (a < .005) return false;
       const R = d.k * Math.sqrt(t + .05);
       ctx.beginPath();
       for (let i = 0; i <= EDGE; i++) {
@@ -365,7 +371,7 @@ stillWater(document.getElementById("water"), document.getElementById("reach"));
   function start() {
     if (raf) return;
     size();
-    nextDrop = performance.now() + 500;
+    nextDrop = performance.now() + 400;
     raf = requestAnimationFrame(frame);
   }
   function stop() {
