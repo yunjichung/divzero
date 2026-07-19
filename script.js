@@ -312,32 +312,50 @@ stillWater(document.getElementById("water"), document.getElementById("reach"));
   let raf = null;
   let nextDrop = 0;
 
+  // a real ink blot is not a circle: its edge wanders (harmonics), the
+  // wash gathers dense at the rim, and the outer edge feathers like
+  // fiber bleed on hanji
   function spawn(now) {
     drops.push({
-      x: W * (.2 + .6 * Math.random()),
-      y: H * (.18 + .64 * Math.random()),
+      x: W * (.22 + .56 * Math.random()),
+      y: H * (.24 + .52 * Math.random()),
       t0: now,
-      k: 26 + 22 * Math.random(),
-      a0: .028 + .022 * Math.random(),
+      k: 30 + 24 * Math.random(),
+      a0: .09 + .05 * Math.random(),
+      amp: [.05 + .05 * Math.random(), .04 + .05 * Math.random(), .03 + .04 * Math.random()],
+      ph: [Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28],
     });
-    nextDrop = now + 3800 + Math.random() * 3600;
+    nextDrop = now + 2800 + Math.random() * 2600;
   }
 
+  const EDGE = 48;
   function frame(now) {
-    if (now >= nextDrop && drops.length < 5) spawn(now);
+    if (now >= nextDrop && drops.length < 4) spawn(now);
     ctx.clearRect(0, 0, W, H);
     drops = drops.filter((d) => {
       const t = (now - d.t0) / 1000;
-      const a = d.a0 * Math.exp(-t / 13);
-      if (a < .0025) return false;
-      const r = d.k * Math.sqrt(t + .05);
-      const g = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, r);
-      g.addColorStop(0, "rgba(255,240,222," + (a * .55).toFixed(4) + ")");
-      g.addColorStop(.55, "rgba(250,238,222," + a.toFixed(4) + ")");
+      const a = d.a0 * Math.exp(-t / 12);
+      if (a < .004) return false;
+      const R = d.k * Math.sqrt(t + .05);
+      ctx.beginPath();
+      for (let i = 0; i <= EDGE; i++) {
+        const th = (i / EDGE) * 2 * Math.PI;
+        const wobble = 1
+          + d.amp[0] * Math.sin(2 * th + d.ph[0])
+          + d.amp[1] * Math.sin(3 * th + d.ph[1])
+          + d.amp[2] * Math.sin(5 * th + d.ph[2]);
+        const x = d.x + R * wobble * Math.cos(th);
+        const y = d.y + R * wobble * Math.sin(th);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      const g = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, R * 1.2);
+      g.addColorStop(0, "rgba(255,240,222," + (a * .45).toFixed(4) + ")");
+      g.addColorStop(.62, "rgba(250,238,222," + (a * .7).toFixed(4) + ")");
+      g.addColorStop(.85, "rgba(248,237,222," + a.toFixed(4) + ")");
+      g.addColorStop(.95, "rgba(245,236,222," + (a * .35).toFixed(4) + ")");
       g.addColorStop(1, "rgba(245,236,222,0)");
       ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, r, 0, 2 * Math.PI);
       ctx.fill();
       return true;
     });
