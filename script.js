@@ -144,7 +144,6 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   // thesis follows in the cool ground. no moment of appearance.
   const title = land.querySelector(".manifesto-title");
   const figure = land.querySelector(".figure");
-  const brand = land.querySelector(".brand");
 
   function words(t) {
     const o1 = easeInOut(clamp01((t - 2200) / 2400));
@@ -155,13 +154,11 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     const u = clamp01((t - 3750) / 950);
     const c1 = 3.4, c3 = c1 + 1;
     const rise = u === 0 ? 0 : 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);
-    const o3 = easeInOut(clamp01((t - 2600) / 2200));
     if (title) title.style.opacity = o1.toFixed(3);
     if (figure) {
       figure.style.opacity = u > 0 ? "1" : "0";
       figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
     }
-    if (brand) brand.style.opacity = o3.toFixed(3);
   }
 
   let start = null;

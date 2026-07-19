@@ -89,22 +89,9 @@ h1, h2, p { margin: 0; }
    drives their opacity frame-by-frame — the light makes them legible,
    and the figure surfaces through the line's breath. */
 .manifesto-title,
-.figure,
-.brand { opacity: 0; z-index: 300; }
+.figure { opacity: 0; z-index: 300; }
 .land.born .manifesto-title,
-.land.born .figure,
-.land.born .brand { opacity: 1; }
-/* the masthead: the name, quiet, above the scene it signs */
-.brand {
-  position: absolute;
-  top: 7vh;
-  width: 100%;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  color: rgba(243,240,233,.55);
-}
+.land.born .figure { opacity: 1; }
 .manifesto-title {
   position: absolute;
   top: 27vh;
