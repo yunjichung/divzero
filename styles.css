@@ -179,16 +179,6 @@ h1, h2, p { margin: 0; }
 .credits {
   width: min(460px, 100%);
 }
-/* 먹: the infinity room is still water — drops of light-ink bloom
-   behind the sentence, diffusing forever slower, never finished */
-.infinity { position: relative; }
-#ink {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.infinity .credits { position: relative; z-index: 1; }
 .credits.beat { width: min(600px, 100%); }
 .beat-tagline {
   font-size: clamp(19px, 2.6vw, 30px);

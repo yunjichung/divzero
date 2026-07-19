@@ -58,16 +58,31 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     ctx.closePath();
   }
 
-  // .4s black · .4–1.8s a point becomes an endless line · 1.8–4s light
-  // blooms from it while the line breathes once · 4.2s the words
+  // .4s black · .4–1.8s a point becomes an endless line · 1.8–3.3s the
+  // line breathes while light blooms · 3.3–4.4s THE SPRINGBOARD: the
+  // breath's energy gathers into a bow beneath the name, the line snaps
+  // up past flat, and the word is flung out of the water — cause, then
+  // effect. the line settles; the word lands standing on it.
+  const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
+  const bump = (u) => Math.exp(-((u - .5) * (u - .5)) / (2 * .11 * .11));
+
+  function springAt(t) {
+    if (t < 3300) return 0;
+    if (t < 3750) return 10 * easeInOut((t - 3300) / 450);          // bow down
+    if (t < 3930) return 10 - 13 * easeOutCubic((t - 3750) / 180);  // snap up past flat
+    if (t < 4400) return -3 * (1 - easeInOut((t - 3930) / 470));    // settle
+    return 0;
+  }
+
   function draw(t) {
     const grow = clamp01((t - 400) / 1400);
     // slow at birth (a point, held), accelerating past the edges
     const half = (W * .5 + 60) * Math.pow(grow, 2.2);
     const bloom = easeInOut(clamp01((t - 1800) / 2200));
-    const breath = Math.sin(Math.PI * bloom);
+    const breath = Math.sin(Math.PI * clamp01((t - 1800) / 1500));
     const s = breath;
-    const edge = (u) => meetY + AMP * s * shape(u);
+    const spring = springAt(t);
+    const edge = (u) => meetY + AMP * s * shape(u) + spring * bump(u);
     // light hugs the line first, reaching further as it becomes;
     // a faint overshoot at mid-bloom, settling to the resting level
     const reachW = Math.max(2, meetY * bloom);
@@ -133,13 +148,13 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
   function words(t) {
     const o1 = easeInOut(clamp01((t - 2200) / 2400));
-    // the drawer: the name rises from below the line, fully opaque,
-    // clipped by the well whose bottom edge is the horizon — tops of
-    // the letters first — one overshoot (~3px), then rest. 1.2s.
-    const u = clamp01((t - 3000) / 1200);
-    const c1 = 1.70158, c3 = c1 + 1;
+    // the fling: the word launches at the instant the line snaps up
+    // (3750ms) — fast off the board, decelerating into hang-time at
+    // the top of its arc, one firm landing. cause, then effect.
+    const u = clamp01((t - 3750) / 950);
+    const c1 = 3.4, c3 = c1 + 1;
     const rise = u === 0 ? 0 : 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);
-    const o3 = easeInOut(clamp01((t - 3300) / 2200));
+    const o3 = easeInOut(clamp01((t - 3600) / 2000));
     if (title) title.style.opacity = o1.toFixed(3);
     if (figure) {
       figure.style.opacity = u > 0 ? "1" : "0";
@@ -160,9 +175,9 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   function frame(now) {
     if (start === null) start = now;
     const t = skipped ? 5600 : now - start;
-    draw(Math.min(t, 4200));
+    draw(Math.min(t, 4500));
     words(t);
-    if (t >= 4200 && !fading) {
+    if (t >= 4500 && !fading) {
       fading = true;
       genesis.style.opacity = "0";
       setTimeout(() => genesis.remove(), 900);
@@ -286,112 +301,6 @@ function stillWater(canvas, reach) {
 }
 
 stillWater(document.getElementById("water"), document.getElementById("reach"));
-
-// 먹: ink in still water. while the sentence holds the stage, drops of
-// light-ink touch the dark and bloom — radius growing as √t, the way
-// diffusion actually moves: forever slowing, never finished. this is
-// the one place the site moves without end, because the sentence is
-// about infinity and the animation refuses to resolve.
-(function () {
-  const section = document.getElementById("infinity");
-  const canvas = document.getElementById("ink");
-  if (!section || !canvas || reducedMotion) return;
-  const ctx = canvas.getContext("2d");
-  let W = 0, H = 0;
-
-  function size() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = section.clientWidth;
-    H = section.clientHeight;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  let drops = [];
-  let raf = null;
-  let nextDrop = 0;
-
-  // one drop, composed: a single fixed point below the sentence where
-  // ink is born, blooms as √t, fades, and is born again inside its own
-  // bloom — concentric generations, a slow heartbeat. one act of
-  // division, endless issue. rhythm instead of weather. each
-  // generation's edge wanders differently (harmonics), the wash
-  // gathering dense at the rim like ink on hanji.
-  const CYCLE = 5600;
-  function spawn(now) {
-    drops.push({
-      t0: now,
-      k: 34,
-      a0: .12,
-      amp: [.05 + .05 * Math.random(), .04 + .05 * Math.random(), .03 + .04 * Math.random()],
-      ph: [Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28],
-    });
-    nextDrop = now + CYCLE;
-  }
-
-  const EDGE = 48;
-  function frame(now) {
-    if (now >= nextDrop && drops.length < 4) spawn(now);
-    ctx.clearRect(0, 0, W, H);
-    const cx = W * .5;
-    const cy = H * .62;
-    drops = drops.filter((d) => {
-      d.x = cx;
-      d.y = cy;
-      const t = (now - d.t0) / 1000;
-      const a = d.a0 * Math.exp(-t / 9);
-      if (a < .005) return false;
-      const R = d.k * Math.sqrt(t + .05);
-      ctx.beginPath();
-      for (let i = 0; i <= EDGE; i++) {
-        const th = (i / EDGE) * 2 * Math.PI;
-        const wobble = 1
-          + d.amp[0] * Math.sin(2 * th + d.ph[0])
-          + d.amp[1] * Math.sin(3 * th + d.ph[1])
-          + d.amp[2] * Math.sin(5 * th + d.ph[2]);
-        const x = d.x + R * wobble * Math.cos(th);
-        const y = d.y + R * wobble * Math.sin(th);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      const g = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, R * 1.2);
-      g.addColorStop(0, "rgba(255,240,222," + (a * .45).toFixed(4) + ")");
-      g.addColorStop(.62, "rgba(250,238,222," + (a * .7).toFixed(4) + ")");
-      g.addColorStop(.85, "rgba(248,237,222," + a.toFixed(4) + ")");
-      g.addColorStop(.95, "rgba(245,236,222," + (a * .35).toFixed(4) + ")");
-      g.addColorStop(1, "rgba(245,236,222,0)");
-      ctx.fillStyle = g;
-      ctx.fill();
-      return true;
-    });
-    raf = requestAnimationFrame(frame);
-  }
-
-  function start() {
-    if (raf) return;
-    size();
-    nextDrop = performance.now() + 400;
-    raf = requestAnimationFrame(frame);
-  }
-  function stop() {
-    if (raf) { cancelAnimationFrame(raf); raf = null; }
-  }
-
-  const inkObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && !document.hidden) start();
-      else stop();
-    });
-  }, { threshold: .2 });
-  inkObserver.observe(section);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) { stop(); return; }
-    const box = section.getBoundingClientRect();
-    if (box.top < window.innerHeight && box.bottom > 0) start();
-  });
-  window.addEventListener("resize", () => { if (raf) size(); });
-})();
 
 // photos are proof: a card gains its documentary image only when a real
 // url exists in assets.json — no placeholder frames ever render
