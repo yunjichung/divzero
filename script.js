@@ -287,24 +287,6 @@ function stillWater(canvas, reach) {
 
 stillWater(document.getElementById("water"), document.getElementById("reach"));
 
-// the sentence performs itself: touch "The right people raise your
-// baseline." and the line — with DivZero standing on it — rises 14px
-// and stays risen for the rest of the visit. the right people don't
-// un-raise you. (waits for the arrival to finish first.)
-(function () {
-  const land = document.getElementById("manifesto");
-  const thesis = land ? land.querySelector(".manifesto-thesis") : null;
-  if (!land || !thesis) return;
-  function raise() {
-    if (!land.classList.contains("born")) return;
-    land.classList.add("risen");
-    thesis.removeEventListener("pointerenter", raise);
-    thesis.removeEventListener("pointerdown", raise);
-  }
-  thesis.addEventListener("pointerenter", raise);
-  thesis.addEventListener("pointerdown", raise);
-})();
-
 // 먹: ink in still water. while the sentence holds the stage, drops of
 // light-ink touch the dark and bloom — radius growing as √t, the way
 // diffusion actually moves: forever slowing, never finished. this is

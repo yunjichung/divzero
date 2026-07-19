@@ -150,19 +150,6 @@ h1, h2, p { margin: 0; }
   left: 0; right: 0;
   height: 44px;
 }
-/* the sentence performs itself: touch "The right people raise your
-   baseline." once, and the baseline — with the one standing on it —
-   rises with a small spring. it does not come back down. */
-#water,
-.reach,
-.figure-well {
-  transition: transform .9s cubic-bezier(.34, 1.56, .64, 1);
-}
-.land.risen #water,
-.land.risen .reach,
-.land.risen .figure-well {
-  transform: translateY(-14px);
-}
 .manifesto-thesis {
   position: absolute;
   top: 76vh;
