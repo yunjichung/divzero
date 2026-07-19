@@ -144,23 +144,24 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   // thesis follows in the cool ground. no moment of appearance.
   const title = land.querySelector(".manifesto-title");
   const figure = land.querySelector(".figure");
-  const thesis = land.querySelector(".manifesto-thesis");
+  const brand = land.querySelector(".brand");
 
   function words(t) {
     const o1 = easeInOut(clamp01((t - 2200) / 2400));
-    // the fling: the word launches at the instant the line snaps up
-    // (3750ms) — fast off the board, decelerating into hang-time at
-    // the top of its arc, one firm landing. cause, then effect.
+    // the fling: the sentence launches at the instant the line snaps
+    // up (3750ms) — fast off the board, hang-time at the top of the
+    // arc, one firm landing. the baseline raises the words that say
+    // the baseline raises you: the sentence proves itself.
     const u = clamp01((t - 3750) / 950);
     const c1 = 3.4, c3 = c1 + 1;
     const rise = u === 0 ? 0 : 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);
-    const o3 = easeInOut(clamp01((t - 3600) / 2000));
+    const o3 = easeInOut(clamp01((t - 2600) / 2200));
     if (title) title.style.opacity = o1.toFixed(3);
     if (figure) {
       figure.style.opacity = u > 0 ? "1" : "0";
       figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
     }
-    if (thesis) thesis.style.opacity = o3.toFixed(3);
+    if (brand) brand.style.opacity = o3.toFixed(3);
   }
 
   let start = null;

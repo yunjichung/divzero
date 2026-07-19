@@ -90,10 +90,21 @@ h1, h2, p { margin: 0; }
    and the figure surfaces through the line's breath. */
 .manifesto-title,
 .figure,
-.manifesto-thesis { opacity: 0; z-index: 300; }
+.brand { opacity: 0; z-index: 300; }
 .land.born .manifesto-title,
 .land.born .figure,
-.land.born .manifesto-thesis { opacity: 1; }
+.land.born .brand { opacity: 1; }
+/* the masthead: the name, quiet, above the scene it signs */
+.brand {
+  position: absolute;
+  top: 7vh;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: rgba(243,240,233,.55);
+}
 .manifesto-title {
   position: absolute;
   top: 27vh;
@@ -127,11 +138,13 @@ h1, h2, p { margin: 0; }
   display: grid;
   justify-items: center;
 }
+/* the risen words: the sentence stands on the baseline that raised it */
 .figure .en {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .01em;
-  color: rgba(243,240,233,.85);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .002em;
+  color: rgba(243,240,233,.8);
+  white-space: nowrap;
 }
 /* the horizon does not end — it leaves the frame on both sides.
    it is drawn as still water: straight at rest; when the taegeuk's
@@ -149,20 +162,6 @@ h1, h2, p { margin: 0; }
   top: calc(68vh - 22px);
   left: 0; right: 0;
   height: 44px;
-}
-.manifesto-thesis {
-  position: absolute;
-  top: 76vh;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 48px);
-  max-width: 32em;
-  text-align: center;
-  font-size: 15px;
-  line-height: 1.7;
-  letter-spacing: -.01em;
-  color: rgba(243,240,233,.45);
-  text-wrap: balance;
 }
 
 /* ---- interior sections ---- */
