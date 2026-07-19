@@ -144,6 +144,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   // thesis follows in the cool ground. no moment of appearance.
   const title = land.querySelector(".manifesto-title");
   const figure = land.querySelector(".figure");
+  const undername = land.querySelector(".undername");
 
   function words(t) {
     const o1 = easeInOut(clamp01((t - 2200) / 2400));
@@ -158,6 +159,13 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     if (figure) {
       figure.style.opacity = u > 0 ? "1" : "0";
       figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
+    }
+    // the reaction: as the sentence flings up, the name settles down —
+    // same instant, opposite motion, no spring. the grounding is calm.
+    if (undername) {
+      const g = easeOutCubic(clamp01((t - 3750) / 700));
+      undername.style.opacity = g.toFixed(3);
+      undername.style.transform = "translateY(" + (-12 * (1 - g)).toFixed(2) + "px)";
     }
   }
 
