@@ -143,7 +143,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     if (title) title.style.opacity = o1.toFixed(3);
     if (figure) {
       figure.style.opacity = u > 0 ? "1" : "0";
-      figure.style.transform = "translateY(" + (40 * (1 - rise)).toFixed(2) + "px)";
+      figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
     }
     if (thesis) thesis.style.opacity = o3.toFixed(3);
   }
@@ -286,6 +286,88 @@ function stillWater(canvas, reach) {
 }
 
 stillWater(document.getElementById("water"), document.getElementById("reach"));
+
+// 먹: ink in still water. while the sentence holds the stage, drops of
+// light-ink touch the dark and bloom — radius growing as √t, the way
+// diffusion actually moves: forever slowing, never finished. this is
+// the one place the site moves without end, because the sentence is
+// about infinity and the animation refuses to resolve.
+(function () {
+  const section = document.getElementById("infinity");
+  const canvas = document.getElementById("ink");
+  if (!section || !canvas || reducedMotion) return;
+  const ctx = canvas.getContext("2d");
+  let W = 0, H = 0;
+
+  function size() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = section.clientWidth;
+    H = section.clientHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  let drops = [];
+  let raf = null;
+  let nextDrop = 0;
+
+  function spawn(now) {
+    drops.push({
+      x: W * (.2 + .6 * Math.random()),
+      y: H * (.18 + .64 * Math.random()),
+      t0: now,
+      k: 26 + 22 * Math.random(),
+      a0: .028 + .022 * Math.random(),
+    });
+    nextDrop = now + 3800 + Math.random() * 3600;
+  }
+
+  function frame(now) {
+    if (now >= nextDrop && drops.length < 5) spawn(now);
+    ctx.clearRect(0, 0, W, H);
+    drops = drops.filter((d) => {
+      const t = (now - d.t0) / 1000;
+      const a = d.a0 * Math.exp(-t / 13);
+      if (a < .0025) return false;
+      const r = d.k * Math.sqrt(t + .05);
+      const g = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, r);
+      g.addColorStop(0, "rgba(255,240,222," + (a * .55).toFixed(4) + ")");
+      g.addColorStop(.55, "rgba(250,238,222," + a.toFixed(4) + ")");
+      g.addColorStop(1, "rgba(245,236,222,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, r, 0, 2 * Math.PI);
+      ctx.fill();
+      return true;
+    });
+    raf = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (raf) return;
+    size();
+    nextDrop = performance.now() + 500;
+    raf = requestAnimationFrame(frame);
+  }
+  function stop() {
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  }
+
+  const inkObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !document.hidden) start();
+      else stop();
+    });
+  }, { threshold: .2 });
+  inkObserver.observe(section);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { stop(); return; }
+    const box = section.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) start();
+  });
+  window.addEventListener("resize", () => { if (raf) size(); });
+})();
 
 // photos are proof: a card gains its documentary image only when a real
 // url exists in assets.json — no placeholder frames ever render

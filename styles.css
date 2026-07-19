@@ -114,8 +114,8 @@ h1, h2, p { margin: 0; }
    co-equal bilingual lockup: both scripts, always, neither a subtitle. */
 .figure-well {
   position: absolute;
-  top: calc(68vh - 46px);
-  height: 46px;
+  top: calc(68vh - 34px);
+  height: 34px;
   left: 0; right: 0;
   overflow: hidden;
   z-index: 300;
@@ -126,19 +126,12 @@ h1, h2, p { margin: 0; }
   width: 100%;
   display: grid;
   justify-items: center;
-  row-gap: 3px;
 }
 .figure .en {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: .01em;
   color: rgba(243,240,233,.85);
-}
-.figure .ko {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .08em;
-  color: rgba(243,240,233,.5);
 }
 /* the horizon does not end — it leaves the frame on both sides.
    it is drawn as still water: straight at rest; when the taegeuk's
@@ -186,6 +179,16 @@ h1, h2, p { margin: 0; }
 .credits {
   width: min(460px, 100%);
 }
+/* 먹: the infinity room is still water — drops of light-ink bloom
+   behind the sentence, diffusing forever slower, never finished */
+.infinity { position: relative; }
+#ink {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.infinity .credits { position: relative; z-index: 1; }
 .credits.beat { width: min(600px, 100%); }
 .beat-tagline {
   font-size: clamp(19px, 2.6vw, 30px);
