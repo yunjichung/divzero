@@ -274,23 +274,10 @@ function stillWater(canvas, reach) {
   let ripples = [];
   let raf = null;
   let lastTouch = 0;
-  // the finger on the water: while hovering, the surface dips gently
-  // under the pointer and follows it with a little lag — pressed, not
-  // drawn — and exhales flat when the hand leaves
-  let hoverActive = false;
-  let hoverAmp = 0;
-  let hoverX = 0;
-  let hoverTarget = 0;
 
   function frame(now) {
     ripples = ripples.filter((r) => now - r.t0 < LIFE);
-    hoverAmp += ((hoverActive ? 1 : 0) - hoverAmp) * .12;
-    hoverX += (hoverTarget - hoverX) * .2;
-    if (!ripples.length && !hoverActive && hoverAmp < .005) {
-      drawStill();
-      raf = null;
-      return;
-    }
+    if (!ripples.length) { drawStill(); raf = null; return; }
     stroke(() => {
       for (let x = 0; x <= width; x += 2) {
         let y = MID + .5;
@@ -299,15 +286,11 @@ function stillWater(canvas, reach) {
           const amp = A * Math.exp(-dt / TAU);
           y += amp * wavelet((Math.abs(x - r.x0) - V * dt) / W);
         }
-        const dx = x - hoverX;
-        y += 2.8 * hoverAmp * Math.exp(-(dx * dx) / 6050);
         x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       }
     });
     raf = requestAnimationFrame(frame);
   }
-
-  const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
 
   function touch(clientX) {
     if (reducedMotion) return;
@@ -315,27 +298,10 @@ function stillWater(canvas, reach) {
     if (now - lastTouch < 550) return;
     lastTouch = now;
     ripples.push({ x0: clientX, t0: now });
-    wake();
+    if (!raf) raf = requestAnimationFrame(frame);
   }
 
-  reach.addEventListener("pointerenter", (e) => {
-    if (reducedMotion) return;
-    hoverActive = true;
-    hoverX = e.clientX;
-    hoverTarget = e.clientX;
-    touch(e.clientX);
-    wake();
-  });
-  reach.addEventListener("pointermove", (e) => {
-    if (reducedMotion) return;
-    hoverTarget = e.clientX;
-    hoverActive = true;
-    wake();
-  });
-  reach.addEventListener("pointerleave", () => {
-    hoverActive = false;
-    wake();
-  });
+  reach.addEventListener("pointerenter", (e) => touch(e.clientX));
   reach.addEventListener("pointerdown", (e) => touch(e.clientX));
   window.addEventListener("resize", size);
   size();
