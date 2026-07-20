@@ -160,12 +160,12 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
       figure.style.opacity = u > 0 ? "1" : "0";
       figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
     }
-    // the reaction: as the sentence flings up, the name settles down —
-    // same instant, opposite motion, no spring. the grounding is calm.
+    // the reaction, same physics mirrored: the name springs DOWN
+    // through the line at the same instant, same fling, same
+    // overshoot — the sentence up, the name down, one snap.
     if (undername) {
-      const g = easeOutCubic(clamp01((t - 3750) / 700));
-      undername.style.opacity = g.toFixed(3);
-      undername.style.transform = "translateY(" + (-12 * (1 - g)).toFixed(2) + "px)";
+      undername.style.opacity = u > 0 ? "1" : "0";
+      undername.style.transform = "translateY(" + (-27 * (1 - rise)).toFixed(2) + "px)";
     }
   }
 

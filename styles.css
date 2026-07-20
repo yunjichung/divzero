@@ -90,15 +90,26 @@ h1, h2, p { margin: 0; }
    and the figure surfaces through the line's breath. */
 .manifesto-title,
 .figure,
-.undername { opacity: 0; z-index: 300; }
+.undername { opacity: 0; }
+.manifesto-title { z-index: 300; }
 .land.born .manifesto-title,
 .land.born .figure,
 .land.born .undername { opacity: 1; }
-/* equal and opposite: as the sentence is flung up off the line, the
-   name settles down beneath it — the keel under the waterline */
-.undername {
+/* equal and opposite, same physics: the mirrored drawer. a clipping
+   window whose TOP edge is the line — the name springs down through
+   it, bottoms of the letters first, same fling as the sentence above,
+   overshooting a few px too deep and settling back. */
+.undername-well {
   position: absolute;
-  top: calc(68vh + 14px);
+  top: 68vh;
+  height: 34px;
+  left: 0; right: 0;
+  overflow: hidden;
+  z-index: 300;
+}
+.undername {
+  position: relative;
+  top: 13px;
   width: 100%;
   text-align: center;
   font-size: 11.5px;
