@@ -44,8 +44,10 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
   const easeInOut = (t) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
-  // one breath: crest then trough, tapered flat at both edges
-  const shape = (u) => Math.sin(2 * Math.PI * u) * Math.sin(Math.PI * u);
+  // one breath: the left lobe RISES, the right lobe SINKS — the wave
+  // itself is the actor: its up side throws the sentence, its down
+  // side grounds the name. yang lifts, um settles.
+  const shape = (u) => -Math.sin(2 * Math.PI * u) * Math.sin(Math.PI * u);
   const N = 140;
 
   function fieldPath(edgeAt, top) {
@@ -58,21 +60,12 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     ctx.closePath();
   }
 
-  // .4s black · .4–1.8s a point becomes an endless line · 1.8–3.3s the
-  // line breathes while light blooms · 3.3–4.4s THE SPRINGBOARD: the
-  // breath's energy gathers into a bow beneath the name, the line snaps
-  // up past flat, and the word is flung out of the water — cause, then
-  // effect. the line settles; the word lands standing on it.
+  // .4s black · .4–1.8s a point becomes an endless line · 1.8–3.3s ONE
+  // BREATH does everything: as the left lobe crests it flings the
+  // sentence up over it; as the right lobe sinks it carries the name
+  // down beneath it; the wave passes and both are left where it put
+  // them. cause on each side, effect on each side.
   const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
-  const bump = (u) => Math.exp(-((u - .5) * (u - .5)) / (2 * .11 * .11));
-
-  function springAt(t) {
-    if (t < 3300) return 0;
-    if (t < 3750) return 10 * easeInOut((t - 3300) / 450);          // bow down
-    if (t < 3930) return 10 - 13 * easeOutCubic((t - 3750) / 180);  // snap up past flat
-    if (t < 4400) return -3 * (1 - easeInOut((t - 3930) / 470));    // settle
-    return 0;
-  }
 
   function draw(t) {
     const grow = clamp01((t - 400) / 1400);
@@ -81,8 +74,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     const bloom = easeInOut(clamp01((t - 1800) / 2200));
     const breath = Math.sin(Math.PI * clamp01((t - 1800) / 1500));
     const s = breath;
-    const spring = springAt(t);
-    const edge = (u) => meetY + AMP * s * shape(u) + spring * bump(u);
+    const edge = (u) => meetY + AMP * s * shape(u);
     // light hugs the line first, reaching further as it becomes;
     // a faint overshoot at mid-bloom, settling to the resting level
     const reachW = Math.max(2, meetY * bloom);
@@ -148,11 +140,10 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
   function words(t) {
     const o1 = easeInOut(clamp01((t - 2200) / 2400));
-    // the fling: the sentence launches at the instant the line snaps
-    // up (3750ms) — fast off the board, hang-time at the top of the
-    // arc, one firm landing. the baseline raises the words that say
-    // the baseline raises you: the sentence proves itself.
-    const u = clamp01((t - 3750) / 950);
+    // the crest flings the sentence: launch at the crest's peak
+    // (2550ms), hang-time at the top of the arc, landing above the
+    // left lobe as the wave passes on. the up side of the breath.
+    const u = clamp01((t - 2550) / 950);
     const c1 = 3.4, c3 = c1 + 1;
     const rise = u === 0 ? 0 : 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);
     if (title) title.style.opacity = o1.toFixed(3);
@@ -160,12 +151,15 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
       figure.style.opacity = u > 0 ? "1" : "0";
       figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
     }
-    // the reaction: as the sentence flings up, the name settles down —
-    // same instant, opposite motion, no spring. the grounding is calm.
+    // the trough carries the name: it rides the sinking right lobe —
+    // pressed down as the trough deepens, left at rest as the wave
+    // closes. the down side of the same breath.
     if (undername) {
-      const g = easeOutCubic(clamp01((t - 3750) / 700));
-      undername.style.opacity = g.toFixed(3);
-      undername.style.transform = "translateY(" + (-12 * (1 - g)).toFixed(2) + "px)";
+      const sw = Math.sin(Math.PI * clamp01((t - 1800) / 1500));
+      const dispR = AMP * sw * shape(.73);
+      const op = clamp01((t - 2100) / 500);
+      undername.style.opacity = op.toFixed(3);
+      undername.style.transform = "translateY(" + dispR.toFixed(2) + "px)";
     }
   }
 

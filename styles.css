@@ -99,7 +99,8 @@ h1, h2, p { margin: 0; }
 .undername {
   position: absolute;
   top: calc(68vh + 14px);
-  width: 100%;
+  right: 0;
+  width: 54vw;
   text-align: center;
   font-size: 11.5px;
   font-weight: 600;
@@ -128,7 +129,8 @@ h1, h2, p { margin: 0; }
   position: absolute;
   top: calc(68vh - 34px);
   height: 34px;
-  left: 0; right: 0;
+  left: 0;
+  width: 54vw;
   overflow: hidden;
   z-index: 300;
 }
@@ -281,6 +283,9 @@ h1, h2, p { margin: 0; }
 
 @media (max-width: 700px) {
   .section { min-height: 0; padding-top: 64px; padding-bottom: 64px; }
+  /* small screens can't afford the asymmetry: both center */
+  .figure-well { width: 100%; }
+  .undername { width: 100%; }
   .manifesto-thesis { font-size: 14.5px; }
   .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card { min-height: 0; padding: 14px; }
