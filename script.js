@@ -66,11 +66,15 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
   const bump = (u) => Math.exp(-((u - .5) * (u - .5)) / (2 * .11 * .11));
 
+  // one oscillation, like a struck diving board: load, up-stroke
+  // (launches the sentence), rebound down-stroke (delivers the name),
+  // settle. one strike, two deliveries.
   function springAt(t) {
     if (t < 3300) return 0;
-    if (t < 3750) return 10 * easeInOut((t - 3300) / 450);          // bow down
-    if (t < 3930) return 10 - 13 * easeOutCubic((t - 3750) / 180);  // snap up past flat
-    if (t < 4400) return -3 * (1 - easeInOut((t - 3930) / 470));    // settle
+    if (t < 3750) return 10 * easeInOut((t - 3300) / 450);          // load: bow down
+    if (t < 3930) return 10 - 18 * easeOutCubic((t - 3750) / 180);  // up-stroke, past flat to -8
+    if (t < 4150) return -8 + 14 * easeInOut((t - 3930) / 220);     // rebound, down past flat to +6
+    if (t < 4700) return 6 * (1 - easeInOut((t - 4150) / 550));     // settle
     return 0;
   }
 
@@ -152,20 +156,23 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     // up (3750ms) — fast off the board, hang-time at the top of the
     // arc, one firm landing. the baseline raises the words that say
     // the baseline raises you: the sentence proves itself.
-    const u = clamp01((t - 3750) / 950);
     const c1 = 3.4, c3 = c1 + 1;
-    const rise = u === 0 ? 0 : 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);
+    const back = (v) => v === 0 ? 0 : 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2);
+    // the up-stroke launches the sentence (3750)…
+    const u = clamp01((t - 3750) / 950);
+    const rise = back(u);
     if (title) title.style.opacity = o1.toFixed(3);
     if (figure) {
       figure.style.opacity = u > 0 ? "1" : "0";
       figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
     }
-    // the reaction, same physics mirrored: the name springs DOWN
-    // through the line at the same instant, same fling, same
-    // overshoot — the sentence up, the name down, one snap.
+    // …and the rebound down-stroke delivers the name (3950): the same
+    // spring, mirrored, one beat later — the board's echo.
     if (undername) {
-      undername.style.opacity = u > 0 ? "1" : "0";
-      undername.style.transform = "translateY(" + (-27 * (1 - rise)).toFixed(2) + "px)";
+      const v = clamp01((t - 3950) / 950);
+      const drop = back(v);
+      undername.style.opacity = v > 0 ? "1" : "0";
+      undername.style.transform = "translateY(" + (-27 * (1 - drop)).toFixed(2) + "px)";
     }
   }
 
@@ -181,9 +188,9 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   function frame(now) {
     if (start === null) start = now;
     const t = skipped ? 5600 : now - start;
-    draw(Math.min(t, 4500));
+    draw(Math.min(t, 4800));
     words(t);
-    if (t >= 4500 && !fading) {
+    if (t >= 4800 && !fading) {
       fading = true;
       genesis.style.opacity = "0";
       setTimeout(() => genesis.remove(), 900);
