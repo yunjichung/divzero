@@ -179,15 +179,40 @@ h1, h2, p { margin: 0; }
 .credits {
   width: min(460px, 100%);
 }
-.credits.beat { width: min(600px, 100%); }
-.beat-tagline {
-  font-size: clamp(19px, 2.6vw, 30px);
-  font-weight: 420;
-  line-height: 1.5;
-  letter-spacing: -.018em;
-  color: rgba(243,240,233,.85);
-  text-wrap: balance;
+/* the four marks, flag-true: 건 gam 리 곤 in the taegeukgi's own
+   corners, drawn in the site's line language — hairline strokes whose
+   ends dissolve, and whose gaps (the zeros) dissolve too. the flag's
+   grammar, made of endless lines around soft zeros. still, always. */
+.kwae-room { position: relative; }
+.kwae {
+  position: absolute;
+  display: grid;
+  row-gap: 3.5px;
+  width: 27px;
 }
+.kwae i { display: block; height: 1px; }
+.kwae .s {
+  background: linear-gradient(90deg,
+    rgba(243,240,233,0),
+    rgba(243,240,233,.32) 24%,
+    rgba(243,240,233,.32) 76%,
+    rgba(243,240,233,0));
+}
+.kwae .k {
+  background: linear-gradient(90deg,
+    rgba(243,240,233,0),
+    rgba(243,240,233,.32) 17%,
+    rgba(243,240,233,.32) 36%,
+    rgba(243,240,233,0) 45%,
+    rgba(243,240,233,0) 55%,
+    rgba(243,240,233,.32) 64%,
+    rgba(243,240,233,.32) 83%,
+    rgba(243,240,233,0));
+}
+.k-geon { top: 10vh; left: 7vw; }
+.k-gam { top: 10vh; right: 7vw; }
+.k-ri { bottom: 10vh; left: 7vw; }
+.k-gon { bottom: 10vh; right: 7vw; }
 .about-text {
   max-width: 100%;
   margin: 0 auto;
