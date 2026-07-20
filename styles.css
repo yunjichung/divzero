@@ -106,6 +106,7 @@ h1, h2, p { margin: 0; }
   left: 0; right: 0;
   overflow: hidden;
   z-index: 300;
+  pointer-events: none;
 }
 .undername {
   position: relative;
@@ -142,6 +143,9 @@ h1, h2, p { margin: 0; }
   left: 0; right: 0;
   overflow: hidden;
   z-index: 300;
+  /* the wells are windows, not walls: the cursor passes through to
+     the water so the line answers the hand */
+  pointer-events: none;
 }
 .figure {
   position: relative;
