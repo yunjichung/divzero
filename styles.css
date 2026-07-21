@@ -277,7 +277,9 @@ h1, h2, p { margin: 0; }
 }
 
 @media (max-width: 700px) {
-  .section { min-height: 0; padding-top: 64px; padding-bottom: 64px; }
+  /* every room owns the whole screen on mobile too — the snap promise
+     holds; tall content (the cards) still scrolls within its room */
+  .section { padding-top: 64px; padding-bottom: 64px; }
   .manifesto-thesis { font-size: 14.5px; }
   .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card { min-height: 0; padding: 14px; }
