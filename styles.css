@@ -35,8 +35,8 @@ body::after {
   opacity: .05;
   /* paper reads where light lives: the grain is fullest at the horizon's
      height and thins into the dark above and below */
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 35%, #000 60%, #000 76%, rgba(0,0,0,.55) 100%);
-  mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 35%, #000 60%, #000 76%, rgba(0,0,0,.55) 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 28%, #000 44%, #000 58%, rgba(0,0,0,.55) 100%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 28%, #000 44%, #000 58%, rgba(0,0,0,.55) 100%);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 a { color: inherit; text-decoration: none; }
@@ -59,7 +59,7 @@ h1, h2, p { margin: 0; }
 .sky {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 68vh;
+  height: 50vh;
   background: linear-gradient(180deg,
     transparent 26%,
     rgba(255,240,220,.016) 66%,
@@ -68,7 +68,7 @@ h1, h2, p { margin: 0; }
 }
 .ground {
   position: absolute;
-  top: 68vh; left: 0; right: 0; bottom: 0;
+  top: 50vh; left: 0; right: 0; bottom: 0;
   background: linear-gradient(180deg,
     rgba(198,214,244,.035) 0%,
     rgba(198,214,244,.015) 40%,
@@ -101,7 +101,7 @@ h1, h2, p { margin: 0; }
    overshooting a few px too deep and settling back. */
 .undername-well {
   position: absolute;
-  top: 68vh;
+  top: 50vh;
   height: 34px;
   left: 0; right: 0;
   overflow: hidden;
@@ -120,7 +120,7 @@ h1, h2, p { margin: 0; }
 }
 .manifesto-title {
   position: absolute;
-  top: 27vh;
+  top: 36vh;
   width: 100%;
   text-align: center;
   font-size: clamp(19px, 3.7vw, 46px);
@@ -138,7 +138,7 @@ h1, h2, p { margin: 0; }
    co-equal bilingual lockup: both scripts, always, neither a subtitle. */
 .figure-well {
   position: absolute;
-  top: calc(68vh - 34px);
+  top: calc(50vh - 34px);
   height: 34px;
   left: 0; right: 0;
   overflow: hidden;
@@ -167,7 +167,7 @@ h1, h2, p { margin: 0; }
    S passes through it, the crest warms and the trough cools. */
 #water {
   position: absolute;
-  top: calc(68vh - 40px);
+  top: calc(50vh - 40px);
   left: 0;
   width: 100%;
   height: 80px;
@@ -175,7 +175,7 @@ h1, h2, p { margin: 0; }
 }
 .reach {
   position: absolute;
-  top: calc(68vh - 22px);
+  top: calc(50vh - 22px);
   left: 0; right: 0;
   height: 44px;
 }
@@ -204,59 +204,6 @@ h1, h2, p { margin: 0; }
     rgba(255,240,222,.05), transparent 72%);
 }
 .kwae-frame { position: relative; width: min(500px, 100%); }
-/* najeon: the marks are not printed, they are inlaid — each shard of
-   mother-of-pearl drifts through faint iridescence far too slowly to
-   watch, and each catches the light on its own phase */
-.kwae {
-  position: absolute;
-  display: grid;
-  row-gap: 3.5px;
-  width: 27px;
-  animation: nacre 36s ease-in-out infinite alternate;
-}
-.k-gam { animation-delay: -9s; }
-.k-ri { animation-delay: -18s; }
-.k-gon { animation-delay: -27s; }
-@keyframes nacre {
-  0% { filter: sepia(.35) saturate(1.3) hue-rotate(-14deg); }
-  50% { filter: sepia(.35) saturate(1.35) hue-rotate(24deg); }
-  100% { filter: sepia(.3) saturate(1.25) hue-rotate(-42deg); }
-}
-.kwae i { display: block; height: 1px; }
-.kwae .s {
-  background: linear-gradient(90deg,
-    rgba(243,240,233,0),
-    rgba(243,240,233,.32) 24%,
-    rgba(243,240,233,.32) 76%,
-    rgba(243,240,233,0));
-}
-.kwae .k {
-  background: linear-gradient(90deg,
-    rgba(243,240,233,0),
-    rgba(243,240,233,.32) 17%,
-    rgba(243,240,233,.32) 36%,
-    rgba(243,240,233,0) 45%,
-    rgba(243,240,233,0) 55%,
-    rgba(243,240,233,.32) 64%,
-    rgba(243,240,233,.32) 83%,
-    rgba(243,240,233,0));
-}
-.k-geon { top: -60px; left: -76px; }
-.k-gam { top: -60px; right: -76px; }
-.k-ri { bottom: -60px; left: -76px; }
-.k-gon { bottom: -60px; right: -76px; }
-/* the fraction, echoed quietly: statement over line over tagline */
-.room-line {
-  width: min(300px, 78%);
-  height: 1px;
-  margin: 28px auto 24px;
-  background: linear-gradient(90deg,
-    rgba(243,240,233,0),
-    rgba(243,240,233,.3) 14%,
-    rgba(243,240,233,.3) 86%,
-    rgba(243,240,233,0));
-}
-.room-line + .tagline { margin-top: 0; }
 .about-text {
   max-width: 100%;
   margin: 0 auto;
@@ -325,10 +272,6 @@ h1, h2, p { margin: 0; }
 
 @media (max-width: 700px) {
   .section { min-height: 0; padding-top: 64px; padding-bottom: 64px; }
-  .k-geon { top: -46px; left: -8px; }
-  .k-gam { top: -46px; right: -8px; }
-  .k-ri { bottom: -46px; left: -8px; }
-  .k-gon { bottom: -46px; right: -8px; }
   .manifesto-thesis { font-size: 14.5px; }
   .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card { min-height: 0; padding: 14px; }

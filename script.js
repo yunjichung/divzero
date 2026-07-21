@@ -31,7 +31,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     genesis.width = Math.round(W * dpr);
     genesis.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    meetY = H * .68;
+    meetY = H * .50;
     AMP = H * .03;
     // the stroke exhales at the frame edges — pigment exhausting as
     // the line heads past the visible world
