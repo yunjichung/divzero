@@ -208,7 +208,7 @@ h1, h2, p { margin: 0; }
   max-width: 100%;
   margin: 0 auto;
   color: rgba(243,240,233,.58);
-  font-size: 17px;
+  font-size: clamp(15px, 1.05vw + 9.5px, 17px);
   line-height: 1.78;
   letter-spacing: -.008em;
   text-wrap: pretty;
@@ -223,57 +223,102 @@ h1, h2, p { margin: 0; }
   text-align: center;
   text-align-last: center;
 }
-/* the collection: each event a small crafted card — the atomix move,
-   the ledger as artifacts rather than rows. photos land inside the
-   cards when they exist; no placeholders ever render. */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
-  width: min(1020px, 100%);
-}
-.card {
-  display: flex;
-  flex-direction: column;
-  min-height: 158px;
-  padding: 18px 18px 16px;
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 12px;
+/* the ledger: no boxes — events as set type with air. years stand
+   behind their entries as watermarks of light; each event carries its
+   count (the number only ever goes up); a row you attend to brightens
+   softly, like a light leaning toward it. photos are documentary,
+   full-width in the entry; quiet slots wait for them. */
+.ledger {
+  width: min(760px, 100%);
   text-align: left;
-  background: linear-gradient(160deg, rgba(255,255,255,.016), transparent 60%);
 }
-.card .when {
+.year-group { position: relative; padding: 30px 0 6px; }
+.year-mark {
+  position: absolute;
+  top: -14px;
+  right: -10px;
+  font-size: clamp(72px, 9vw, 128px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .02em;
+  color: rgba(243,240,233,.045);
+  pointer-events: none;
+  user-select: none;
+}
+.entry {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 0 22px;
+  padding: 18px 14px;
+  border-radius: 12px;
+  transition: background .45s ease;
+}
+@media (hover: hover) {
+  .entry:hover {
+    background: radial-gradient(ellipse 70% 90% at 26% 40%,
+      rgba(255,240,222,.04), transparent 75%);
+  }
+}
+.entry-side { padding-top: 2px; }
+.entry-side .no {
+  display: block;
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(243,240,233,.3);
+}
+.entry-side .date {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .1em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
-  color: rgba(243,240,233,.35);
+  color: rgba(243,240,233,.38);
 }
-.card .card-title {
-  margin-top: 10px;
-  font-size: 15.5px;
+.entry-title {
+  font-size: clamp(15px, .4vw + 13.2px, 16.5px);
   font-weight: 500;
   letter-spacing: -.01em;
-  line-height: 1.35;
-  color: rgba(243,240,233,.88);
+  line-height: 1.4;
+  color: rgba(243,240,233,.85);
 }
-.card .card-desc {
-  margin-top: auto;
-  padding-top: 14px;
-  font-size: 13px;
-  line-height: 1.55;
+.entry-desc {
+  margin-top: 5px;
+  font-size: clamp(13px, .3vw + 12px, 14px);
+  line-height: 1.6;
   letter-spacing: -.005em;
   color: rgba(243,240,233,.45);
   text-wrap: pretty;
 }
-.card img.photo {
-  width: 100%;
+/* the slot: a breath of tone where a photograph will live */
+.ph {
+  width: min(520px, 100%);
+  aspect-ratio: 3 / 2;
+  margin-top: 14px;
+  border-radius: 6px;
+  background: linear-gradient(160deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  display: grid;
+  place-items: center;
+}
+.ph::after {
+  content: "Photo";
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(243,240,233,.14);
+}
+.entry img.photo {
+  width: min(520px, 100%);
   aspect-ratio: 3 / 2;
   object-fit: cover;
-  margin-bottom: 12px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 8px;
+  margin-top: 14px;
+  border-radius: 6px;
 }
 
 @media (max-width: 700px) {
@@ -281,8 +326,8 @@ h1, h2, p { margin: 0; }
      holds; tall content (the cards) still scrolls within its room */
   .section { padding-top: 64px; padding-bottom: 64px; }
   .manifesto-thesis { font-size: 14.5px; }
-  .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .card { min-height: 0; padding: 14px; }
+  .entry { grid-template-columns: 64px 1fr; gap: 0 14px; padding: 14px 8px; }
+  .year-mark { font-size: 64px; right: 0; }
   .about-text {
     hyphens: auto;
     -webkit-hyphens: auto;

@@ -6,6 +6,55 @@
       "title": "2026 Opening",
       "url": "",
       "alt": "DivZero 2026 Opening gathering"
+    },
+    {
+      "id": "2025-holiday",
+      "type": "event",
+      "title": "Holiday Party 2025",
+      "url": "",
+      "alt": "DivZero 2025 holiday party"
+    },
+    {
+      "id": "2025-exponential",
+      "type": "event",
+      "title": "Exponential Growth",
+      "url": "",
+      "alt": "Exponential Growth discussion"
+    },
+    {
+      "id": "2025-cities",
+      "type": "event",
+      "title": "Shaped by Cities, Driven by Ambition",
+      "url": "",
+      "alt": "Cities and Ambition panel"
+    },
+    {
+      "id": "2025-ai",
+      "type": "event",
+      "title": "The Future of AI & Computing",
+      "url": "",
+      "alt": "The Future of AI and Computing discussion"
+    },
+    {
+      "id": "2024-holiday",
+      "type": "event",
+      "title": "Holiday Party 2024",
+      "url": "",
+      "alt": "DivZero 2024 holiday party"
+    },
+    {
+      "id": "2024-almanack-2",
+      "type": "event",
+      "title": "The Almanack of Naval Ravikant, Continued",
+      "url": "",
+      "alt": "Almanack discussion, part two"
+    },
+    {
+      "id": "2024-almanack",
+      "type": "event",
+      "title": "The Almanack of Naval Ravikant",
+      "url": "",
+      "alt": "The first Almanack book discussion"
     }
   ]
 }

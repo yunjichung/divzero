@@ -315,22 +315,24 @@ function stillWater(canvas, reach) {
 
 stillWater(document.getElementById("water"), document.getElementById("reach"));
 
-// photos are proof: a card gains its documentary image only when a real
-// url exists in assets.json — no placeholder frames ever render
+// photos are proof: when an entry's assets.json url is filled in, its
+// quiet slot becomes the documentary photograph
 fetch("assets.json")
   .then((response) => response.ok ? response.json() : null)
   .then((assets) => {
     if (!assets || !Array.isArray(assets.images)) return;
     const imagesById = new Map(assets.images.map((image) => [image.id, image]));
-    document.querySelectorAll("[data-asset-id]").forEach((card) => {
-      const image = imagesById.get(card.dataset.assetId);
+    document.querySelectorAll("[data-asset-id]").forEach((entry) => {
+      const image = imagesById.get(entry.dataset.assetId);
       if (!image || !image.url) return;
       const img = document.createElement("img");
       img.className = "photo";
       img.src = image.url;
       img.alt = image.alt || "";
       img.loading = "lazy";
-      card.prepend(img);
+      const slot = entry.querySelector(".ph");
+      if (slot) slot.replaceWith(img);
+      else entry.appendChild(img);
     });
   })
   .catch(() => {});
