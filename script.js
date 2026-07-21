@@ -358,24 +358,46 @@ function stillWater(canvas, reach) {
 
 stillWater(document.getElementById("water"), document.getElementById("reach"));
 
-// photos are proof: when an entry's assets.json url is filled in, its
-// quiet slot becomes the documentary photograph
+// the accordion: one room open at a time. opening a row closes the
+// others; opening an open row simply closes the ledger back to rest.
+(() => {
+  const events = document.querySelectorAll(".event");
+  events.forEach((ev, i) => {
+    const row = ev.querySelector(".row");
+    const detail = ev.querySelector(".detail");
+    if (!row || !detail) return;
+    detail.id = "event-detail-" + i;
+    row.setAttribute("aria-controls", detail.id);
+    row.addEventListener("click", () => {
+      const wasOpen = ev.classList.contains("open");
+      events.forEach((other) => {
+        other.classList.remove("open");
+        other.querySelector(".row").setAttribute("aria-expanded", "false");
+      });
+      if (!wasOpen) {
+        ev.classList.add("open");
+        row.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+})();
+
+// photos are proof: when a slot's assets.json url is filled in, the
+// quiet placeholder becomes the documentary photograph
 fetch("assets.json")
   .then((response) => response.ok ? response.json() : null)
   .then((assets) => {
     if (!assets || !Array.isArray(assets.images)) return;
     const imagesById = new Map(assets.images.map((image) => [image.id, image]));
-    document.querySelectorAll("[data-asset-id]").forEach((entry) => {
-      const image = imagesById.get(entry.dataset.assetId);
+    document.querySelectorAll("div.photo[data-asset-id]").forEach((slot) => {
+      const image = imagesById.get(slot.dataset.assetId);
       if (!image || !image.url) return;
       const img = document.createElement("img");
       img.className = "photo";
       img.src = image.url;
       img.alt = image.alt || "";
       img.loading = "lazy";
-      const slot = entry.querySelector(".ph");
-      if (slot) slot.replaceWith(img);
-      else entry.appendChild(img);
+      slot.replaceWith(img);
     });
   })
   .catch(() => {});
@@ -394,8 +416,8 @@ fetch("assets.json")
       observer.unobserve(hit.target);
     });
   }, { threshold: 0.2, rootMargin: "0px 0px -5% 0px" });
-  document.querySelectorAll(".entry").forEach((entry) => {
-    entry.classList.add("pre-reveal");
-    observer.observe(entry);
+  document.querySelectorAll(".event").forEach((event) => {
+    event.classList.add("pre-reveal");
+    observer.observe(event);
   });
 })();

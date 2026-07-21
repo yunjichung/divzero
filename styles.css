@@ -16,7 +16,10 @@ body {
 /* TYPE SCALE — every size on the page is one of these steps:
    display 42 (hero, fluid down to 22) · text 17 · caption 14 · label 11.
    tracking: -.024em display · -.008em all lowercase · +.1em all caps.
-   weights: 400 body · 430 display · 500 titles and labels. */
+   weights: 400 body · 430 display · 500 titles and labels.
+   ONE deliberate exception: the closed ledger is an index, not
+   content — its rows sit a register lower (15px titles, 12px caps)
+   so the archive stays quiet until a room is opened. */
 /* lacquer, not screen: the black is layered — a breath of warmth lifts
    the upper air of every view, settling to true black below */
 body::before {
@@ -233,73 +236,115 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 /* the third sentence keeps its lift: slightly more white, the one
    line in the box that looks up */
 .aim { color: rgba(243,240,233,.66); }
-/* the ledger: no boxes — events as set type with air. each event
-   carries its count (the number only ever goes up); a row you attend
-   to warms back into color, like a light leaning toward it. photos
-   are documentary, contact-sheet scale; quiet slots wait for them.
-   RHYTHM RULE: every vertical measure in the ledger is a multiple of
+/* the ledger: a closed archive. each event is one quiet row — month,
+   title, a small + — standing under its year; opening a row is
+   entering that room: the note and the photograph unfold, one room
+   at a time, and the plus turns into its own close. the ledger holds
+   the manifesto's measure (516px): the archive and the box are the
+   same column. RHYTHM RULE: every vertical measure is a multiple of
    three — one modulus, so the column reads composed, not spaced. */
 .ledger {
-  width: min(760px, 100%);
+  width: min(516px, 100%);
   text-align: left;
 }
-.year-group { position: relative; padding: 6px 0 0; }
-.entry {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 86px 1fr 200px;
-  gap: 0 18px;
-  align-items: start;
-  padding: 12px 12px;
-}
-.entry-side { padding-top: 3px; }
-.entry-side .no {
-  display: block;
-  font-size: 11px;
+.year {
+  margin: 42px 0 9px;
+  color: rgba(243,240,233,.45);
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: .1em;
+  letter-spacing: .15em;
   font-variant-numeric: tabular-nums;
-  color: rgba(243,240,233,.3);
 }
-.entry-side .date {
-  display: block;
-  margin-top: 6px;
-  font-size: 11px;
+.year:first-child { margin-top: 0; }
+.row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+}
+.row:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px rgba(243,240,233,.35);
+}
+.mon {
+  flex: none;
+  width: 45px;
+  color: rgba(243,240,233,.3);
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: .1em;
+  letter-spacing: .06em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
-  color: rgba(243,240,233,.38);
 }
-.entry-title {
-  font-size: 17px;
+.title {
+  flex: 1;
+  color: rgba(243,240,233,.7);
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: -.008em;
   line-height: 1.4;
-  color: rgba(243,240,233,.85);
+  transition: color .45s ease;
 }
-.entry-desc {
-  margin-top: 6px;
+.event.open .title { color: rgba(243,240,233,.97); }
+@media (hover: hover) {
+  .row:hover .title { color: rgba(243,240,233,.97); }
+  .row:hover .plus { color: rgba(243,240,233,.6); }
+}
+.plus {
+  flex: none;
+  width: 15px;
+  color: rgba(243,240,233,.3);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  transition: transform .55s cubic-bezier(.16,1,.3,1), color .45s ease;
+}
+.event.open .plus {
+  transform: rotate(45deg);
+  color: rgba(243,240,233,.7);
+}
+/* the unfolding: a grid row growing 0fr to 1fr — the browser's own
+   physics, no measured heights, the same spring the plus turns on */
+.detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .55s cubic-bezier(.16,1,.3,1);
+}
+.detail-inner { overflow: hidden; padding-left: 69px; }
+.event.open .detail { grid-template-rows: 1fr; }
+.detail p {
+  padding: 3px 0;
+  color: rgba(243,240,233,.5);
   font-size: 14px;
   line-height: 1.6;
   letter-spacing: -.008em;
-  color: rgba(243,240,233,.45);
   text-wrap: pretty;
 }
-/* the slot: a breath of tone where a photograph will live —
-   contact-sheet scale, beside the words */
-.ph {
-  width: 200px;
+/* every photograph wears the same light: desaturated, re-warmed toward
+   the page's cream, dimmed to sit in the black rather than on it —
+   one grade for all rooms. opening the room returns its color. */
+.photo,
+img.photo {
+  width: 100%;
   aspect-ratio: 3 / 2;
-  margin-top: 3px;
+  margin: 12px 0 9px;
   border-radius: 3px;
-  border: 1px solid rgba(243,240,233,.07);
+  border: 1px solid rgba(243,240,233,.09);
+}
+div.photo {
   background: linear-gradient(160deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
   display: grid;
   place-items: center;
 }
-.ph::after {
+div.photo::after {
   content: "Photo";
   font-size: 11px;
   font-weight: 500;
@@ -307,39 +352,27 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   text-transform: uppercase;
   color: rgba(243,240,233,.14);
 }
-/* every photograph wears the same light: desaturated, re-warmed toward
-   the page's cream, dimmed to sit in the black rather than on it —
-   eight rooms, eight nights, one grade. hard crop, hairline edge. */
-.entry img.photo {
-  width: 200px;
-  aspect-ratio: 3 / 2;
+img.photo {
   object-fit: cover;
-  margin-top: 3px;
-  border-radius: 3px;
-  border: 1px solid rgba(243,240,233,.12);
   filter: grayscale(1) sepia(.22) contrast(.92) brightness(.82);
-  transition: filter .45s ease;
+  transition: filter .55s ease;
 }
-.entry-title { transition: color .45s ease; }
-/* attention returns the color: the row you rest on warms back to life —
-   hover devices only, so touch never sticks */
-@media (hover: hover) {
-  .entry:hover img.photo { filter: grayscale(0) sepia(0) contrast(1) brightness(.94); }
-  .entry:hover .entry-title { color: rgba(243,240,233,.97); }
+.event.open img.photo {
+  filter: grayscale(0) sepia(0) contrast(1) brightness(.94);
 }
-/* each entry surfaces as the reader reaches it — a short rise, scrubbed
+/* each row surfaces as the reader reaches it — a short rise, scrubbed
    by the scroll itself where the browser can drive it */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .entry {
+    .event {
       animation: entry-rise both;
       animation-timeline: view();
       animation-range: entry 0% entry 45%;
     }
   }
-  /* fallback: script.js marks entries and an observer lifts them once */
-  .entry.pre-reveal { opacity: 0; transform: translateY(8px); }
-  .entry.pre-reveal.is-revealed {
+  /* fallback: script.js marks rows and an observer lifts them once */
+  .event.pre-reveal { opacity: 0; transform: translateY(8px); }
+  .event.pre-reveal.is-revealed {
     opacity: 1;
     transform: none;
     transition: opacity .8s ease, transform .8s ease;
@@ -353,8 +386,9 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   /* every room owns the whole screen on mobile too — the snap promise
      holds; tall content (the cards) still scrolls within its room */
   .section { padding-top: 66px; padding-bottom: 66px; }
-  .entry { grid-template-columns: 56px 1fr; gap: 0 12px; padding: 12px 9px; }
-  .ph, .entry img.photo { grid-column: 1 / -1; width: 100%; margin-top: 12px; }
+  /* the open room owns the phone's full width: the note and photo
+     drop the month indent and align with the row itself */
+  .detail-inner { padding-left: 0; }
 }
 @media print {
   body::after { display: none; }
