@@ -13,6 +13,10 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+/* TYPE SCALE — every size on the page is one of these steps:
+   display 42 (hero, fluid down to 22) · text 17 · caption 14 · label 11.
+   tracking: -.024em display · -.008em all lowercase · +.1em all caps.
+   weights: 400 body · 430 display · 500 titles and labels. */
 /* lacquer, not screen: the black is layered — a breath of warmth lifts
    the upper air of every view, settling to true black below */
 body::before {
@@ -147,9 +151,9 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   text-align: center;
 }
 .undername .en {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: .002em;
+  letter-spacing: -.008em;
   color: rgba(243,240,233,.72);
   white-space: nowrap;
 }
@@ -269,17 +273,17 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   color: rgba(243,240,233,.38);
 }
 .entry-title {
-  font-size: clamp(15px, .4vw + 13.2px, 16.5px);
+  font-size: 17px;
   font-weight: 500;
-  letter-spacing: -.01em;
+  letter-spacing: -.008em;
   line-height: 1.4;
   color: rgba(243,240,233,.85);
 }
 .entry-desc {
   margin-top: 6px;
-  font-size: clamp(13px, .3vw + 12px, 14px);
+  font-size: 14px;
   line-height: 1.6;
-  letter-spacing: -.005em;
+  letter-spacing: -.008em;
   color: rgba(243,240,233,.45);
   text-wrap: pretty;
 }
@@ -297,9 +301,9 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 }
 .ph::after {
   content: "Photo";
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 500;
-  letter-spacing: .18em;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: rgba(243,240,233,.14);
 }
