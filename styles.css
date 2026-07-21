@@ -192,18 +192,35 @@ h1, h2, p { margin: 0; }
   scroll-snap-stop: always;
 }
 .credits {
-  width: min(460px, 100%);
+  width: min(500px, 100%);
 }
 /* the four marks, flag-true: 건 gam 리 곤 in the taegeukgi's own
-   corners, drawn in the site's line language — hairline strokes whose
-   ends dissolve, and whose gaps (the zeros) dissolve too. the flag's
-   grammar, made of endless lines around soft zeros. still, always. */
-.kwae-room { position: relative; }
+   corners — but hugging the text now, frame and content one
+   composition. the room glows like a moon jar: porcelain lit faintly
+   from within, no longer a void. */
+.kwae-room {
+  position: relative;
+  background: radial-gradient(ellipse 42% 36% at 50% 50%,
+    rgba(255,240,222,.05), transparent 72%);
+}
+.kwae-frame { position: relative; width: min(500px, 100%); }
+/* najeon: the marks are not printed, they are inlaid — each shard of
+   mother-of-pearl drifts through faint iridescence far too slowly to
+   watch, and each catches the light on its own phase */
 .kwae {
   position: absolute;
   display: grid;
   row-gap: 3.5px;
   width: 27px;
+  animation: nacre 36s ease-in-out infinite alternate;
+}
+.k-gam { animation-delay: -9s; }
+.k-ri { animation-delay: -18s; }
+.k-gon { animation-delay: -27s; }
+@keyframes nacre {
+  0% { filter: sepia(.35) saturate(1.3) hue-rotate(-14deg); }
+  50% { filter: sepia(.35) saturate(1.35) hue-rotate(24deg); }
+  100% { filter: sepia(.3) saturate(1.25) hue-rotate(-42deg); }
 }
 .kwae i { display: block; height: 1px; }
 .kwae .s {
@@ -224,17 +241,29 @@ h1, h2, p { margin: 0; }
     rgba(243,240,233,.32) 83%,
     rgba(243,240,233,0));
 }
-.k-geon { top: 10vh; left: 7vw; }
-.k-gam { top: 10vh; right: 7vw; }
-.k-ri { bottom: 10vh; left: 7vw; }
-.k-gon { bottom: 10vh; right: 7vw; }
+.k-geon { top: -60px; left: -76px; }
+.k-gam { top: -60px; right: -76px; }
+.k-ri { bottom: -60px; left: -76px; }
+.k-gon { bottom: -60px; right: -76px; }
+/* the fraction, echoed quietly: statement over line over tagline */
+.room-line {
+  width: min(300px, 78%);
+  height: 1px;
+  margin: 28px auto 24px;
+  background: linear-gradient(90deg,
+    rgba(243,240,233,0),
+    rgba(243,240,233,.3) 14%,
+    rgba(243,240,233,.3) 86%,
+    rgba(243,240,233,0));
+}
+.room-line + .tagline { margin-top: 0; }
 .about-text {
   max-width: 100%;
   margin: 0 auto;
-  color: rgba(243,240,233,.5);
-  font-size: 16px;
-  line-height: 1.7;
-  letter-spacing: -.01em;
+  color: rgba(243,240,233,.58);
+  font-size: 17px;
+  line-height: 1.78;
+  letter-spacing: -.008em;
   text-wrap: pretty;
   text-align: justify;
   text-align-last: center;
@@ -296,6 +325,10 @@ h1, h2, p { margin: 0; }
 
 @media (max-width: 700px) {
   .section { min-height: 0; padding-top: 64px; padding-bottom: 64px; }
+  .k-geon { top: -46px; left: -8px; }
+  .k-gam { top: -46px; right: -8px; }
+  .k-ri { bottom: -46px; left: -8px; }
+  .k-gon { bottom: -46px; right: -8px; }
   .manifesto-thesis { font-size: 14.5px; }
   .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card { min-height: 0; padding: 14px; }
