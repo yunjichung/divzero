@@ -233,18 +233,6 @@ h1, h2, p { margin: 0; }
   text-align: left;
 }
 .year-group { position: relative; padding: 30px 0 6px; }
-.year-mark {
-  position: absolute;
-  top: -14px;
-  right: -10px;
-  font-size: clamp(72px, 9vw, 128px);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: .02em;
-  color: rgba(243,240,233,.045);
-  pointer-events: none;
-  user-select: none;
-}
 .entry {
   position: relative;
   z-index: 1;
@@ -327,7 +315,6 @@ h1, h2, p { margin: 0; }
   .section { padding-top: 64px; padding-bottom: 64px; }
   .manifesto-thesis { font-size: 14.5px; }
   .entry { grid-template-columns: 64px 1fr; gap: 0 14px; padding: 14px 8px; }
-  .year-mark { font-size: 64px; right: 0; }
   .about-text {
     hyphens: auto;
     -webkit-hyphens: auto;
