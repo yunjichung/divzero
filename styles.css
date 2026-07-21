@@ -204,18 +204,6 @@ h1, h2, p { margin: 0; }
     rgba(255,240,222,.05), transparent 72%);
 }
 .kwae-frame { position: relative; width: min(500px, 100%); }
-/* the fraction, echoed quietly: statement over line over tagline */
-.room-line {
-  width: min(300px, 78%);
-  height: 1px;
-  margin: 28px auto 24px;
-  background: linear-gradient(90deg,
-    rgba(243,240,233,0),
-    rgba(243,240,233,.3) 14%,
-    rgba(243,240,233,.3) 86%,
-    rgba(243,240,233,0));
-}
-.room-line + .tagline { margin-top: 0; }
 .about-text {
   max-width: 100%;
   margin: 0 auto;
@@ -229,6 +217,12 @@ h1, h2, p { margin: 0; }
   hanging-punctuation: allow-end;
 }
 .about-text + .about-text { margin-top: 18px; }
+.tagline {
+  margin-top: 30px;
+  color: rgba(243,240,233,.5);
+  text-align: center;
+  text-align-last: center;
+}
 /* the collection: each event a small crafted card — the atomix move,
    the ledger as artifacts rather than rows. photos land inside the
    cards when they exist; no placeholders ever render. */
