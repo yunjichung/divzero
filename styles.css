@@ -237,7 +237,7 @@ h1, h2, p { margin: 0; }
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 86px 1fr 168px;
+  grid-template-columns: 86px 1fr 220px;
   gap: 0 20px;
   align-items: start;
   padding: 14px 12px;
@@ -287,7 +287,7 @@ h1, h2, p { margin: 0; }
 /* the slot: a breath of tone where a photograph will live —
    contact-sheet scale, beside the words */
 .ph {
-  width: 168px;
+  width: 220px;
   aspect-ratio: 3 / 2;
   margin-top: 2px;
   border-radius: 6px;
@@ -304,11 +304,21 @@ h1, h2, p { margin: 0; }
   color: rgba(243,240,233,.14);
 }
 .entry img.photo {
-  width: 168px;
+  width: 220px;
   aspect-ratio: 3 / 2;
   object-fit: cover;
   margin-top: 2px;
   border-radius: 6px;
+}
+/* the marquee: the newest event carries the room's one large image —
+   cinematic, wide but not tall, the vibe of the whole collection */
+.entry.feature { grid-template-columns: 86px 1fr; }
+.entry.feature .ph,
+.entry.feature img.photo {
+  grid-column: 2;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  margin-top: 12px;
 }
 
 @media (max-width: 700px) {
