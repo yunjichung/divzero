@@ -232,14 +232,15 @@ h1, h2, p { margin: 0; }
   width: min(760px, 100%);
   text-align: left;
 }
-.year-group { position: relative; padding: 30px 0 6px; }
+.year-group { position: relative; padding: 12px 0 0; }
 .entry {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 86px 1fr;
-  gap: 0 22px;
-  padding: 18px 14px;
+  grid-template-columns: 86px 1fr 168px;
+  gap: 0 20px;
+  align-items: start;
+  padding: 14px 12px;
   border-radius: 12px;
   transition: background .45s ease;
 }
@@ -283,11 +284,12 @@ h1, h2, p { margin: 0; }
   color: rgba(243,240,233,.45);
   text-wrap: pretty;
 }
-/* the slot: a breath of tone where a photograph will live */
+/* the slot: a breath of tone where a photograph will live —
+   contact-sheet scale, beside the words */
 .ph {
-  width: min(520px, 100%);
+  width: 168px;
   aspect-ratio: 3 / 2;
-  margin-top: 14px;
+  margin-top: 2px;
   border-radius: 6px;
   background: linear-gradient(160deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
   display: grid;
@@ -295,17 +297,17 @@ h1, h2, p { margin: 0; }
 }
 .ph::after {
   content: "Photo";
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: rgba(243,240,233,.14);
 }
 .entry img.photo {
-  width: min(520px, 100%);
+  width: 168px;
   aspect-ratio: 3 / 2;
   object-fit: cover;
-  margin-top: 14px;
+  margin-top: 2px;
   border-radius: 6px;
 }
 
@@ -314,7 +316,8 @@ h1, h2, p { margin: 0; }
      holds; tall content (the cards) still scrolls within its room */
   .section { padding-top: 64px; padding-bottom: 64px; }
   .manifesto-thesis { font-size: 14.5px; }
-  .entry { grid-template-columns: 64px 1fr; gap: 0 14px; padding: 14px 8px; }
+  .entry { grid-template-columns: 56px 1fr; gap: 0 14px; padding: 12px 8px; }
+  .ph, .entry img.photo { grid-column: 1 / -1; width: 100%; margin-top: 10px; }
   .about-text {
     hyphens: auto;
     -webkit-hyphens: auto;
