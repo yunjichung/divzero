@@ -42,12 +42,13 @@ body::after {
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }
 a, button, input { -webkit-tap-highlight-color: transparent; }
-h1, h2, p { margin: 0; }
+h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 
 /* ---- the landing: a horizon at dusk ----
    the taegeuk, dissolved: warmth above the line (yang — fire, day),
    coolness below it (um — water, night). never named, only felt.
-   the sentence is the sky; the small name stands on the horizon. */
+   both sentences hold the horizon: the thesis stands on the line,
+   the answer hangs beneath it. */
 .land {
   position: relative;
   height: 100vh;
@@ -60,6 +61,7 @@ h1, h2, p { margin: 0; }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 50vh;
+  height: 50svh;
   background: linear-gradient(180deg,
     transparent 26%,
     rgba(255,240,220,.016) 66%,
@@ -68,7 +70,7 @@ h1, h2, p { margin: 0; }
 }
 .ground {
   position: absolute;
-  top: 50vh; left: 0; right: 0; bottom: 0;
+  top: 50vh; top: 50svh; left: 0; right: 0; bottom: 0;
   background: linear-gradient(180deg,
     rgba(198,214,244,.035) 0%,
     rgba(198,214,244,.015) 40%,
@@ -88,58 +90,20 @@ h1, h2, p { margin: 0; }
 /* the words sit above the arrival and are revealed BY it: the genesis
    drives their opacity frame-by-frame — the light makes them legible,
    and the figure surfaces through the line's breath. */
-.manifesto-title,
 .figure,
 .undername { opacity: 0; }
-.manifesto-title { z-index: 300; }
-.land.born .manifesto-title,
 .land.born .figure,
 .land.born .undername { opacity: 1; }
-/* equal and opposite, same physics: the mirrored drawer. a clipping
-   window whose TOP edge is the line — the name springs down through
-   it, bottoms of the letters first, same fling as the sentence above,
-   overshooting a few px too deep and settling back. */
-.undername-well {
-  position: absolute;
-  top: 50vh;
-  height: 34px;
-  left: 0; right: 0;
-  overflow: hidden;
-  z-index: 300;
-  pointer-events: none;
-}
-.undername {
-  position: relative;
-  top: 13px;
-  width: 100%;
-  text-align: center;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: .03em;
-  color: rgba(243,240,233,.5);
-}
-.manifesto-title {
-  position: absolute;
-  top: 36vh;
-  width: 100%;
-  text-align: center;
-  font-size: clamp(19px, 3.7vw, 46px);
-  font-weight: 420;
-  letter-spacing: -.026em;
-  color: rgba(243,240,233,.93);
-  white-space: nowrap;
-}
-/* the small figure standing on the horizon. touched, its name quietly
-   becomes 디브제로 for a moment — the identity is bilingual only for
-   those who reach for it. */
-/* the drawer: a clipping window whose bottom edge is the line itself.
-   the name rises through it fully opaque — tops of the letters first,
-   coming over the horizon — one overshoot, then rest. the figure is a
-   co-equal bilingual lockup: both scripts, always, neither a subtitle. */
+/* the thesis is the headline, and it still stands on the horizon:
+   display scale, feet on the line. its drawer is a clipping window
+   whose BOTTOM edge is the line itself — tall enough to hold the
+   large letters and their overshoot; the words are flung up through
+   it, tops of the letters first, one overshoot, then rest. */
 .figure-well {
   position: absolute;
-  top: calc(50vh - 34px);
-  height: 34px;
+  top: calc(50vh - 110px);
+  top: calc(50svh - 110px);
+  height: 110px;
   left: 0; right: 0;
   overflow: hidden;
   z-index: 300;
@@ -148,18 +112,45 @@ h1, h2, p { margin: 0; }
   pointer-events: none;
 }
 .figure {
-  position: relative;
-  top: 7px;
-  width: 100%;
-  display: grid;
-  justify-items: center;
+  position: absolute;
+  bottom: 9px;
+  left: 0; right: 0;
+  text-align: center;
 }
-/* the risen words: the sentence stands on the baseline that raised it */
 .figure .en {
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 430;
+  letter-spacing: -.024em;
+  line-height: 1.12;
+  color: rgba(243,240,233,.93);
+  white-space: nowrap;
+}
+/* the answer hangs from the line it names — DivZero lives inside the
+   sentence, plain: the sentence is the signature. its drawer is the
+   mirror of the thesis's: a window whose TOP edge is the line; the
+   words spring down through it, bottoms of the letters first, one
+   overshoot too deep, then rest. */
+.undername-well {
+  position: absolute;
+  top: 50vh;
+  top: 50svh;
+  height: 34px;
+  left: 0; right: 0;
+  overflow: hidden;
+  z-index: 300;
+  pointer-events: none;
+}
+.undername {
+  position: absolute;
+  top: 9px;
+  left: 0; right: 0;
+  text-align: center;
+}
+.undername .en {
   font-size: 13px;
   font-weight: 500;
   letter-spacing: .002em;
-  color: rgba(243,240,233,.8);
+  color: rgba(243,240,233,.72);
   white-space: nowrap;
 }
 /* the horizon does not end — it leaves the frame on both sides.
@@ -168,6 +159,7 @@ h1, h2, p { margin: 0; }
 #water {
   position: absolute;
   top: calc(50vh - 40px);
+  top: calc(50svh - 40px);
   left: 0;
   width: 100%;
   height: 80px;
@@ -176,6 +168,7 @@ h1, h2, p { margin: 0; }
 .reach {
   position: absolute;
   top: calc(50vh - 22px);
+  top: calc(50svh - 22px);
   left: 0; right: 0;
   height: 44px;
 }
@@ -192,7 +185,9 @@ h1, h2, p { margin: 0; }
   scroll-snap-stop: always;
 }
 .credits {
-  width: min(500px, 100%);
+  /* the box's measure is tuned to the words: at 17px, 516px breaks
+     the three sentences into four lines with the last 99% full */
+  width: min(516px, 100%);
 }
 /* the four marks, flag-true: 건 gam 리 곤 in the taegeukgi's own
    corners — but hugging the text now, frame and content one
@@ -203,31 +198,43 @@ h1, h2, p { margin: 0; }
   background: radial-gradient(ellipse 42% 36% at 50% 50%,
     rgba(255,240,222,.05), transparent 72%);
 }
-.kwae-frame { position: relative; width: min(500px, 100%); }
+.kwae-frame { position: relative; width: min(516px, 100%); }
 .about-text {
   max-width: 100%;
   margin: 0 auto;
   color: rgba(243,240,233,.58);
-  font-size: clamp(15px, 1.05vw + 9.5px, 17px);
+  /* fixed size, not fluid: the box is measured to these exact metrics */
+  font-size: 17px;
   line-height: 1.78;
   letter-spacing: -.008em;
   text-wrap: pretty;
   text-align: justify;
   text-align-last: center;
   hanging-punctuation: allow-end;
+  /* justified type earns its block shape only with hyphenation —
+     at every width, not just narrow ones — or the lines go gappy */
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 7 4 4;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
 }
-.about-text + .about-text { margin-top: 18px; }
-.tagline {
-  margin-top: 30px;
-  color: rgba(243,240,233,.5);
-  text-align: center;
-  text-align-last: center;
+/* the manifesto is a carved block: while the box holds its full
+   516px measure, the last line is set flush too — a slab, not a
+   paragraph. narrower than that the text reflows, so the last line
+   falls back to the centered close. */
+@media (min-width: 580px) {
+  .about-text { text-align-last: justify; }
 }
-/* the ledger: no boxes — events as set type with air. years stand
-   behind their entries as watermarks of light; each event carries its
-   count (the number only ever goes up); a row you attend to brightens
-   softly, like a light leaning toward it. photos are documentary,
-   full-width in the entry; quiet slots wait for them. */
+/* the third sentence keeps its lift: slightly more white, the one
+   line in the box that looks up */
+.aim { color: rgba(243,240,233,.66); }
+/* the ledger: no boxes — events as set type with air. each event
+   carries its count (the number only ever goes up); a row you attend
+   to warms back into color, like a light leaning toward it. photos
+   are documentary, contact-sheet scale; quiet slots wait for them.
+   RHYTHM RULE: every vertical measure in the ledger is a multiple of
+   three — one modulus, so the column reads composed, not spaced. */
 .ledger {
   width: min(760px, 100%);
   text-align: left;
@@ -238,12 +245,11 @@ h1, h2, p { margin: 0; }
   z-index: 1;
   display: grid;
   grid-template-columns: 86px 1fr 200px;
-  gap: 0 20px;
+  gap: 0 18px;
   align-items: start;
-  padding: 10px 12px;
+  padding: 12px 12px;
 }
-}
-.entry-side { padding-top: 2px; }
+.entry-side { padding-top: 3px; }
 .entry-side .no {
   display: block;
   font-size: 11px;
@@ -254,7 +260,7 @@ h1, h2, p { margin: 0; }
 }
 .entry-side .date {
   display: block;
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: .1em;
@@ -270,7 +276,7 @@ h1, h2, p { margin: 0; }
   color: rgba(243,240,233,.85);
 }
 .entry-desc {
-  margin-top: 5px;
+  margin-top: 6px;
   font-size: clamp(13px, .3vw + 12px, 14px);
   line-height: 1.6;
   letter-spacing: -.005em;
@@ -282,8 +288,9 @@ h1, h2, p { margin: 0; }
 .ph {
   width: 200px;
   aspect-ratio: 3 / 2;
-  margin-top: 2px;
-  border-radius: 6px;
+  margin-top: 3px;
+  border-radius: 3px;
+  border: 1px solid rgba(243,240,233,.07);
   background: linear-gradient(160deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
   display: grid;
   place-items: center;
@@ -296,27 +303,54 @@ h1, h2, p { margin: 0; }
   text-transform: uppercase;
   color: rgba(243,240,233,.14);
 }
+/* every photograph wears the same light: desaturated, re-warmed toward
+   the page's cream, dimmed to sit in the black rather than on it —
+   eight rooms, eight nights, one grade. hard crop, hairline edge. */
 .entry img.photo {
   width: 200px;
   aspect-ratio: 3 / 2;
   object-fit: cover;
-  margin-top: 2px;
-  border-radius: 6px;
+  margin-top: 3px;
+  border-radius: 3px;
+  border: 1px solid rgba(243,240,233,.12);
+  filter: grayscale(1) sepia(.22) contrast(.92) brightness(.82);
+  transition: filter .45s ease;
+}
+.entry-title { transition: color .45s ease; }
+/* attention returns the color: the row you rest on warms back to life —
+   hover devices only, so touch never sticks */
+@media (hover: hover) {
+  .entry:hover img.photo { filter: grayscale(0) sepia(0) contrast(1) brightness(.94); }
+  .entry:hover .entry-title { color: rgba(243,240,233,.97); }
+}
+/* each entry surfaces as the reader reaches it — a short rise, scrubbed
+   by the scroll itself where the browser can drive it */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .entry {
+      animation: entry-rise both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+  /* fallback: script.js marks entries and an observer lifts them once */
+  .entry.pre-reveal { opacity: 0; transform: translateY(8px); }
+  .entry.pre-reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+    transition: opacity .8s ease, transform .8s ease;
+  }
+}
+@keyframes entry-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
 @media (max-width: 700px) {
   /* every room owns the whole screen on mobile too — the snap promise
      holds; tall content (the cards) still scrolls within its room */
-  .section { padding-top: 64px; padding-bottom: 64px; }
-  .manifesto-thesis { font-size: 14.5px; }
-  .entry { grid-template-columns: 56px 1fr; gap: 0 14px; padding: 12px 8px; }
-  .ph, .entry img.photo { grid-column: 1 / -1; width: 100%; margin-top: 10px; }
-  .about-text {
-    hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphenate-limit-chars: 7 4 4;
-    -webkit-hyphenate-limit-before: 4;
-    -webkit-hyphenate-limit-after: 4;
-  }
+  .section { padding-top: 66px; padding-bottom: 66px; }
+  .entry { grid-template-columns: 56px 1fr; gap: 0 12px; padding: 12px 9px; }
+  .ph, .entry img.photo { grid-column: 1 / -1; width: 100%; margin-top: 12px; }
 }
 @media print {
   body::after { display: none; }

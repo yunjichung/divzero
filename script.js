@@ -31,7 +31,10 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     genesis.width = Math.round(W * dpr);
     genesis.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    meetY = H * .50;
+    // the horizon's one source of truth: the CSS line sits at 50svh of
+    // the hero, so the arrival draws its line at the hero's own middle
+    // (not the window's) — the fade-out lands pixel-for-pixel on it
+    meetY = land.offsetHeight * .50;
     AMP = H * .03;
     // the stroke exhales at the frame edges — pigment exhausting as
     // the line heads past the visible world
@@ -48,26 +51,16 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   const shape = (u) => Math.sin(2 * Math.PI * u) * Math.sin(Math.PI * u);
   const N = 140;
 
-  function fieldPath(edgeAt, top) {
-    ctx.beginPath();
-    if (top) { ctx.moveTo(0, -2); ctx.lineTo(W, -2); }
-    else { ctx.moveTo(0, H + 2); ctx.lineTo(W, H + 2); }
-    for (let i = N; i >= 0; i--) {
-      ctx.lineTo(W * i / N, edgeAt(i / N));
-    }
-    ctx.closePath();
-  }
-
   // .4s black · .4–1.8s a point becomes an endless line · 1.8–3.3s the
   // line breathes while light blooms · 3.3–4.4s THE SPRINGBOARD: the
-  // breath's energy gathers into a bow beneath the name, the line snaps
-  // up past flat, and the word is flung out of the water — cause, then
-  // effect. the line settles; the word lands standing on it.
+  // breath's energy gathers into a bow, the line snaps up past flat,
+  // and both sentences arrive from the strike — the thesis flung up
+  // to stand on the line, the answer handed down to hang from it.
   const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
   const bump = (u) => Math.exp(-((u - .5) * (u - .5)) / (2 * .11 * .11));
 
   // one oscillation, like a struck diving board: load, up-stroke
-  // (launches the sentence), rebound down-stroke (delivers the name),
+  // (launches the thesis), rebound down-stroke (delivers the answer),
   // settle. one strike, two deliveries.
   function springAt(t) {
     if (t < 3300) return 0;
@@ -97,28 +90,31 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     ctx.fillRect(0, 0, W, H);
 
     if (m > 0) {
-      ctx.save();
-      fieldPath(edge, true);
-      ctx.clip();
-      const gw = ctx.createLinearGradient(0, meetY - reachW, 0, meetY);
-      gw.addColorStop(.26, "rgba(255,240,220,0)");
-      gw.addColorStop(.66, "rgba(255,240,220," + (.016 * m).toFixed(4) + ")");
-      gw.addColorStop(.94, "rgba(255,238,214," + (.045 * m).toFixed(4) + ")");
-      gw.addColorStop(1, "rgba(255,238,214," + (.065 * m).toFixed(4) + ")");
-      ctx.fillStyle = gw;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-
-      ctx.save();
-      fieldPath(edge, false);
-      ctx.clip();
-      const gc = ctx.createLinearGradient(0, meetY, 0, meetY + reachC);
-      gc.addColorStop(0, "rgba(198,214,244," + (.035 * m).toFixed(4) + ")");
-      gc.addColorStop(.4, "rgba(198,214,244," + (.015 * m).toFixed(4) + ")");
-      gc.addColorStop(.85, "rgba(198,214,244,0)");
-      ctx.fillStyle = gc;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
+      // the line dictates where the light goes: one vertical profile,
+      // brightest AT the line — warmth reaching up from it, coolness
+      // falling away below — and each column of the field is shifted
+      // to the line's own height there. the halo bends and travels
+      // with every crest and trough; the warmth never crosses beneath
+      // the line, the cool never rises above it.
+      const wSpan = reachW / (reachW + reachC);
+      const g = ctx.createLinearGradient(0, meetY - reachW, 0, meetY + reachC);
+      g.addColorStop(wSpan * .26, "rgba(255,240,220,0)");
+      g.addColorStop(wSpan * .66, "rgba(255,240,220," + (.016 * m).toFixed(4) + ")");
+      g.addColorStop(wSpan * .94, "rgba(255,238,214," + (.045 * m).toFixed(4) + ")");
+      g.addColorStop(wSpan, "rgba(255,238,214," + (.065 * m).toFixed(4) + ")");
+      g.addColorStop(wSpan, "rgba(198,214,244," + (.035 * m).toFixed(4) + ")");
+      g.addColorStop(wSpan + (1 - wSpan) * .4, "rgba(198,214,244," + (.015 * m).toFixed(4) + ")");
+      g.addColorStop(wSpan + (1 - wSpan) * .85, "rgba(198,214,244,0)");
+      ctx.fillStyle = g;
+      const colW = W / N;
+      for (let i = 0; i < N; i++) {
+        const dy = edge((i + .5) / N) - meetY;
+        const x0 = Math.round(i * colW);
+        ctx.save();
+        ctx.translate(0, dy);
+        ctx.fillRect(x0, -dy, Math.round((i + 1) * colW) - x0, H);
+        ctx.restore();
+      }
     }
 
     if (grow > 0) {
@@ -142,32 +138,28 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     }
   }
 
-  // the words are revealed by the light, not after it: the sentence
-  // surfaces as the sky blooms; the figure rises through the line's
-  // breath and settles onto the horizon as the water stills; the
-  // thesis follows in the cool ground. no moment of appearance.
-  const title = land.querySelector(".manifesto-title");
+  // both sentences arrive by the strike, not by fade — the line is
+  // the whole composition, and it hands out its own words.
   const figure = land.querySelector(".figure");
   const undername = land.querySelector(".undername");
 
   function words(t) {
-    const o1 = easeInOut(clamp01((t - 2200) / 2400));
-    // the fling: the sentence launches at the instant the line snaps
-    // up (3750ms) — fast off the board, hang-time at the top of the
-    // arc, one firm landing. the baseline raises the words that say
-    // the baseline raises you: the sentence proves itself.
     const c1 = 3.4, c3 = c1 + 1;
     const back = (v) => v === 0 ? 0 : 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2);
-    // the up-stroke launches the sentence (3750)…
-    const u = clamp01((t - 3750) / 950);
-    const rise = back(u);
-    if (title) title.style.opacity = o1.toFixed(3);
+    // the up-stroke flings the thesis (3750): fast off the board,
+    // hang-time at the top of the arc, one firm landing — it stands
+    // on the line that raised it.
+    // the fling is deeper than the answer's (62px vs 27): the headline
+    // must start fully sunk beneath the line, so it has further to rise
     if (figure) {
+      const u = clamp01((t - 3750) / 950);
+      const rise = back(u);
       figure.style.opacity = u > 0 ? "1" : "0";
-      figure.style.transform = "translateY(" + (27 * (1 - rise)).toFixed(2) + "px)";
+      figure.style.transform = "translateY(" + (62 * (1 - rise)).toFixed(2) + "px)";
     }
-    // …and the rebound down-stroke delivers the name (3950): the same
-    // spring, mirrored, one beat later — the board's echo.
+    // the rebound down-stroke delivers the answer (3950): the same
+    // spring, mirrored, one beat later — the board's echo. the
+    // baseline delivers the words that say the baseline raises you.
     if (undername) {
       const v = clamp01((t - 3950) / 950);
       const drop = back(v);
@@ -207,9 +199,11 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
 // the horizon is still water. touched, one damped pulse travels outward
 // from the point of contact — each point it passes rises then falls —
-// and the water settles back to mirror-stillness. at rest it is a
-// perfectly straight 1px line. it appears twice: the horizon the page
-// opens on, and the line it closes on.
+// and the water settles back to mirror-stillness. while the line bends,
+// the light bends with it: the strip repaints its glow as one vertical
+// profile shifted to the line's height at every point, so the halo
+// rides the pulse — warmth never beneath the line, cool never above.
+// at rest it is a perfectly straight 1px line.
 function stillWater(canvas, reach) {
   if (!canvas || !reach) return;
   const ctx = canvas.getContext("2d");
@@ -275,20 +269,69 @@ function stillWater(canvas, reach) {
   let raf = null;
   let lastTouch = 0;
 
+  // the CSS glow, rebuilt in canvas: the same stops as .sky and
+  // .ground, sampled where the 80px strip sits, so the repaint is
+  // seamless against the static gradients above and below it
+  const lerpStops = (stops, u) => {
+    if (u <= stops[0][0]) return stops[0][1];
+    for (let i = 1; i < stops.length; i++) {
+      if (u <= stops[i][0]) {
+        const a = stops[i - 1], b = stops[i];
+        return a[1] + (b[1] - a[1]) * (u - a[0]) / (b[0] - a[0]);
+      }
+    }
+    return stops[stops.length - 1][1];
+  };
+  const skyStops = [[.26, 0], [.66, .016], [.94, .045], [1, .065]];
+  const groundStops = [[0, .035], [.4, .015], [.85, 0]];
+
   function frame(now) {
     ripples = ripples.filter((r) => now - r.t0 < LIFE);
     if (!ripples.length) { drawStill(); raf = null; return; }
-    stroke(() => {
-      for (let x = 0; x <= width; x += 2) {
-        let y = MID + .5;
-        for (const r of ripples) {
-          const dt = (now - r.t0) / 1000;
-          const amp = A * Math.exp(-dt / TAU);
-          y += amp * wavelet((Math.abs(x - r.x0) - V * dt) / W);
-        }
-        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    const pts = [];
+    for (let x = 0; x <= width; x += 2) {
+      let y = MID + .5;
+      for (const r of ripples) {
+        const dt = (now - r.t0) / 1000;
+        const amp = A * Math.exp(-dt / TAU);
+        y += amp * wavelet((Math.abs(x - r.x0) - V * dt) / W);
       }
-    });
+      pts.push([x, y]);
+    }
+
+    // repaint the strip: black base, then one vertical light profile —
+    // brightest AT the line, warm side up, cool side down — shifted
+    // column-by-column to the ripple's height there. the halo travels
+    // with the pulse; the light holds the line's shape exactly.
+    ctx.clearRect(0, 0, width, 80);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, width, 80);
+    const half = Math.max(1, window.innerHeight * .5);
+    const g = ctx.createLinearGradient(0, 0, 0, 80);
+    g.addColorStop(0, "rgba(255,238,214," + lerpStops(skyStops, 1 - MID / half).toFixed(4) + ")");
+    const knot = MID - .06 * half;
+    if (knot > 0 && knot < MID) g.addColorStop(knot / 80, "rgba(255,238,214,.045)");
+    g.addColorStop(MID / 80, "rgba(255,238,214,.065)");
+    g.addColorStop(MID / 80, "rgba(198,214,244,.035)");
+    g.addColorStop(1, "rgba(198,214,244," + lerpStops(groundStops, (80 - MID) / half).toFixed(4) + ")");
+    ctx.fillStyle = g;
+    for (let i = 0; i < pts.length; i += 2) {
+      const dy = pts[i][1] - (MID + .5);
+      ctx.save();
+      ctx.translate(0, dy);
+      ctx.fillRect(pts[i][0], -dy, 4, 80);
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      i === 0 ? ctx.moveTo(pts[i][0], pts[i][1]) : ctx.lineTo(pts[i][0], pts[i][1]);
+    }
+    ctx.globalAlpha = .34;
+    ctx.strokeStyle = ink();
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
     raf = requestAnimationFrame(frame);
   }
 
@@ -336,3 +379,23 @@ fetch("assets.json")
     });
   })
   .catch(() => {});
+
+// the ledger's rise, for browsers that can't scroll-drive it in CSS:
+// an observer lifts each entry once as it enters. without JS (or with
+// reduced motion) the ledger simply stands visible.
+(() => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (CSS.supports("animation-timeline: view()")) return;
+  if (!("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver((hits) => {
+    hits.forEach((hit) => {
+      if (!hit.isIntersecting) return;
+      hit.target.classList.add("is-revealed");
+      observer.unobserve(hit.target);
+    });
+  }, { threshold: 0.2, rootMargin: "0px 0px -5% 0px" });
+  document.querySelectorAll(".entry").forEach((entry) => {
+    entry.classList.add("pre-reveal");
+    observer.observe(entry);
+  });
+})();
