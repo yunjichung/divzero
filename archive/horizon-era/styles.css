@@ -1,0 +1,403 @@
+* { box-sizing: border-box; }
+html {
+  background: #000;
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  /* the page moves in blocks: every scroll lands on a section */
+  scroll-snap-type: y mandatory;
+}
+body {
+  margin: 0;
+  background: transparent;
+  color: #f3f0e9;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+/* TYPE SCALE — every size on the page is one of these steps:
+   display 42 (hero, fluid down to 22) · text 17 · caption 14 · label 11.
+   tracking: -.024em display · -.008em all lowercase · +.1em all caps.
+   weights: 400 body · 430 display · 500 titles and labels.
+   ONE deliberate exception: the closed ledger is an index, not
+   content — its rows sit a register lower (15px titles, 12px caps)
+   so the archive stays quiet until a room is opened. */
+/* lacquer, not screen: the black is layered — a breath of warmth lifts
+   the upper air of every view, settling to true black below */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(243,240,233,.013), rgba(243,240,233,0) 55%);
+}
+::selection { background: rgba(243,240,233,.9); color: #000; }
+/* hanji: the grain tuned toward paper fiber — larger, softer, denser —
+   so the black reads as material, not screen */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: .05;
+  /* paper reads where light lives: the grain is fullest at the horizon's
+     height and thins into the dark above and below */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 28%, #000 44%, #000 58%, rgba(0,0,0,.55) 100%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.65) 28%, #000 44%, #000 58%, rgba(0,0,0,.55) 100%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+a, button, input { -webkit-tap-highlight-color: transparent; }
+h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
+
+/* ---- the landing: a horizon at dusk ----
+   the taegeuk, dissolved: warmth above the line (yang — fire, day),
+   coolness below it (um — water, night). never named, only felt.
+   both sentences hold the horizon: the thesis stands on the line,
+   the answer hangs beneath it. */
+.land {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.sky {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50vh;
+  height: 50svh;
+  background: linear-gradient(180deg,
+    transparent 26%,
+    rgba(255,240,220,.016) 66%,
+    rgba(255,238,214,.045) 94%,
+    rgba(255,238,214,.065) 100%);
+}
+.ground {
+  position: absolute;
+  top: 50vh; top: 50svh; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg,
+    rgba(198,214,244,.035) 0%,
+    rgba(198,214,244,.015) 40%,
+    transparent 85%);
+}
+/* the arrival: two worlds make the line. the page is dark until the
+   creation completes; the words appear only over the finished horizon. */
+#genesis {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  pointer-events: none;
+  transition: opacity .8s ease;
+}
+/* the words sit above the arrival and are revealed BY it: the genesis
+   drives their opacity frame-by-frame — the light makes them legible,
+   and the figure surfaces through the line's breath. */
+.figure,
+.undername { opacity: 0; }
+.land.born .figure,
+.land.born .undername { opacity: 1; }
+/* the thesis is the headline, and it still stands on the horizon:
+   display scale, feet on the line. its drawer is a clipping window
+   whose BOTTOM edge is the line itself — tall enough to hold the
+   large letters and their overshoot; the words are flung up through
+   it, tops of the letters first, one overshoot, then rest. */
+.figure-well {
+  position: absolute;
+  top: calc(50vh - 110px);
+  top: calc(50svh - 110px);
+  height: 110px;
+  left: 0; right: 0;
+  overflow: hidden;
+  z-index: 300;
+  /* the wells are windows, not walls: the cursor passes through to
+     the water so the line answers the hand */
+  pointer-events: none;
+}
+.figure {
+  position: absolute;
+  bottom: 9px;
+  left: 0; right: 0;
+  text-align: center;
+}
+.figure .en {
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 430;
+  letter-spacing: -.024em;
+  line-height: 1.12;
+  color: rgba(243,240,233,.93);
+  white-space: nowrap;
+}
+/* the answer hangs from the line it names — DivZero lives inside the
+   sentence, plain: the sentence is the signature. its drawer is the
+   mirror of the thesis's: a window whose TOP edge is the line; the
+   words spring down through it, bottoms of the letters first, one
+   overshoot too deep, then rest. */
+.undername-well {
+  position: absolute;
+  top: 50vh;
+  top: 50svh;
+  height: 34px;
+  left: 0; right: 0;
+  overflow: hidden;
+  z-index: 300;
+  pointer-events: none;
+}
+.undername {
+  position: absolute;
+  top: 9px;
+  left: 0; right: 0;
+  text-align: center;
+}
+.undername .en {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -.008em;
+  color: rgba(243,240,233,.72);
+  white-space: nowrap;
+}
+/* the horizon does not end — it leaves the frame on both sides.
+   it is drawn as still water: straight at rest; when the taegeuk's
+   S passes through it, the crest warms and the trough cools. */
+#water {
+  position: absolute;
+  top: calc(50vh - 40px);
+  top: calc(50svh - 40px);
+  left: 0;
+  width: 100%;
+  height: 80px;
+  display: block;
+}
+.reach {
+  position: absolute;
+  top: calc(50vh - 22px);
+  top: calc(50svh - 22px);
+  left: 0; right: 0;
+  height: 44px;
+}
+
+/* ---- interior sections ---- */
+.section {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 12vh max(24px, env(safe-area-inset-left)) 12vh max(24px, env(safe-area-inset-right));
+  display: grid;
+  place-items: center;
+  text-align: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.credits {
+  /* the box's measure is tuned to the words: at 17px, 516px breaks
+     the three sentences into four lines with the last 99% full */
+  width: min(516px, 100%);
+}
+/* the four marks, flag-true: 건 gam 리 곤 in the taegeukgi's own
+   corners — but hugging the text now, frame and content one
+   composition. the room glows like a moon jar: porcelain lit faintly
+   from within, no longer a void. */
+.kwae-room {
+  position: relative;
+  background: radial-gradient(ellipse 42% 36% at 50% 50%,
+    rgba(255,240,222,.05), transparent 72%);
+}
+.kwae-frame { position: relative; width: min(516px, 100%); }
+.about-text {
+  max-width: 100%;
+  margin: 0 auto;
+  color: rgba(243,240,233,.58);
+  /* fixed size, not fluid: the box is measured to these exact metrics */
+  font-size: 17px;
+  line-height: 1.78;
+  letter-spacing: -.008em;
+  text-wrap: pretty;
+  text-align: justify;
+  text-align-last: center;
+  hanging-punctuation: allow-end;
+  /* justified type earns its block shape only with hyphenation —
+     at every width, not just narrow ones — or the lines go gappy */
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 7 4 4;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
+}
+/* the manifesto is a carved block: while the box holds its full
+   516px measure, the last line is set flush too — a slab, not a
+   paragraph. narrower than that the text reflows, so the last line
+   falls back to the centered close. */
+@media (min-width: 580px) {
+  .about-text { text-align-last: justify; }
+}
+/* the third sentence keeps its lift: slightly more white, the one
+   line in the box that looks up */
+.aim { color: rgba(243,240,233,.66); }
+/* the ledger: a closed archive. each event is one quiet row — month,
+   title, a small + — standing under its year; opening a row is
+   entering that room: the note and the photograph unfold, one room
+   at a time, and the plus turns into its own close. the ledger holds
+   the manifesto's measure (516px): the archive and the box are the
+   same column. RHYTHM RULE: every vertical measure is a multiple of
+   three — one modulus, so the column reads composed, not spaced. */
+.ledger {
+  width: min(516px, 100%);
+  text-align: left;
+}
+.year {
+  margin: 42px 0 9px;
+  color: rgba(243,240,233,.45);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .15em;
+  font-variant-numeric: tabular-nums;
+}
+.year:first-child { margin-top: 0; }
+.row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+}
+.row:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px rgba(243,240,233,.35);
+}
+.mon {
+  flex: none;
+  width: 45px;
+  color: rgba(243,240,233,.3);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.title {
+  flex: 1;
+  color: rgba(243,240,233,.7);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -.008em;
+  line-height: 1.4;
+  transition: color .45s ease;
+}
+.event.open .title { color: rgba(243,240,233,.97); }
+@media (hover: hover) {
+  .row:hover .title { color: rgba(243,240,233,.97); }
+  .row:hover .plus { color: rgba(243,240,233,.6); }
+}
+.plus {
+  flex: none;
+  width: 15px;
+  color: rgba(243,240,233,.3);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  transition: transform .55s cubic-bezier(.16,1,.3,1), color .45s ease;
+}
+.event.open .plus {
+  transform: rotate(45deg);
+  color: rgba(243,240,233,.7);
+}
+/* the unfolding: a grid row growing 0fr to 1fr — the browser's own
+   physics, no measured heights, the same spring the plus turns on */
+.detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .55s cubic-bezier(.16,1,.3,1);
+}
+.detail-inner { overflow: hidden; padding-left: 69px; }
+.event.open .detail { grid-template-rows: 1fr; }
+.detail p {
+  padding: 3px 0;
+  color: rgba(243,240,233,.5);
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -.008em;
+  text-wrap: pretty;
+}
+/* every photograph wears the same light: desaturated, re-warmed toward
+   the page's cream, dimmed to sit in the black rather than on it —
+   one grade for all rooms. opening the room returns its color. */
+.photo,
+img.photo {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  margin: 12px 0 9px;
+  border-radius: 3px;
+  border: 1px solid rgba(243,240,233,.09);
+}
+div.photo {
+  background: linear-gradient(160deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  display: grid;
+  place-items: center;
+}
+div.photo::after {
+  content: "Photo";
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(243,240,233,.14);
+}
+img.photo {
+  object-fit: cover;
+  filter: grayscale(1) sepia(.22) contrast(.92) brightness(.82);
+  transition: filter .55s ease;
+}
+.event.open img.photo {
+  filter: grayscale(0) sepia(0) contrast(1) brightness(.94);
+}
+/* each row surfaces as the reader reaches it — a short rise, scrubbed
+   by the scroll itself where the browser can drive it */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .event {
+      animation: entry-rise both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+  /* fallback: script.js marks rows and an observer lifts them once */
+  .event.pre-reveal { opacity: 0; transform: translateY(8px); }
+  .event.pre-reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+    transition: opacity .8s ease, transform .8s ease;
+  }
+}
+@keyframes entry-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 700px) {
+  /* every room owns the whole screen on mobile too — the snap promise
+     holds; tall content (the cards) still scrolls within its room */
+  .section { padding-top: 66px; padding-bottom: 66px; }
+  /* the open room owns the phone's full width: the note and photo
+     drop the month indent and align with the row itself */
+  .detail-inner { padding-left: 0; }
+}
+@media print {
+  body::after { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
