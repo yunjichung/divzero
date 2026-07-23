@@ -3,8 +3,8 @@ html {
   background: #000;
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
-  /* the page moves in blocks: every scroll lands on a section */
-  scroll-snap-type: y mandatory;
+  /* the page scrolls free: the name in the floor needs every resting
+     position between cut and whole, so no snap owns the scroll */
 }
 body {
   margin: 0;
@@ -14,7 +14,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 /* TYPE SCALE — every size on the page is one of these steps:
-   display 42 (hero, fluid down to 22) · text 17 · caption 14 · label 11.
+   wordmark 23vw (the name in the floor) · statement serif 24–46
+   (the one serif voice, typed) · text 17 · caption 14 (the
+   manifesto reads at this step, weight 200) · label 11.
    tracking: -.024em display · -.008em all lowercase · +.1em all caps.
    weights: 400 body · 430 display · 500 titles and labels.
    ONE deliberate exception: the closed ledger is an index, not
@@ -51,135 +53,108 @@ button { font: inherit; cursor: pointer; }
 a, button, input { -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 
-/* ---- the landing: a horizon at dusk ----
-   the taegeuk, dissolved: warmth above the line (yang — fire, day),
-   coolness below it (um — water, night). never named, only felt.
-   both sentences hold the horizon: the thesis stands on the line,
-   the answer hangs beneath it. */
+/* ---- the landing: the statement, typed ----
+   lovefrom-literal: a near-empty page, one serif voice, a live
+   caret. the thesis types itself; the caret blinks alone through a
+   held pause — the volta, performed in real time — then Enter, and
+   the answer types on its own line. DIVZERO still stands in the
+   page's bottom edge, its lowest fifth cut by the FOLD (the
+   reference: olivergareis.com), fading up as the signature once
+   the statement ends; plain scrolling shows it whole. */
 .land {
   position: relative;
-  height: 100vh;
-  height: 100svh;
+  --wm: min(23vw, 42vh);
+  /* hidden glyphs reach .153em below the fold (.141em of cap + the
+     O's overshoot); the landing carries them plus a 24px breath.
+     the fold is measured in dvh — wherever the browser's bottom
+     edge currently is — so the 80% preview holds on phones whose
+     bars come and go, not just at the smallest viewport */
+  height: calc(100vh + var(--wm) * .16 + 24px);
+  height: calc(100dvh + var(--wm) * .16 + 24px);
   overflow: hidden;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
-.sky {
+@supports (height: 1svh) {
+  .land { --wm: min(23vw, 42svh); }
+}
+/* the statement: the single serif voice on the site, reserved for
+   the sentence — caslon lineage (big caslon on apple hardware,
+   baskerville/georgia elsewhere), typed live by script.js */
+.typed {
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 50vh;
-  height: 50svh;
-  background: linear-gradient(180deg,
-    transparent 26%,
-    rgba(255,240,220,.016) 66%,
-    rgba(255,238,214,.045) 94%,
-    rgba(255,238,214,.065) 100%);
-}
-.ground {
-  position: absolute;
-  top: 50vh; top: 50svh; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg,
-    rgba(198,214,244,.035) 0%,
-    rgba(198,214,244,.015) 40%,
-    transparent 85%);
-}
-/* the arrival: two worlds make the line. the page is dark until the
-   creation completes; the words appear only over the finished horizon. */
-#genesis {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 200;
-  pointer-events: none;
-  transition: opacity .8s ease;
-}
-/* the words sit above the arrival and are revealed BY it: the genesis
-   drives their opacity frame-by-frame — the light makes them legible,
-   and the figure surfaces through the line's breath. */
-.figure,
-.undername { opacity: 0; }
-.land.born .figure,
-.land.born .undername { opacity: 1; }
-/* the thesis is the headline, and it still stands on the horizon:
-   display scale, feet on the line. its drawer is a clipping window
-   whose BOTTOM edge is the line itself — tall enough to hold the
-   large letters and their overshoot; the words are flung up through
-   it, tops of the letters first, one overshoot, then rest. */
-.figure-well {
-  position: absolute;
-  top: calc(50vh - 110px);
-  top: calc(50svh - 110px);
-  height: 110px;
-  left: 0; right: 0;
-  overflow: hidden;
+  top: 36vh;
+  top: 36svh;
+  left: max(24px, env(safe-area-inset-left));
+  right: max(24px, env(safe-area-inset-right));
   z-index: 300;
-  /* the wells are windows, not walls: the cursor passes through to
-     the water so the line answers the hand */
-  pointer-events: none;
-}
-.figure {
-  position: absolute;
-  bottom: 9px;
-  left: 0; right: 0;
   text-align: center;
+  font-family: "Big Caslon", Baskerville, Georgia, "Times New Roman", serif;
+  font-size: clamp(24px, 3.2vw, 46px);
+  font-weight: 400;
+  letter-spacing: .002em;
+  line-height: 1.5;
+  color: rgba(243,240,233,.93);
 }
-.figure .en {
-  font-size: clamp(22px, 3.2vw, 42px);
+/* both rows hold their height from the start, so the Enter drops
+   the caret into space already reserved — nothing shifts */
+.tline {
+  display: block;
+  min-height: 1.5em;
+}
+/* the caret: proof of a living hand. it types, waits, and stays.
+   absolutely positioned at its natural spot so it takes no width —
+   the centered line never re-centers when the caret leaves it.
+   seated on the BASELINE: half-leading .25em + ascent .88em puts
+   the baseline 1.13em under the line-box top; the caret's .78em
+   body hangs from .35em down to meet it. */
+.caret {
+  position: absolute;
+  width: 2px;
+  height: .78em;
+  margin-left: .1em;
+  margin-top: .35em;
+  background: rgba(243,240,233,.8);
+  animation: caret-blink 1.1s steps(2, jump-none) infinite;
+  /* the character waits in the wings: script.js brings it on for
+     the scene's first beat */
+  visibility: hidden;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+/* the signature: once the statement ends, the name fades up in the
+   floor */
+.land.signed .wordmark { opacity: 1; transform: none; }
+/* the name stands in the floor: DIVZERO in the document's flow,
+   cut below the waist at the first fold — the environment clips
+   even the name, and the reader's own scroll shows it whole:
+   DivZero raises your baseline. no scrub, no pin — the fold is
+   the knife. */
+.wordmark {
+  position: absolute;
+  left: 0; right: 0;
+  /* MEASURED metrics for this stack at line-height 1: baseline sits
+     .12em above the em-box bottom, caps are .705em tall, the O
+     overshoots .012em below the baseline. box top .74em above the
+     fold puts the cut at 20% of the caps: an 80% preview — and the
+     fold is dvh, the browser's real bottom edge, at every size */
+  top: calc(100vh - var(--wm) * .74);
+  top: calc(100dvh - var(--wm) * .74);
+  z-index: 300;
+  /* width-fit on any screen, height-capped for short wide viewports */
+  font-size: var(--wm);
   font-weight: 430;
   letter-spacing: -.024em;
-  line-height: 1.12;
-  color: rgba(243,240,233,.93);
-  white-space: nowrap;
-}
-/* the answer hangs from the line it names — DivZero lives inside the
-   sentence, plain: the sentence is the signature. its drawer is the
-   mirror of the thesis's: a window whose TOP edge is the line; the
-   words spring down through it, bottoms of the letters first, one
-   overshoot too deep, then rest. */
-.undername-well {
-  position: absolute;
-  top: 50vh;
-  top: 50svh;
-  height: 34px;
-  left: 0; right: 0;
-  overflow: hidden;
-  z-index: 300;
-  pointer-events: none;
-}
-.undername {
-  position: absolute;
-  top: 9px;
-  left: 0; right: 0;
+  line-height: 1;
   text-align: center;
-}
-.undername .en {
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -.008em;
-  color: rgba(243,240,233,.72);
   white-space: nowrap;
+  color: rgba(243,240,233,.93);
+  pointer-events: none;
+  /* the scene's button: after the statement, the name RISES into
+     its cut — a monolith settling, weight told through slowness.
+     the ledger's own spring curve, stretched long. */
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 1.1s ease .25s,
+              transform 1.1s cubic-bezier(.16,1,.3,1) .25s;
 }
-/* the horizon does not end — it leaves the frame on both sides.
-   it is drawn as still water: straight at rest; when the taegeuk's
-   S passes through it, the crest warms and the trough cools. */
-#water {
-  position: absolute;
-  top: calc(50vh - 40px);
-  top: calc(50svh - 40px);
-  left: 0;
-  width: 100%;
-  height: 80px;
-  display: block;
-}
-.reach {
-  position: absolute;
-  top: calc(50vh - 22px);
-  top: calc(50svh - 22px);
-  left: 0; right: 0;
-  height: 44px;
-}
-
 /* ---- interior sections ---- */
 .section {
   min-height: 100vh;
@@ -188,8 +163,6 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   display: grid;
   place-items: center;
   text-align: center;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 .credits {
   /* the box's measure is tuned to the words: at 17px, 516px breaks
@@ -207,35 +180,23 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 }
 .kwae-frame { position: relative; width: min(516px, 100%); }
 .about-text {
-  max-width: 100%;
+  /* a small, thin, centered column, set like print: it does not
+     arrive, perform, or fill — it has simply always been there.
+     the page's one performance is the typed statement; everything
+     after it holds still. */
+  width: min(20em, 100%);
   margin: 0 auto;
-  color: rgba(243,240,233,.58);
-  /* fixed size, not fluid: the box is measured to these exact metrics */
-  font-size: 17px;
+  color: rgba(243,240,233,.75);
+  font-size: 14px;
+  font-weight: 200;
   line-height: 1.78;
   letter-spacing: -.008em;
   text-wrap: pretty;
-  text-align: justify;
-  text-align-last: center;
-  hanging-punctuation: allow-end;
-  /* justified type earns its block shape only with hyphenation —
-     at every width, not just narrow ones — or the lines go gappy */
-  hyphens: auto;
-  -webkit-hyphens: auto;
-  hyphenate-limit-chars: 7 4 4;
-  -webkit-hyphenate-limit-before: 4;
-  -webkit-hyphenate-limit-after: 4;
-}
-/* the manifesto is a carved block: while the box holds its full
-   516px measure, the last line is set flush too — a slab, not a
-   paragraph. narrower than that the text reflows, so the last line
-   falls back to the centered close. */
-@media (min-width: 580px) {
-  .about-text { text-align-last: justify; }
+  text-align: center;
 }
 /* the third sentence keeps its lift: slightly more white, the one
    line in the box that looks up */
-.aim { color: rgba(243,240,233,.66); }
+.aim { color: rgba(243,240,233,.9); }
 /* the ledger: a closed archive. each event is one quiet row — month,
    title, a small + — standing under its year; opening a row is
    entering that room: the note and the photograph unfold, one room
@@ -383,8 +344,18 @@ img.photo {
   to { opacity: 1; transform: none; }
 }
 @media (max-width: 700px) {
-  /* every room owns the whole screen on mobile too — the snap promise
-     holds; tall content (the cards) still scrolls within its room */
+  /* the cut deepens where the letters shrink: 20% of a phone-sized
+     cap is a sliver that reads as a glitch, so small screens hide
+     40% — the cut's PRESENCE is what stays equal, not its fraction */
+  .land {
+    height: calc(100vh + var(--wm) * .3 + 24px);
+    height: calc(100dvh + var(--wm) * .3 + 24px);
+  }
+  .wordmark {
+    top: calc(100vh - var(--wm) * .6);
+    top: calc(100dvh - var(--wm) * .6);
+  }
+  /* every room keeps its full-screen measure on mobile too */
   .section { padding-top: 66px; padding-bottom: 66px; }
   /* the open room owns the phone's full width: the note and photo
      drop the month indent and align with the row itself */
