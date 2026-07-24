@@ -3,8 +3,11 @@ html {
   background: #000;
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
-  /* the page scrolls free: the name in the floor needs every resting
-     position between cut and whole, so no snap owns the scroll */
+  /* the page has two COMPOSED READINGS — the landing, and the
+     name-at-the-top view with the description beneath (.snap-2).
+     proximity snap carries touch there; the eased wheel settles
+     there in script.js. everything past them scrolls free. */
+  scroll-snap-type: y proximity;
 }
 body {
   margin: 0;
@@ -63,6 +66,7 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
    the statement ends; plain scrolling shows it whole. */
 .land {
   position: relative;
+  scroll-snap-align: start;
   --wm: min(23vw, 42vh);
   /* hidden glyphs reach .153em below the fold (.141em of cap + the
      O's overshoot); the landing carries them plus a 24px breath.
@@ -122,6 +126,21 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 /* the signature: once the statement ends, the name fades up in the
    floor */
 .land.signed .wordmark { opacity: 1; transform: none; }
+/* the second reading's anchor: one scroll lands the page with the
+   name's caps 5vh below the frame's top — placed, not cropped
+   (the cropping story belongs to the landing's fold) — and the
+   description composed beneath. .565 = .74 (box above the fold)
+   minus .175 (em-box air above the caps). */
+.snap-2 {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  top: calc(95vh - var(--wm) * .565);
+  top: calc(95dvh - var(--wm) * .565);
+  scroll-snap-align: start;
+  pointer-events: none;
+}
 /* the name stands in the floor: DIVZERO in the document's flow,
    cut below the waist at the first fold — the environment clips
    even the name, and the reader's own scroll shows it whole:
@@ -175,6 +194,11 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
    from within, no longer a void. */
 .kwae-room {
   position: relative;
+  /* shorter than a full screen ON PURPOSE: in the second reading
+     (name at the frame's top), the description must sit composed in
+     the space under the letters, not a full viewport further down */
+  min-height: 66vh;
+  min-height: 66svh;
   background: radial-gradient(ellipse 42% 36% at 50% 50%,
     rgba(255,240,222,.05), transparent 72%);
 }
@@ -354,6 +378,12 @@ img.photo {
   .wordmark {
     top: calc(100vh - var(--wm) * .6);
     top: calc(100dvh - var(--wm) * .6);
+  }
+  /* the mobile cut is deeper (.6 above the fold), so the anchor
+     compensates: .6 - .175 = .425 */
+  .snap-2 {
+    top: calc(95vh - var(--wm) * .425);
+    top: calc(95dvh - var(--wm) * .425);
   }
   /* every room keeps its full-screen measure on mobile too */
   .section { padding-top: 66px; padding-bottom: 66px; }
