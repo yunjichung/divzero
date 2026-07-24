@@ -153,6 +153,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   // is within reach — the lerp glides in, so arriving feels chosen,
   // not forced. past the readings, the scroll stays free.
   let settleTimer = null;
+  let lastDir = 0;
   function settle() {
     if (target === null) return;
     const marker = document.querySelector(".snap-2");
@@ -160,7 +161,12 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     if (marker) points.push(marker.getBoundingClientRect().top + window.scrollY);
     const vh = window.innerHeight;
     for (const p of points) {
-      if (Math.abs(target - p) < vh * .28) {
+      const d = p - target;
+      // a reading only ever pulls FORWARD along the direction of
+      // travel (or from a whisker away) — it never drags the
+      // reader back against their own scroll
+      const ahead = d * lastDir > 0;
+      if ((ahead && Math.abs(d) < vh * .3) || Math.abs(d) < vh * .08) {
         target = p;
         if (!raf) raf = requestAnimationFrame(tick);
         break;
@@ -170,6 +176,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   window.addEventListener("wheel", (e) => {
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
+    if (e.deltaY) lastDir = e.deltaY > 0 ? 1 : -1;
     const from = target === null ? window.scrollY : target;
     target = Math.max(0, Math.min(maxScroll(), from + e.deltaY * .8));
     clearTimeout(settleTimer);

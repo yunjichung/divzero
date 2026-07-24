@@ -3,11 +3,15 @@ html {
   background: #000;
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
-  /* the page has two COMPOSED READINGS — the landing, and the
-     name-at-the-top view with the description beneath (.snap-2).
-     proximity snap carries touch there; the eased wheel settles
-     there in script.js. everything past them scrolls free. */
-  scroll-snap-type: y proximity;
+}
+/* the page has two COMPOSED READINGS — the landing, and the
+   name-at-the-top view with the description beneath (.snap-2).
+   CSS snap serves ONLY touch devices: on wheel machines the eased
+   scroll in script.js drives scrollTo every frame, and browser
+   snap would fight it frame-by-frame and pin the page. there, the
+   script's own settle() lands the readings instead. */
+@media (hover: none) {
+  html { scroll-snap-type: y proximity; }
 }
 body {
   margin: 0;
