@@ -56,8 +56,6 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     line2.textContent = TEXT2;
     line2.appendChild(caret);
     caret.style.visibility = "visible";
-    caret.style.transform = "";
-    solid(false);
     signed();
   };
 
@@ -67,11 +65,10 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   //       someone is here, about to speak.
   // 1.0s  the thesis, PHRASED: word-bursts, breaths between words,
   //       easing in on the first word. a hand that knows the line.
-  // ~2.4s the period lands; the blink resumes (follow-through).
-  // ~2.9s the blink STOPS — a solid, held caret. the writer has
-  //       decided. (the held breath before the turn.)
-  // ~3.4s Enter: the caret drops; the eye is staged on the empty
-  //       line where the answer will land.
+  // ~2.4s the period lands; Enter follows almost at once,
+  //       document-true. THE pause — the only one — happens on the
+  //       EMPTY line: the caret blinking in the blank space where
+  //       the answer will land. commitment first, then the voice.
   // ~3.7s "So " — the pivot word, left alone for one beat — then
   //       the answer, typed SLOW: this is the powerful line, and
   //       its weight is told through deliberateness — each word
@@ -89,25 +86,6 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     return 40 + Math.max(0, 3 - i) * 22 + Math.random() * 20;
   };
 
-  // a blinking caret that suddenly holds SOLID reads as a held
-  // breath — the cursor-language for "the writer has decided"
-  const solid = (on) => { caret.style.animation = on ? "none" : ""; };
-
-  // no teleports: Enter is a CARRIAGE RETURN the eye can follow —
-  // one fast swept hop from the end of the thesis down to the new
-  // line (FLIP: measure, move, play back the difference)
-  const hop = () => {
-    const a = caret.getBoundingClientRect();
-    line2.appendChild(caret);
-    const b = caret.getBoundingClientRect();
-    caret.style.transition = "none";
-    caret.style.transform = "translate(" + (a.left - b.left) + "px, " + (a.top - b.top) + "px)";
-    requestAnimationFrame(() => {
-      caret.style.transition = "transform .16s cubic-bezier(.3,0,.2,1)";
-      caret.style.transform = "";
-      setTimeout(() => { caret.style.transition = "none"; }, 220);
-    });
-  };
 
   function type(lineEl, text, i, weighty, then) {
     if (skipped) { finish(); return; }
@@ -120,23 +98,22 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     caret.style.visibility = "visible";
     setTimeout(() => {                  // …blinks once, then speaks
       type(line1, TEXT1, 0, false, () => {
-        setTimeout(() => {              // follow-through: blink resumes
+        // ONE pause, ONE place — and it lives on the EMPTY line:
+        // Enter comes document-true almost at once (no travel, no
+        // hold above), and the caret blinks naturally in the blank
+        // space where the answer will land. the commitment is
+        // visible before the voice arrives; the audience waits
+        // where the vow will be spoken.
+        setTimeout(() => {
           if (skipped) { finish(); return; }
-          solid(true);                  // the decision: blink held solid
+          line2.appendChild(caret);
           setTimeout(() => {
-            if (skipped) { finish(); return; }
-            hop();                      // Enter: the carriage returns
-            setTimeout(() => {
-              solid(false);             // landed — the blink resumes
-              setTimeout(() => {
-                // …and after the period: one full exhale blink of
-                // stillness before the monument rises. the reader
-                // finishes the sentence; THEN the ground answers.
-                type(line2, TEXT2, 0, true, () => setTimeout(signed, 1000));
-              }, 280);
-            }, 180);
-          }, 500);
-        }, 450);
+            // after the answer's period: one exhale of stillness,
+            // then the monument rises. the reader finishes the
+            // sentence; THEN the ground answers.
+            type(line2, TEXT2, 0, true, () => setTimeout(signed, 1000));
+          }, 830);
+        }, 180);
       });
     }, 600);
   }, 400);
@@ -170,11 +147,33 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     window.scrollTo(0, cur + d * (1 - Math.pow(1 - .045, dt / 16.7)));
     raf = requestAnimationFrame(tick);
   }
+  // the page's two composed readings (the landing, and the
+  // name-at-the-top view marked by .snap-2): when the wheel goes
+  // quiet, the eased scroll settles onto the nearest reading if one
+  // is within reach — the lerp glides in, so arriving feels chosen,
+  // not forced. past the readings, the scroll stays free.
+  let settleTimer = null;
+  function settle() {
+    if (target === null) return;
+    const marker = document.querySelector(".snap-2");
+    const points = [0];
+    if (marker) points.push(marker.getBoundingClientRect().top + window.scrollY);
+    const vh = window.innerHeight;
+    for (const p of points) {
+      if (Math.abs(target - p) < vh * .28) {
+        target = p;
+        if (!raf) raf = requestAnimationFrame(tick);
+        break;
+      }
+    }
+  }
   window.addEventListener("wheel", (e) => {
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
     const from = target === null ? window.scrollY : target;
     target = Math.max(0, Math.min(maxScroll(), from + e.deltaY * .8));
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(settle, 170);
     if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: false });
 })();
