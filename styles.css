@@ -99,13 +99,16 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 .land {
   position: relative;
   scroll-snap-align: start;
+  /* a flick may not sail past a room: every reading is a stop */
+  scroll-snap-stop: always;
   /* hidden glyphs reach .153em below the fold (.141em of cap + the
      O's overshoot); the landing carries them plus a 24px breath.
-     the fold is measured in dvh — wherever the browser's bottom
-     edge currently is — so the 80% preview holds on phones whose
-     bars come and go, not just at the smallest viewport */
+     the fold is measured in svh — the STABLE small viewport — so
+     snap geometry never shifts mid-gesture when a phone's toolbar
+     collapses. at the resting top (toolbar shown) svh IS the real
+     fold, which is where the preview matters. */
   height: calc(100vh + var(--wm) * .16 + 24px);
-  height: calc(100dvh + var(--wm) * .16 + 24px);
+  height: calc(100svh + var(--wm) * .16 + 24px);
   overflow: hidden;
 }
 /* the statement: the single serif voice on the site, reserved for
@@ -165,8 +168,9 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   width: 100%;
   height: 1px;
   top: calc(95vh - var(--wm) * .565);
-  top: calc(95dvh - var(--wm) * .565);
+  top: calc(95svh - var(--wm) * .565);
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   pointer-events: none;
 }
 /* the name stands in the floor: DIVZERO in the document's flow,
@@ -180,10 +184,10 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   /* MEASURED metrics for pretendard@430 at line-height 1: baseline
      sits .145em above the em-box bottom, caps are .707em tall, the
      O overshoots .01em below the baseline. box top .71em above the
-     fold puts the cut at 20% of the caps: an 80% preview — and the
-     fold is dvh, the browser's real bottom edge, at every size */
+     fold puts the cut at 20% of the caps: an 80% preview — the
+     fold in svh, stable against phone toolbar collapse */
   top: calc(100vh - var(--wm) * .71);
-  top: calc(100dvh - var(--wm) * .71);
+  top: calc(100svh - var(--wm) * .71);
   z-index: 300;
   /* width-fit on any screen, height-capped for short wide viewports */
   font-size: var(--wm);
@@ -261,7 +265,7 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   color: rgba(243,240,233,.9);
 }
 /* the archive is the third room: a snap stop for touch paging */
-#events { scroll-snap-align: start; }
+#events { scroll-snap-align: start; scroll-snap-stop: always; }
 /* the ledger: a closed archive. each event is one quiet row — month,
    title, a small + — standing under its year; opening a row is
    entering that room: the note and the photograph unfold, one room
@@ -414,17 +418,17 @@ img.photo {
      40% — the cut's PRESENCE is what stays equal, not its fraction */
   .land {
     height: calc(100vh + var(--wm) * .3 + 24px);
-    height: calc(100dvh + var(--wm) * .3 + 24px);
+    height: calc(100svh + var(--wm) * .3 + 24px);
   }
   .wordmark {
     top: calc(100vh - var(--wm) * .57);
-    top: calc(100dvh - var(--wm) * .57);
+    top: calc(100svh - var(--wm) * .57);
   }
   /* the mobile cut is deeper (.57 above the fold), so the anchor
      compensates: .57 - .148 = .425 */
   .snap-2 {
     top: calc(95vh - var(--wm) * .425);
-    top: calc(95dvh - var(--wm) * .425);
+    top: calc(95svh - var(--wm) * .425);
   }
   /* every room keeps its full-screen measure on mobile too */
   .section { padding-top: 66px; padding-bottom: 66px; }

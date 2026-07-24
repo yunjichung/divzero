@@ -159,6 +159,11 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
       target = null;
       last = null;
       raf = null;
+      // the lock ends when the TRANSIT ends (after a short grace
+      // for the flick's momentum tail) — never gated on the hand
+      // going quiet, or a continuous scroll holds the lock forever
+      // and the page goes deaf mid-journey
+      setTimeout(() => { lock = false; acc = 0; }, 400);
       return;
     }
     // the reference's lerp .045 per 60fps frame, held at any framerate
@@ -170,7 +175,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
     clearTimeout(quietTimer);
-    quietTimer = setTimeout(() => { lock = false; acc = 0; pageDir = 0; }, 240);
+    quietTimer = setTimeout(() => { lock = false; acc = 0; pageDir = 0; }, 300);
     // the lock swallows MOMENTUM from the turn just taken — and
     // momentum never changes sign. input against the last turn's
     // direction is always a human, and it pages back at once, even
@@ -178,7 +183,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     if (lock && e.deltaY * pageDir >= 0) return;
     if (acc * e.deltaY < 0) acc = 0;
     acc += e.deltaY;
-    if (Math.abs(acc) < 60) return;
+    if (Math.abs(acc) < 30) return;
     const dir = acc > 0 ? 1 : -1;
     acc = 0;
     lock = true;
