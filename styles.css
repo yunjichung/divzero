@@ -4,14 +4,13 @@ html {
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
 }
-/* the page has two COMPOSED READINGS — the landing, and the
-   name-at-the-top view with the description beneath (.snap-2).
-   CSS snap serves ONLY touch devices: on wheel machines the eased
-   scroll in script.js drives scrollTo every frame, and browser
-   snap would fight it frame-by-frame and pin the page. there, the
-   script's own settle() lands the readings instead. */
+/* the page MOVES IN ROOMS: the landing, the name-with-description
+   reading (.snap-2), the archive. CSS snap serves ONLY touch
+   devices — on wheel machines the eased scroll drives scrollTo
+   every frame and browser snap would fight it and pin the page;
+   there, script.js pages one section per gesture instead. */
 @media (hover: none) {
-  html { scroll-snap-type: y proximity; }
+  html { scroll-snap-type: y mandatory; }
 }
 body {
   margin: 0;
@@ -68,10 +67,17 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
    page's bottom edge, its lowest fifth cut by the FOLD (the
    reference: olivergareis.com), fading up as the signature once
    the statement ends; plain scrolling shows it whole. */
+:root {
+  /* the name's one size, shared: the landing places it, the second
+     reading and the about room measure themselves against it */
+  --wm: min(23vw, 42vh);
+}
+@supports (height: 1svh) {
+  :root { --wm: min(23vw, 42svh); }
+}
 .land {
   position: relative;
   scroll-snap-align: start;
-  --wm: min(23vw, 42vh);
   /* hidden glyphs reach .153em below the fold (.141em of cap + the
      O's overshoot); the landing carries them plus a 24px breath.
      the fold is measured in dvh — wherever the browser's bottom
@@ -80,9 +86,6 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   height: calc(100vh + var(--wm) * .16 + 24px);
   height: calc(100dvh + var(--wm) * .16 + 24px);
   overflow: hidden;
-}
-@supports (height: 1svh) {
-  .land { --wm: min(23vw, 42svh); }
 }
 /* the statement: the single serif voice on the site, reserved for
    the sentence — caslon lineage (big caslon on apple hardware,
@@ -196,16 +199,23 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
    corners — but hugging the text now, frame and content one
    composition. the room glows like a moon jar: porcelain lit faintly
    from within, no longer a void. */
-.kwae-room {
+.section.kwae-room {
   position: relative;
-  /* shorter than a full screen ON PURPOSE: in the second reading
-     (name at the frame's top), the description must sit composed in
-     the space under the letters, not a full viewport further down */
-  min-height: 66vh;
-  min-height: 66svh;
+  /* the room is EXACTLY the space under the name in the second
+     reading: from just below the letters' feet to the fold */
+  min-height: calc(95vh - var(--wm) * .725 - 24px);
+  min-height: calc(95svh - var(--wm) * .725 - 24px);
+  /* the canon (van de graaf/tschichold, 2:3:4:6): the space below
+     content doubles the space above it. one part gap under the
+     name, the description, two parts emptiness beneath — the eye's
+     center, not the ruler's. */
+  grid-template-rows: 1fr auto 2fr;
+  padding-top: 0;
+  padding-bottom: 0;
   background: radial-gradient(ellipse 42% 36% at 50% 50%,
     rgba(255,240,222,.05), transparent 72%);
 }
+.kwae-room .kwae-frame { grid-row: 2; }
 .kwae-frame { position: relative; width: min(516px, 100%); }
 .about-text {
   /* a small, thin, centered column, set like print: it does not
@@ -225,6 +235,8 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 /* the third sentence keeps its lift: slightly more white, the one
    line in the box that looks up */
 .aim { color: rgba(243,240,233,.9); }
+/* the archive is the third room: a snap stop for touch paging */
+#events { scroll-snap-align: start; }
 /* the ledger: a closed archive. each event is one quiet row — month,
    title, a small + — standing under its year; opening a row is
    entering that room: the note and the photograph unfold, one room

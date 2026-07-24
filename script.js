@@ -119,18 +119,32 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   }, 400);
 })();
 
-// the page scrolls the way the reference does: wheel input gathers
-// into a target and the view eases toward it — Lenis-style, lerp
-// .045 with ticks at .8 — so arriving anywhere is a deliberate act.
-// touch keeps the platform's own physics; reduced motion keeps
-// native scrolling entirely.
+// the page MOVES IN ROOMS: one gesture, one section — the landing,
+// the name-with-description reading, the archive — each transit
+// carried by the reference's eased glide (lerp .045). momentum
+// after a page-turn is swallowed until the wheel goes quiet, so a
+// flick turns exactly one page. reduced motion keeps native
+// scrolling entirely; touch pages via CSS snap instead.
 (() => {
   if (reducedMotion) return;
   let target = null;
   let raf = null;
   let last = null;
+  let acc = 0;
+  let lock = false;
+  let quietTimer = null;
   const maxScroll = () =>
     document.documentElement.scrollHeight - window.innerHeight;
+  // the rooms, freshly measured each turn: the landing's top, the
+  // .snap-2 reading, the archive's own top
+  function points() {
+    const pts = [0];
+    const marker = document.querySelector(".snap-2");
+    if (marker) pts.push(marker.getBoundingClientRect().top + window.scrollY);
+    const events = document.getElementById("events");
+    if (events) pts.push(Math.min(events.offsetTop, maxScroll()));
+    return pts;
+  }
   function tick(now) {
     const dt = last === null ? 16.7 : Math.min(50, now - last);
     last = now;
@@ -147,40 +161,32 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     window.scrollTo(0, cur + d * (1 - Math.pow(1 - .045, dt / 16.7)));
     raf = requestAnimationFrame(tick);
   }
-  // the page's two composed readings (the landing, and the
-  // name-at-the-top view marked by .snap-2): when the wheel goes
-  // quiet, the eased scroll settles onto the nearest reading if one
-  // is within reach — the lerp glides in, so arriving feels chosen,
-  // not forced. past the readings, the scroll stays free.
-  let settleTimer = null;
-  let lastDir = 0;
-  function settle() {
-    if (target === null) return;
-    const marker = document.querySelector(".snap-2");
-    const points = [0];
-    if (marker) points.push(marker.getBoundingClientRect().top + window.scrollY);
-    const vh = window.innerHeight;
-    for (const p of points) {
-      const d = p - target;
-      // a reading only ever pulls FORWARD along the direction of
-      // travel (or from a whisker away) — it never drags the
-      // reader back against their own scroll
-      const ahead = d * lastDir > 0;
-      if ((ahead && Math.abs(d) < vh * .3) || Math.abs(d) < vh * .08) {
-        target = p;
-        if (!raf) raf = requestAnimationFrame(tick);
-        break;
-      }
-    }
-  }
+  let pageDir = 0;
   window.addEventListener("wheel", (e) => {
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
-    if (e.deltaY) lastDir = e.deltaY > 0 ? 1 : -1;
-    const from = target === null ? window.scrollY : target;
-    target = Math.max(0, Math.min(maxScroll(), from + e.deltaY * .8));
-    clearTimeout(settleTimer);
-    settleTimer = setTimeout(settle, 170);
+    clearTimeout(quietTimer);
+    quietTimer = setTimeout(() => { lock = false; acc = 0; pageDir = 0; }, 240);
+    // the lock swallows MOMENTUM from the turn just taken — and
+    // momentum never changes sign. input against the last turn's
+    // direction is always a human, and it pages back at once, even
+    // mid-glide.
+    if (lock && e.deltaY * pageDir >= 0) return;
+    if (acc * e.deltaY < 0) acc = 0;
+    acc += e.deltaY;
+    if (Math.abs(acc) < 60) return;
+    const dir = acc > 0 ? 1 : -1;
+    acc = 0;
+    lock = true;
+    pageDir = dir;
+    const pts = points();
+    const here = target === null ? window.scrollY : target;
+    let cur = 0;
+    for (let i = 1; i < pts.length; i++) {
+      if (Math.abs(pts[i] - here) < Math.abs(pts[cur] - here)) cur = i;
+    }
+    const next = Math.max(0, Math.min(pts.length - 1, cur + dir));
+    target = pts[next];
     if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: false });
 })();
