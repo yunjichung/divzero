@@ -1,3 +1,24 @@
+/* ---- TYPE DELIVERY: the free build, self-hosted ----
+   · statement serif: Libre Caslon Text (OFL, 17KB latin) — the
+     truest free Caslon. premium swap target: Klim Signifier.
+   · everything sans: Pretendard Std variable (OFL, 292KB, wght
+     45–920) — built on Inter's bones, so the future 한글 layer
+     (full Pretendard's dynamic subsets) will share one voice.
+     premium swap target: Söhne / Suisse Int'l.
+   swapping premium in = replace the two files below and the first
+   name in each font list (--serif / body). */
+@font-face {
+  font-family: "Libre Caslon Text";
+  src: url("fonts/LibreCaslonText-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard Std";
+  src: url("fonts/PretendardStdVariable.woff2") format("woff2-variations");
+  font-weight: 45 920;
+  font-display: swap;
+}
 * { box-sizing: border-box; }
 html {
   background: #000;
@@ -16,7 +37,7 @@ body {
   margin: 0;
   background: transparent;
   color: #f3f0e9;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Pretendard Std", Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 /* TYPE SCALE — every size on the page is one of these steps:
@@ -88,8 +109,8 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   overflow: hidden;
 }
 /* the statement: the single serif voice on the site, reserved for
-   the sentence — caslon lineage (big caslon on apple hardware,
-   baskerville/georgia elsewhere), typed live by script.js */
+   the sentence — caslon lineage, self-hosted (libre caslon text),
+   identical on every platform, typed live by script.js */
 .typed {
   position: absolute;
   top: 36vh;
@@ -98,7 +119,7 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   right: max(24px, env(safe-area-inset-right));
   z-index: 300;
   text-align: center;
-  font-family: "Big Caslon", Baskerville, Georgia, "Times New Roman", serif;
+  font-family: "Libre Caslon Text", "Big Caslon", Baskerville, Georgia, "Times New Roman", serif;
   font-size: clamp(24px, 3.2vw, 46px);
   font-weight: 400;
   letter-spacing: .002em;
@@ -114,15 +135,15 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 /* the caret: proof of a living hand. it types, waits, and stays.
    absolutely positioned at its natural spot so it takes no width —
    the centered line never re-centers when the caret leaves it.
-   seated on the BASELINE: half-leading .25em + ascent .88em puts
-   the baseline 1.13em under the line-box top; the caret's .78em
-   body hangs from .35em down to meet it. */
+   seated on the BASELINE (libre caslon @ lh 1.5): half-leading
+   .135em + ascent .97em puts the baseline 1.105em under the
+   line-box top; the caret's .78em body hangs from .33em down. */
 .caret {
   position: absolute;
   width: 2px;
   height: .78em;
   margin-left: .1em;
-  margin-top: .35em;
+  margin-top: .33em;
   background: rgba(243,240,233,.8);
   animation: caret-blink 1.1s steps(2, jump-none) infinite;
   /* the character waits in the wings: script.js brings it on for
@@ -136,8 +157,8 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 /* the second reading's anchor: one scroll lands the page with the
    name's caps 5vh below the frame's top — placed, not cropped
    (the cropping story belongs to the landing's fold) — and the
-   description composed beneath. .565 = .74 (box above the fold)
-   minus .175 (em-box air above the caps). */
+   description composed beneath. .565 = .71 (box above the fold)
+   minus .148 (em-box air above the caps, pretendard@430). */
 .snap-2 {
   position: absolute;
   left: 0;
@@ -156,13 +177,13 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 .wordmark {
   position: absolute;
   left: 0; right: 0;
-  /* MEASURED metrics for this stack at line-height 1: baseline sits
-     .12em above the em-box bottom, caps are .705em tall, the O
-     overshoots .012em below the baseline. box top .74em above the
+  /* MEASURED metrics for pretendard@430 at line-height 1: baseline
+     sits .145em above the em-box bottom, caps are .707em tall, the
+     O overshoots .01em below the baseline. box top .71em above the
      fold puts the cut at 20% of the caps: an 80% preview — and the
      fold is dvh, the browser's real bottom edge, at every size */
-  top: calc(100vh - var(--wm) * .74);
-  top: calc(100dvh - var(--wm) * .74);
+  top: calc(100vh - var(--wm) * .71);
+  top: calc(100dvh - var(--wm) * .71);
   z-index: 300;
   /* width-fit on any screen, height-capped for short wide viewports */
   font-size: var(--wm);
@@ -232,9 +253,13 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   text-wrap: pretty;
   text-align: center;
 }
-/* the third sentence keeps its lift: slightly more white, the one
-   line in the box that looks up */
-.aim { color: rgba(243,240,233,.9); }
+/* the aim stands as its own stanza: a breath apart, slightly more
+   white — the one line in the box that looks up */
+.aim {
+  display: block;
+  margin-top: 12px;
+  color: rgba(243,240,233,.9);
+}
 /* the archive is the third room: a snap stop for touch paging */
 #events { scroll-snap-align: start; }
 /* the ledger: a closed archive. each event is one quiet row — month,
@@ -392,11 +417,11 @@ img.photo {
     height: calc(100dvh + var(--wm) * .3 + 24px);
   }
   .wordmark {
-    top: calc(100vh - var(--wm) * .6);
-    top: calc(100dvh - var(--wm) * .6);
+    top: calc(100vh - var(--wm) * .57);
+    top: calc(100dvh - var(--wm) * .57);
   }
-  /* the mobile cut is deeper (.6 above the fold), so the anchor
-     compensates: .6 - .175 = .425 */
+  /* the mobile cut is deeper (.57 above the fold), so the anchor
+     compensates: .57 - .148 = .425 */
   .snap-2 {
     top: calc(95vh - var(--wm) * .425);
     top: calc(95dvh - var(--wm) * .425);

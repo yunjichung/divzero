@@ -2,3 +2,5 @@
 .tmp/
 DESIGN_RESEARCH.md
 KOREAN_DESIGN_RESEARCH.md
+# foundry trial fonts: evaluation-only EULA — never commit or deploy
+fonts/trials/

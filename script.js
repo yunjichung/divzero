@@ -40,6 +40,10 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   }
   fit();
   window.addEventListener("resize", fit);
+  // the self-hosted serif may land a beat after first paint: once
+  // the real face is in, re-measure the typewriter boxes so the
+  // carriage margins are true to it
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 
   line1.textContent = "";
   line2.textContent = "";
