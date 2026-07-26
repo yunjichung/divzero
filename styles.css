@@ -135,15 +135,17 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   scroll-snap-stop: always;
   /* hidden glyphs reach .153em below the fold (.141em of cap + the
      O's overshoot); the landing carries them plus a 24px breath.
-     the HEIGHT is measured in lvh — the LARGEST (stable) viewport —
-     so it never changes as a phone's toolbar hides or shows, which
-     keeps the scroll-snap geometry steady (a dvh height here shifts
-     the snap points mid-gesture and the mandatory snap fights the
-     finger). the wordmark's cut sits at svh — also static — and the
-     fixed .floor panel owns whatever the toolbar state reveals
-     below it; lvh is always tall enough to contain the glyphs. */
+     the HEIGHT is on --fold — the SAME ruler as the cut, the knife
+     and the second reading's anchor. it was lvh once, but lvh − fold
+     varies per browser (~23px safari, ~90 chrome, ~150 kakao), and
+     that excess pushed the about room's document position down by a
+     DIFFERENT amount on each surface: the name-to-description gap
+     disagreed across browsers. --fold is static during scroll, so
+     the snap-stability reason lvh was chosen for still holds; the
+     floor panel covers anything a collapsed toolbar reveals below
+     the fold at rest. */
   height: calc(100vh + var(--wm) * .16 + 24px - var(--lift));
-  height: calc(100lvh + var(--wm) * .16 + 24px - var(--lift));
+  height: calc(var(--fold) + var(--wm) * .16 + 24px - var(--lift));
   /* clip, NOT hidden: overflow:hidden makes .land a scroll
      container, which silently captures the .snap-2 anchor inside
      it — the root scroller then has no middle snap position and
