@@ -185,15 +185,20 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   window.addEventListener("wheel", (e) => {
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
+    // firefox reports wheel deltas in LINES (deltaMode 1, ~3/notch)
+    // or PAGES (2), not pixels — unnormalized, the 30px accumulator
+    // needed ~10 notches per page-turn there. one delta currency.
+    const dy = e.deltaY *
+      (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 100 : 1);
     clearTimeout(quietTimer);
     quietTimer = setTimeout(() => { lock = false; acc = 0; pageDir = 0; }, 300);
     // the lock swallows MOMENTUM from the turn just taken — and
     // momentum never changes sign. input against the last turn's
     // direction is always a human, and it pages back at once, even
     // mid-glide.
-    if (lock && e.deltaY * pageDir >= 0) return;
-    if (acc * e.deltaY < 0) acc = 0;
-    acc += e.deltaY;
+    if (lock && dy * pageDir >= 0) return;
+    if (acc * dy < 0) acc = 0;
+    acc += dy;
     if (Math.abs(acc) < 30) return;
     const dir = acc > 0 ? 1 : -1;
     acc = 0;

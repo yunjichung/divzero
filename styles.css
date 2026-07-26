@@ -28,6 +28,12 @@ html {
      dressed for the room */
   scrollbar-color: rgba(243,240,233,.2) transparent;
   scrollbar-width: thin;
+  /* 100vw includes the scrollbar on classic-scrollbar browsers
+     (firefox / older windows), and the name spans ~99.8vw — without
+     this, those surfaces grow a horizontal scrollbar. clipping
+     shaves ~1% off the O's edge there instead: the lesser harm,
+     invisible on overlay-scrollbar browsers (all of them modern). */
+  overflow-x: clip;
 }
 /* the page MOVES IN ROOMS: the landing, the name-with-description
    reading (.snap-2), the archive. CSS snap serves ONLY touch
@@ -517,6 +523,11 @@ img.photo {
   to { opacity: 1; transform: none; }
 }
 @media (max-width: 700px) {
+  /* SURFACE NOTE — the seam between gates: touch devices WIDER than
+     700px (iPad portrait, tablets) get CSS snap (hover:none) but not
+     this block: no floor, no pill math — the window edge is their
+     knife, desktop-fashion. intentional: their bars are stable and
+     their viewports honest, so the desktop composition holds. */
   /* portrait phones are width-starved, so the name takes the WHOLE
      width: at 24.4vw the word spans 99.8% of the screen — hairline
      margins, edge to edge, and no glyph cropped (a clipped O reads
