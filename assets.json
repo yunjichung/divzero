@@ -55,6 +55,104 @@
       "title": "The Almanack of Naval Ravikant",
       "url": "",
       "alt": "The first Almanack book discussion"
+    },
+    {
+      "id": "founder-hyungwon",
+      "type": "founder",
+      "title": "Hyung Won Chung",
+      "url": "",
+      "alt": "Hyung Won Chung, founder of DivZero"
+    },
+    {
+      "id": "founder-yunji",
+      "type": "founder",
+      "title": "Yun Ji Chung",
+      "url": "assets/founder-yunji.jpg",
+      "alt": "Yun Ji Chung, founder of DivZero"
+    },
+    {
+      "id": "founder-martin",
+      "type": "founder",
+      "title": "Martin Lee",
+      "url": "",
+      "alt": "Martin Lee, founder of DivZero"
+    },
+    {
+      "id": "founder-gia",
+      "type": "founder",
+      "title": "Gia Min",
+      "url": "",
+      "alt": "Gia Min, founder of DivZero"
+    },
+    {
+      "id": "founder-kyel",
+      "type": "founder",
+      "title": "Kyel Ok",
+      "url": "",
+      "alt": "Kyel Ok, founder of DivZero"
+    },
+    {
+      "id": "2025-exponential-b",
+      "type": "event",
+      "title": "Exponential Growth",
+      "url": "",
+      "alt": "Exponential Growth photograph"
+    },
+    {
+      "id": "2026-opening-b",
+      "type": "event",
+      "title": "2026 Opening",
+      "url": "",
+      "alt": "2026 Opening photograph"
+    },
+    {
+      "id": "2025-cities-b",
+      "type": "event",
+      "title": "Shaped by Cities",
+      "url": "",
+      "alt": "Shaped by Cities photograph"
+    },
+    {
+      "id": "2025-holiday-b",
+      "type": "event",
+      "title": "Holiday Party",
+      "url": "",
+      "alt": "Holiday Party photograph"
+    },
+    {
+      "id": "2025-ai-b",
+      "type": "event",
+      "title": "The Future of AI",
+      "url": "",
+      "alt": "The Future of AI photograph"
+    },
+    {
+      "id": "2024-almanack-b",
+      "type": "event",
+      "title": "The Almanack",
+      "url": "",
+      "alt": "The Almanack photograph"
+    },
+    {
+      "id": "2025-holiday-c",
+      "type": "event",
+      "title": "Holiday Party",
+      "url": "",
+      "alt": "Holiday Party photograph"
+    },
+    {
+      "id": "2024-almanack-2-b",
+      "type": "event",
+      "title": "The Almanack, Continued",
+      "url": "",
+      "alt": "The Almanack, Continued photograph"
+    },
+    {
+      "id": "2024-holiday-b",
+      "type": "event",
+      "title": "Holiday Party",
+      "url": "",
+      "alt": "Holiday Party photograph"
     }
   ]
 }
