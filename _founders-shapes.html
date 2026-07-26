@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>founders — shape prototypes</title>
+<style>
+@font-face {
+  font-family: "Pretendard Std";
+  src: url("fonts/PretendardStdVariable.woff2") format("woff2-variations");
+  font-weight: 45 920;
+  font-display: swap;
+}
+* { box-sizing: border-box; margin: 0; }
+html { background: #000; color-scheme: dark; }
+body {
+  color: #f3f0e9;
+  font-family: "Pretendard Std", -apple-system, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding: 90px 24px 150px;
+}
+.proto { max-width: 852px; margin: 0 auto 180px; }
+.tag {
+  font-size: 11px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(243,240,233,.35);
+  margin-bottom: 60px;
+}
+.name { font-size: 14px; font-weight: 500; letter-spacing: -.008em; color: rgba(243,240,233,.9); }
+.bio {
+  margin-top: 6px; font-size: 13px; font-weight: 300; line-height: 1.6;
+  letter-spacing: -.008em; color: rgba(243,240,233,.5); max-width: 342px;
+  text-wrap: pretty;
+}
+
+/* ---------- A: the zero counter, scattered ---------- */
+.zrow {
+  display: flex; align-items: center; gap: 45px;
+  margin-bottom: 66px;
+}
+.zrow.flip { flex-direction: row-reverse; text-align: right; }
+.zrow.flip .bio { margin-left: auto; }
+.zrow:nth-child(odd) { transform: translateY(-9px); }
+.zero {
+  flex: none;
+  width: 168px; height: 216px;
+  border-radius: 50%;
+  border: 1px solid rgba(243,240,233,.1);
+  background: linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,.01));
+  transition: transform .6s cubic-bezier(.22,1,.36,1);
+}
+.zrow:nth-child(2) .zero { transform: rotate(-6deg); }
+.zrow:nth-child(3) .zero { transform: rotate(4deg); }
+.zrow:nth-child(4) .zero { transform: rotate(-3deg); }
+.zrow:nth-child(5) .zero { transform: rotate(7deg); }
+.zrow:nth-child(6) .zero { transform: rotate(-5deg); }
+.zrow:hover .zero { transform: rotate(0deg); }
+/* stagger the horizontal seat too — hung, not gridded */
+.zrow:nth-child(2) { padding-left: 24px; }
+.zrow:nth-child(3) { padding-right: 60px; }
+.zrow:nth-child(4) { padding-left: 96px; }
+.zrow:nth-child(5) { padding-right: 24px; }
+.zrow:nth-child(6) { padding-left: 48px; }
+
+/* ---------- B: the obelus, five marks ---------- */
+.ogrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 90px 48px;
+}
+.obelus { text-align: center; }
+.obelus:nth-child(odd) { transform: translateY(-24px); }
+.obelus:nth-child(3) { transform: translateY(24px); }
+.obelus:nth-child(5) { grid-column: 1 / -1; justify-self: center; max-width: 402px; }
+.dot {
+  width: 138px; height: 138px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 1px solid rgba(243,240,233,.1);
+  background: linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,.01));
+  transition: transform .6s cubic-bezier(.22,1,.36,1);
+}
+.obelus:hover .dot { transform: scale(1.04); }
+.bar {
+  display: flex; align-items: center; gap: 15px;
+  margin: 21px 0 15px;
+}
+.bar::before, .bar::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(243,240,233,0), rgba(243,240,233,.22));
+}
+.bar::after {
+  background: linear-gradient(90deg, rgba(243,240,233,.22), rgba(243,240,233,0));
+}
+.bar .name { white-space: nowrap; }
+.obelus .bio { margin: 0 auto; max-width: 312px; text-align: left; }
+</style>
+</head>
+<body>
+
+<section class="proto">
+  <p class="tag">A &mdash; The zero counter &middot; scattered &middot; hover rights the lean</p>
+  <div class="zrow flip"><div class="zero"></div><div><p class="name">Yunji Chung</p><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div></div>
+  <div class="zrow"><div class="zero"></div><div><p class="name">[Founder Name]</p><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div></div>
+  <div class="zrow flip"><div class="zero"></div><div><p class="name">[Founder Name]</p><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div></div>
+  <div class="zrow"><div class="zero"></div><div><p class="name">[Founder Name]</p><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div></div>
+  <div class="zrow flip"><div class="zero"></div><div><p class="name">[Founder Name]</p><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div></div>
+</section>
+
+<section class="proto">
+  <p class="tag">B &mdash; The obelus &middot; each founder composed as &divide;</p>
+  <div class="ogrid">
+    <div class="obelus"><div class="dot"></div><div class="bar"><p class="name">Yunji Chung</p></div><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div>
+    <div class="obelus"><div class="dot"></div><div class="bar"><p class="name">[Founder Name]</p></div><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div>
+    <div class="obelus"><div class="dot"></div><div class="bar"><p class="name">[Founder Name]</p></div><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div>
+    <div class="obelus"><div class="dot"></div><div class="bar"><p class="name">[Founder Name]</p></div><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div>
+    <div class="obelus"><div class="dot"></div><div class="bar"><p class="name">[Founder Name]</p></div><p class="bio">[Self-introduction &mdash; about 150 words. Who you are, what you build and where, what brought you to DivZero, and what you want the community to become.]</p></div>
+  </div>
+</section>
+
+</body>
+</html>

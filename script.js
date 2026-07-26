@@ -204,11 +204,12 @@ iso(() => {
 });
 
 // the page MOVES IN ROOMS: one gesture, one section — the landing,
-// the name-with-description reading, the archive — each transit
-// carried by the reference's eased glide (lerp .045). momentum
-// after a page-turn is swallowed until the wheel goes quiet, so a
-// flick turns exactly one page. reduced motion keeps native
-// scrolling entirely; touch pages via CSS snap instead.
+// the reading, the wall, the founders — each transit a time-boxed
+// tween. momentum is recognized by its shape and swallowed, so a
+// flick turns exactly one page while a held scroll travels on; on
+// touch the same tween is driven by hand (the authored block below).
+// reduced motion keeps native scrolling; css snap stands only as
+// the no-JS fallback.
 iso(() => {
   if (reducedMotion) return;
   let target = null;
@@ -258,10 +259,6 @@ iso(() => {
         - window.innerHeight / 2;
       pts.push(Math.max(0, Math.min(centered, maxScroll())));
     }
-    // if the LAST room outgrows the frame (a confined cast with five
-    // full introductions), its foot must stay reachable: the page's
-    // bottom becomes one more stop — only then
-    if (maxScroll() > pts[pts.length - 1] + 24) pts.push(maxScroll());
     return pts;
   }
   let began = 0;
@@ -454,41 +451,6 @@ iso(() => {
   }
 });
 
-// the accordion: one room open at a time. opening a row closes the
-// others; opening an open row simply closes the ledger back to rest.
-iso(() => {
-  const events = document.querySelectorAll(".event");
-  events.forEach((ev, i) => {
-    const row = ev.querySelector(".row");
-    const detail = ev.querySelector(".detail");
-    if (!row || !detail) return;
-    detail.id = "event-detail-" + i;
-    row.setAttribute("aria-controls", detail.id);
-    row.addEventListener("click", () => {
-      const wasOpen = ev.classList.contains("open");
-      events.forEach((other) => {
-        other.classList.remove("open");
-        other.querySelector(".row").setAttribute("aria-expanded", "false");
-      });
-      if (!wasOpen) {
-        ev.classList.add("open");
-        row.setAttribute("aria-expanded", "true");
-      }
-      // the room re-frames itself: a door opening or closing moves
-      // the page's ground (the section re-measures, browsers
-      // anchor-correct, snap re-settles) — so the scroll glides back
-      // to the archive's own stop, the framing the reader started
-      // from, instead of resting wherever the shift left it
-      const room = document.getElementById("events");
-      if (room) {
-        const top = Math.min(room.offsetTop,
-          document.documentElement.scrollHeight - window.innerHeight);
-        window.scrollTo({ top, behavior: reducedMotion ? "auto" : "smooth" });
-      }
-    });
-  });
-});
-
 // the founders, kalinsky-fashion: a centered stack of five — the
 // standing portrait scales and takes the light, the bracketed name
 // and introduction swap in place beneath. clicking selects
@@ -525,123 +487,6 @@ iso(() => {
     walk: (dir) => set(at + dir),
   };
   set(0);
-});
-
-// the ring, shared: a looping strip of cards. two clones stand past
-// each end; after every wrap the track teleports one full turn back
-// with no transition — the frame is pixel-identical, so the jump
-// cannot be seen and one direction loops forever. the standing card
-// takes the light, its caption crossfades in below, and a meta line
-// (if the stage carries one) reads the standing card's year and
-// count. arrows, sideways trackpad and touch all walk the same way:
-// one gesture, one card. vertical input passes through untouched.
-iso(() => {
-  document.querySelectorAll(".ring-stage").forEach((stage) => {
-    const track = stage.querySelector(".ring-track");
-    if (!track) return;
-    const real = Array.from(track.querySelectorAll(".rcard"));
-    const caps = stage.querySelectorAll(".ring-cap");
-    const meta = stage.querySelector(".ring-meta");
-    const N = real.length;
-    const OFF = 2;
-    if (N < 3) return;
-    real.forEach((c, k) => { c.dataset.real = k; });
-    const cloneOf = (k) => {
-      const c = real[k].cloneNode(true);
-      c.setAttribute("aria-hidden", "true");
-      c.dataset.real = k;
-      return c;
-    };
-    track.insertBefore(cloneOf(N - 2), real[0]);
-    track.insertBefore(cloneOf(N - 1), real[0]);
-    track.appendChild(cloneOf(0));
-    track.appendChild(cloneOf(1));
-    const all = Array.from(track.querySelectorAll(".rcard"));
-    let pos = OFF + Number(track.dataset.start || 0);
-    let busy = false;
-    let guard = null;
-    const step = () => all[0].getBoundingClientRect().width + 24;
-    const place = (animate) => {
-      track.style.transition = animate ? "" : "none";
-      track.style.transform =
-        "translateX(" + (-(pos * step() + step() / 2 - 12)) + "px)";
-      if (!animate) void track.offsetWidth; // commit the jump untransitioned
-    };
-    const settle = () => {
-      if (pos >= N + OFF) { pos -= N; place(false); }
-      if (pos < OFF) { pos += N; place(false); }
-      busy = false;
-    };
-    const dress = () => {
-      const r = ((pos - OFF) % N + N) % N;
-      all.forEach((c) => c.classList.toggle("active", Number(c.dataset.real) === r));
-      caps.forEach((c, k) => c.classList.toggle("active", k === r));
-      if (meta && real[r].dataset.meta) meta.innerHTML = real[r].dataset.meta;
-    };
-    const walk = (dir) => {
-      if (busy) return;
-      busy = true;
-      pos += dir;
-      place(true);
-      dress();
-      // backstop: if the transition's end never reports (hidden tab,
-      // interrupted paint), the ring must not stay frozen
-      clearTimeout(guard);
-      guard = setTimeout(settle, 750);
-    };
-    track.addEventListener("transitionend", (e) => {
-      if (e.propertyName !== "transform") return;
-      clearTimeout(guard);
-      settle();
-    });
-    window.addEventListener("resize", () => place(false), { passive: true });
-    place(false);
-    dress();
-    stage.querySelectorAll(".ring-arrow").forEach((b) => {
-      b.addEventListener("click", () => walk(Number(b.dataset.dir)));
-    });
-    // trackpad: sideways-dominant wheel input belongs to the strip —
-    // claimed before the page's own wheel pager sees it (and before
-    // the browser reads it as back/forward)
-    let hAcc = 0;
-    let hLock = false;
-    let hQuiet = null;
-    stage.addEventListener("wheel", (e) => {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      e.stopPropagation();
-      clearTimeout(hQuiet);
-      hQuiet = setTimeout(() => { hLock = false; hAcc = 0; }, 250);
-      if (hLock) return;
-      hAcc += e.deltaX;
-      if (Math.abs(hAcc) < 40) return;
-      hLock = true;
-      walk(hAcc > 0 ? 1 : -1);
-      hAcc = 0;
-    }, { passive: false });
-    // touch: a sideways drag is the same gesture by hand
-    let tx = null;
-    let ty = null;
-    stage.addEventListener("touchstart", (e) => {
-      tx = e.touches[0].clientX;
-      ty = e.touches[0].clientY;
-    }, { passive: true });
-    stage.addEventListener("touchmove", (e) => {
-      if (tx === null) return;
-      if (Math.abs(e.touches[0].clientX - tx) >
-          Math.abs(e.touches[0].clientY - ty)) e.preventDefault();
-    }, { passive: false });
-    stage.addEventListener("touchend", (e) => {
-      if (tx === null) return;
-      const dx = e.changedTouches[0].clientX - tx;
-      const dy = e.changedTouches[0].clientY - ty;
-      tx = null;
-      ty = null;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        walk(dx < 0 ? 1 : -1);
-      }
-    }, { passive: true });
-  });
 });
 
 // the knife belongs to the RESTING landing only: the first few px of
@@ -738,24 +583,3 @@ fetch("assets.json")
     });
   })
   .catch(() => {});
-
-// the ledger's rise, for browsers that can't scroll-drive it in CSS:
-// an observer lifts each entry once as it enters. without JS (or with
-// reduced motion) the ledger simply stands visible.
-iso(() => {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (CSS.supports("animation-timeline: view()")) return;
-  if (!("IntersectionObserver" in window)) return;
-  const observer = new IntersectionObserver((hits) => {
-    hits.forEach((hit) => {
-      if (!hit.isIntersecting) return;
-      hit.target.classList.add("is-revealed");
-      observer.unobserve(hit.target);
-    });
-  }, { threshold: 0.2, rootMargin: "0px 0px -5% 0px" });
-  document.querySelectorAll(".event, .cell").forEach((event) => {
-    event.classList.add("pre-reveal");
-    observer.observe(event);
-  });
-});
-
