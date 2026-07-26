@@ -21,29 +21,11 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     return;
   }
 
-  // the lines are TYPEWRITER BOXES: each line's final width is
-  // measured up front and fixed, left-aligned inside the centered
-  // column. text builds left-to-right like a real carriage —
-  // nothing re-centers per keystroke — and the carriage return
-  // lands exactly at the new line's left margin. the finished
-  // composition is pixel-identical to centered text.
-  function fit() {
-    const cs = getComputedStyle(line1);
-    const c = fit.ctx || (fit.ctx = document.createElement("canvas").getContext("2d"));
-    c.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
-    if ("letterSpacing" in c) c.letterSpacing = cs.letterSpacing;
-    [[line1, TEXT1], [line2, TEXT2]].forEach(([el, t]) => {
-      el.style.width = "min(" + Math.ceil(c.measureText(t).width + 2) + "px, 100%)";
-      el.style.margin = "0 auto";
-      el.style.textAlign = "left";
-    });
-  }
-  fit();
-  window.addEventListener("resize", fit);
-  // the self-hosted serif may land a beat after first paint: once
-  // the real face is in, re-measure the typewriter boxes so the
-  // carriage margins are true to it
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  // the line types LIVE-CENTERED: each keystroke inserts a character
+  // before the trailing caret, and the whole centered line re-centers
+  // around it — the statement is optically centered at every instant,
+  // not only when finished. no fixed box, no carriage: the caret rides
+  // at the end and the composition breathes outward from the center.
 
   line1.textContent = "";
   line2.textContent = "";
@@ -59,14 +41,22 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     line1.textContent = TEXT1;
     line2.textContent = TEXT2;
     line2.appendChild(caret);
-    caret.style.visibility = "visible";
+    caret.style.visibility = "hidden";
+    signed();
+  };
+
+  // the hand lifts once the line is set: the caret takes one last
+  // exhale blink, then LEAVES — no cursor left blinking on a finished
+  // statement. the stillness is the cue for the name to rise.
+  const settle = () => {
+    caret.style.visibility = "hidden";
     signed();
   };
 
   // ---- the scene, boarded as an animator would ----
   // 0.4s  empty stage: black. let the audience arrive.
-  // 0.4s  the CHARACTER enters: the caret appears, blinks once —
-  //       someone is here, about to speak.
+  // 0.4s  the CHARACTER enters: the caret appears and blinks once or
+  //       twice (~1.6s) — someone is here, gathering to speak.
   // 1.0s  the thesis, PHRASED: word-bursts, breaths between words,
   //       easing in on the first word. a hand that knows the line.
   // ~2.4s the period lands; Enter follows almost at once,
@@ -77,8 +67,9 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   //       the answer, typed SLOW: this is the powerful line, and
   //       its weight is told through deliberateness — each word
   //       set down like a stone, every letter meant.
-  // ~6.3s the period; one exhale blink; and the NAME rises at the
-  //       floor — heavy, slow-settling, built from the ground up.
+  // ~6.3s the period; one exhale blink; the caret LEAVES; and the
+  //       NAME rises at the floor — heavy, slow-settling, from the
+  //       ground up. no cursor lingers on the finished statement.
   const strokeDelay = (ch, i, weighty) => {
     if (weighty) {
       if (ch === " ") return i === 2 ? 380 : 300; // each word set down
@@ -100,7 +91,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
   setTimeout(() => {                    // the character enters
     caret.style.visibility = "visible";
-    setTimeout(() => {                  // …blinks once, then speaks
+    setTimeout(() => {                  // …blinks once or twice, then speaks
       type(line1, TEXT1, 0, false, () => {
         // ONE pause, ONE place — and it lives on the EMPTY line:
         // Enter comes document-true almost at once (no travel, no
@@ -115,11 +106,11 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
             // after the answer's period: one exhale of stillness,
             // then the monument rises. the reader finishes the
             // sentence; THEN the ground answers.
-            type(line2, TEXT2, 0, true, () => setTimeout(signed, 1000));
+            type(line2, TEXT2, 0, true, () => setTimeout(settle, 1000));
           }, 830);
         }, 180);
       });
-    }, 600);
+    }, 1600);
   }, 400);
 })();
 
