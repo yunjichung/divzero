@@ -303,11 +303,18 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      content doubles the space above it. one part gap under the
      name, the description, two parts emptiness beneath — the eye's
      center, not the ruler's. */
-  grid-template-rows: 1fr auto 2fr;
+  /* .6 : 2.4, not the canon's 1 : 2 — the name region above the room
+     eats into the top share, so on tall phones a 1:2 grid lands the
+     text near dead-center of the screen: floating, not placed. the
+     steeper ratio restores the canon's INTENT as measured on the
+     actual glass — text held high, the long black below a deliberate
+     silence. */
+  grid-template-rows: .6fr auto 2.4fr;
   padding-top: 0;
   padding-bottom: 0;
-  background: radial-gradient(ellipse 42% 36% at 50% 50%,
-    rgba(255,240,222,.05), transparent 72%);
+  /* no glow: the room's light once haloed the text (the moon jar),
+     but against a browser bar it only made the seam between page
+     and chrome visible. the black is the material — unlit. */
 }
 .kwae-room .kwae-frame { grid-row: 2; }
 .kwae-frame { position: relative; width: min(516px, 100%); }
@@ -525,6 +532,17 @@ img.photo {
      WHISPER, so the full-width name reads monumental by contrast;
      (2) the reveal itself becomes the payoff — see .wordmark below. */
   .typed { font-size: min(15px, calc((100vw - 56px) / 16)); }
+  /* the description is the page's SMALLEST voice: the hierarchy
+     must read name >> statement > description, unambiguous.
+     pretendard's x-height (~.73em) reads a third taller than
+     baskerville's (.53em) at equal size, so even 14px sans talked
+     over the 15px serif thesis — 13px (the paragraph readability
+     floor) plus a slight dim finally seats it beneath the whisper.
+     the measure is em-based: the balanced six-line block survives. */
+  .about-text {
+    font-size: 13px;
+    color: rgba(240,236,227,.66);
+  }
   /* the reveal as the payoff: longer, heavier — the name grows up
      from the floor it stands on (bottom-anchored scale) while the
      tracking settles open from tighter to final (wider-to-final
@@ -538,6 +556,20 @@ img.photo {
                 letter-spacing 2.1s cubic-bezier(.19, 1, .22, 1) .35s;
   }
   .land.signed .wordmark { letter-spacing: -.024em; }
+  /* the SECOND READING, recomposed for portrait: the name and its
+     description read as ONE centered composition — the name's
+     center a hair above the screen's center (41%), the caption a
+     close breath beneath — not a name parked at the ceiling with
+     a caption adrift below. .59·fold − .21·wm lands the name's
+     center at .41 of the glass. */
+  .snap-2 {
+    top: calc(var(--fold) * .59 - var(--wm) * .21 - var(--lift));
+  }
+  .section.kwae-room {
+    /* a fixed close gap under the name's feet, then the caption;
+       everything after is held black, not leftover space */
+    grid-template-rows: 28px auto 1fr;
+  }
   /* THE FIXED KNIFE: a black panel fixed to the screen whose top
      edge is the cut line, anchored to 100svh — a static length, so
      the knife holds dead still while toolbars hide and show. it
