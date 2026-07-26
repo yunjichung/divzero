@@ -167,6 +167,21 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     raf = requestAnimationFrame(tick);
   }
   let pageDir = 0;
+  // one page-turn, shared by wheel and keyboard: find the nearest
+  // room to where we are (or are headed) and glide one room over
+  const page = (dir) => {
+    lock = true;
+    pageDir = dir;
+    const pts = points();
+    const here = target === null ? window.scrollY : target;
+    let cur = 0;
+    for (let i = 1; i < pts.length; i++) {
+      if (Math.abs(pts[i] - here) < Math.abs(pts[cur] - here)) cur = i;
+    }
+    const next = Math.max(0, Math.min(pts.length - 1, cur + dir));
+    target = pts[next];
+    if (!raf) raf = requestAnimationFrame(tick);
+  };
   window.addEventListener("wheel", (e) => {
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
@@ -182,18 +197,25 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     if (Math.abs(acc) < 30) return;
     const dir = acc > 0 ? 1 : -1;
     acc = 0;
-    lock = true;
-    pageDir = dir;
-    const pts = points();
-    const here = target === null ? window.scrollY : target;
-    let cur = 0;
-    for (let i = 1; i < pts.length; i++) {
-      if (Math.abs(pts[i] - here) < Math.abs(pts[cur] - here)) cur = i;
-    }
-    const next = Math.max(0, Math.min(pts.length - 1, cur + dir));
-    target = pts[next];
-    if (!raf) raf = requestAnimationFrame(tick);
+    page(dir);
   }, { passive: false });
+  // keyboard parity: arrows, PageUp/Down and Space turn the same
+  // rooms the wheel does — the keyboard reader sees the site
+  // composed, not raw-scrolled. keys have no momentum, so they
+  // bypass the wheel's lock; interactive elements keep their keys
+  // (Space still opens a focused ledger row).
+  window.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target && e.target.closest &&
+        e.target.closest("button, a, input, textarea, select")) return;
+    const down = e.key === "ArrowDown" || e.key === "PageDown" ||
+                 (e.key === " " && !e.shiftKey);
+    const up = e.key === "ArrowUp" || e.key === "PageUp" ||
+               (e.key === " " && e.shiftKey);
+    if (!down && !up) return;
+    e.preventDefault();
+    page(down ? 1 : -1);
+  });
 })();
 
 // the accordion: one room open at a time. opening a row closes the
