@@ -182,7 +182,15 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   letter-spacing: .002em;
   line-height: 1.5;
   color: rgba(243,240,233,.93);
+  transition: opacity .4s ease;
 }
+/* the statement belongs to the RESTING landing: away from it the
+   voice falls silent. the fold geometry above SHOULD keep its last
+   line out of the second reading's frame, but production safari
+   proved a bar state where it still peeked — this is the guarantee
+   the geometry can't give. only the statement fades; the landing
+   itself is untouched. */
+body.off-landing .typed { opacity: 0; }
 /* both rows hold their height from the start, so the Enter drops
    the caret into space already reserved — nothing shifts. nowrap:
    each line is ONE line, always; the fit-cap on .typed guarantees it
