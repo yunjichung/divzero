@@ -263,18 +263,23 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 .kwae-room .kwae-frame { grid-row: 2; }
 .kwae-frame { position: relative; width: min(516px, 100%); }
 .about-text {
-  /* a small, thin, centered column, set like print: it does not
-     arrive, perform, or fill — it has simply always been there.
-     the page's one performance is the typed statement; everything
-     after it holds still. */
-  width: min(20em, 100%);
+  /* a small, quiet, centered column, set like print: present but
+     unhurried. weight 300 so it reads solid, not frail; a warm-dim
+     off-white that holds still while the typed statement stays the
+     page's one performance. the measure (21.5em) + the copy length
+     are tuned (measured against pretendard's real advances) so the
+     text lands in exactly 6 balanced lines with no orphan: within
+     text-wrap: balance's ~6-line cap, so the symmetric block is
+     algorithm-locked and holds on every screen — the column is fixed,
+     so phone and desktop wrap the same. */
+  width: min(21.5em, 100%);
   margin: 0 auto;
-  color: rgba(243,240,233,.75);
-  font-size: 14px;
-  font-weight: 200;
-  line-height: 1.78;
-  letter-spacing: -.008em;
-  text-wrap: pretty;
+  color: rgba(240,236,227,.72);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: -.008em; /* the scale's own rule: all lowercase */
+  text-wrap: balance;
   text-align: center;
 }
 /* the aim stands as its own stanza: a breath apart, slightly more
