@@ -13,7 +13,12 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   if (!land || !line1 || !line2 || !caret) return;
   const TEXT1 = line1.textContent;
   const TEXT2 = line2.textContent;
-  const signed = () => land.classList.add("signed");
+  // signing marks the land (name rises) AND the body (the floor's
+  // hairline draws itself — the knife joins the scene)
+  const signed = () => {
+    land.classList.add("signed");
+    document.body.classList.add("signed");
+  };
 
   // deep links and reduced motion read the finished page
   if (reducedMotion || location.hash) {
@@ -213,6 +218,28 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
       }
     });
   });
+})();
+
+// the knife exists only on the landing: its one job is cutting the
+// name. a single rAF-throttled scroll listener covers every scroll
+// path (wheel pager, touch snap, reduced-motion native) — paging
+// down, the letters clear the knife within ~15px of scroll, so by a
+// quarter-viewport the knife's work is done and it dissolves;
+// paging back, the fast fade restores it long before the letters
+// sink. the initial call lets deep links (#events) arrive floorless.
+(() => {
+  const floor = document.querySelector(".floor");
+  if (!floor) return;
+  let raf = null;
+  const update = () => {
+    raf = null;
+    document.body.classList.toggle("off-landing",
+      window.scrollY > window.innerHeight * 0.25);
+  };
+  window.addEventListener("scroll", () => {
+    if (!raf) raf = requestAnimationFrame(update);
+  }, { passive: true });
+  update();
 })();
 
 // photos are proof: when a slot's assets.json url is filled in, the

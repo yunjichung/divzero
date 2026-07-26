@@ -92,7 +92,17 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   /* the name's one size, shared: the landing places it, the second
      reading and the about room measure themselves against it */
   --wm: min(23vw, 42vh);
+  /* the fold must be the PAGE's edge, not the browser's furniture:
+     on phones the cut lifts clear of the chrome and a drawn floor
+     (.floor) becomes the knife. zero on desktop. */
+  --lift: 0px;
 }
+/* the FLOOR: mobile's knife. a fixed page-owned black band at the
+   screen's bottom, its top edge a drawn hairline — the horizon
+   line, returned from the archive with a job. the name sinks
+   behind a line the page drew, so the cut is authored wherever
+   the browser's furniture sits. desktop keeps the window edge. */
+.floor { display: none; }
 @supports (height: 1svh) {
   :root { --wm: min(23vw, 42svh); }
 }
@@ -103,13 +113,22 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   scroll-snap-stop: always;
   /* hidden glyphs reach .153em below the fold (.141em of cap + the
      O's overshoot); the landing carries them plus a 24px breath.
-     the fold is measured in svh — the STABLE small viewport — so
-     snap geometry never shifts mid-gesture when a phone's toolbar
-     collapses. at the resting top (toolbar shown) svh IS the real
-     fold, which is where the preview matters. */
-  height: calc(100vh + var(--wm) * .16 + 24px);
-  height: calc(100svh + var(--wm) * .16 + 24px);
+     the HEIGHT is measured in lvh — the LARGEST (stable) viewport —
+     so it never changes as a phone's toolbar hides or shows, which
+     keeps the scroll-snap geometry steady (a dvh height here shifts
+     the snap points mid-gesture and the mandatory snap fights the
+     finger). the wordmark's cut sits at svh — also static — and the
+     fixed .floor panel owns whatever the toolbar state reveals
+     below it; lvh is always tall enough to contain the glyphs. */
+  height: calc(100vh + var(--wm) * .16 + 24px - var(--lift));
+  height: calc(100lvh + var(--wm) * .16 + 24px - var(--lift));
+  /* clip, NOT hidden: overflow:hidden makes .land a scroll
+     container, which silently captures the .snap-2 anchor inside
+     it — the root scroller then has no middle snap position and
+     touch paging can never reach the second reading. clip clips
+     identically but creates no scroll container. */
   overflow: hidden;
+  overflow: clip;
 }
 /* the statement: the single serif voice on the site, reserved for
    the sentence — baskerville lineage, self-hosted (libre baskerville),
@@ -187,8 +206,8 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   left: 0;
   width: 100%;
   height: 1px;
-  top: calc(95vh - var(--wm) * .565);
-  top: calc(95svh - var(--wm) * .565);
+  top: calc(95vh - var(--wm) * .565 - var(--lift));
+  top: calc(95svh - var(--wm) * .565 - var(--lift));
   scroll-snap-align: start;
   scroll-snap-stop: always;
   pointer-events: none;
@@ -206,8 +225,11 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      O overshoots .01em below the baseline. box top .71em above the
      fold puts the cut at 20% of the caps: an 80% preview — the
      fold in svh, stable against phone toolbar collapse */
-  top: calc(100vh - var(--wm) * .71);
-  top: calc(100svh - var(--wm) * .71);
+  /* svh — the STATIC small viewport: the cut never moves when a
+     phone's toolbar collapses. the floor panel keeps everything
+     below it black, so the cut needs no live tracking. */
+  top: calc(100vh - var(--wm) * .71 - var(--lift));
+  top: calc(100svh - var(--wm) * .71 - var(--lift));
   z-index: 300;
   /* width-fit on any screen, height-capped for short wide viewports */
   font-size: var(--wm);
@@ -219,12 +241,14 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   color: rgba(243,240,233,.93);
   pointer-events: none;
   /* the scene's button: after the statement, the name RISES into
-     its cut — a monolith settling, weight told through slowness.
-     the ledger's own spring curve, stretched long. */
+     its cut — from nearly sunk (55% of its own height) so the
+     TRAVEL is watched: a word that parks itself half-buried was
+     placed, not cropped. the ledger's spring curve, stretched
+     long; the landing's clip is the stage floor. */
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 1.1s ease .25s,
-              transform 1.1s cubic-bezier(.16,1,.3,1) .25s;
+  transform: translateY(55%);
+  transition: opacity 1.2s ease .25s,
+              transform 1.6s cubic-bezier(.16,1,.3,1) .25s;
 }
 /* ---- interior sections ---- */
 .section {
@@ -247,9 +271,13 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 .section.kwae-room {
   position: relative;
   /* the room is EXACTLY the space under the name in the second
-     reading: from just below the letters' feet to the fold */
-  min-height: calc(95vh - var(--wm) * .725 - 24px);
-  min-height: calc(95svh - var(--wm) * .725 - 24px);
+     reading: from just below the letters' feet to the fold. the
+     BOTTOM measures in lvh — the largest the viewport can be — so
+     when a phone's toolbar collapses, the room still fills the
+     screen and the archive cannot leak into view. snap anchors
+     stay svh; only the room's depth stretches. */
+  min-height: calc(95vh - var(--wm) * .725 - 24px - var(--lift));
+  min-height: calc(95lvh - var(--wm) * .725 - 24px - var(--lift));
   /* the canon (van de graaf/tschichold, 2:3:4:6): the space below
      content doubles the space above it. one part gap under the
      name, the description, two parts emptiness beneath — the eye's
@@ -438,23 +466,101 @@ img.photo {
   to { opacity: 1; transform: none; }
 }
 @media (max-width: 700px) {
-  /* the cut deepens where the letters shrink: 20% of a phone-sized
-     cap is a sliver that reads as a glitch, so small screens hide
-     40% — the cut's PRESENCE is what stays equal, not its fraction */
-  .land {
-    height: calc(100vh + var(--wm) * .3 + 24px);
-    height: calc(100svh + var(--wm) * .3 + 24px);
+  /* portrait phones are width-starved, so the name takes the WHOLE
+     width: at 24.4vw the word spans 99.8% of the screen — hairline
+     margins, edge to edge, and no glyph cropped (a clipped O reads
+     as broken, not bold: the floor is the only knife). */
+  :root {
+    --wm: min(24.4vw, 42vh);
+    /* the knife must be a CONSTANT: env(safe-area-inset-bottom) is
+       dynamic in iOS Safari (~0 with the bar shown, ~34px collapsed),
+       so any knife math touching it moves mid-scroll. 1px keeps the
+       hairline's pixel row on-screen at the resting (bars-shown)
+       viewport; the floor panel below the knife owns everything the
+       toolbar state reveals. */
+    --lift: 1px;
   }
+  @supports (height: 1svh) {
+    :root { --wm: min(24.4vw, 42svh); }
+  }
+  /* MOBILE CINEMA — portrait can't hold desktop's tiny-vs-titanic
+     composition in one glance, so the drama is rebuilt from two
+     portrait-native parts: (1) the statement drops to a genuine
+     WHISPER, so the full-width name reads monumental by contrast;
+     (2) the reveal itself becomes the payoff — see .wordmark below. */
+  .typed { font-size: min(15px, calc((100vw - 56px) / 16)); }
+  /* the reveal as the payoff: longer, heavier — the name grows up
+     from the floor it stands on (bottom-anchored scale) while the
+     tracking settles open from tighter to final (wider-to-final
+     would start past 100vw and clip the O: broken, not bold). */
   .wordmark {
-    top: calc(100vh - var(--wm) * .57);
-    top: calc(100svh - var(--wm) * .57);
+    letter-spacing: -.034em;
+    transform: translateY(62%) scale(.985);
+    transform-origin: 50% 100%;
+    transition: opacity 1.5s ease .35s,
+                transform 2.1s cubic-bezier(.19, 1, .22, 1) .35s,
+                letter-spacing 2.1s cubic-bezier(.19, 1, .22, 1) .35s;
   }
-  /* the mobile cut is deeper (.57 above the fold), so the anchor
-     compensates: .57 - .148 = .425 */
-  .snap-2 {
-    top: calc(95vh - var(--wm) * .425);
-    top: calc(95svh - var(--wm) * .425);
+  .land.signed .wordmark { letter-spacing: -.024em; }
+  /* THE FIXED KNIFE: a black panel fixed to the screen whose top
+     edge is the cut line, anchored to 100svh — a static length, so
+     the knife holds dead still while toolbars hide and show. it
+     overdraws 40vh downward: past any lvh bottom, so Safari's
+     translucent bar always samples pure black (the chrome merges
+     with the page — no letter ghosting) and Chrome's opaque bar
+     crops it black-on-black. hover:none keeps a narrow DESKTOP
+     window from growing a hairline at its own bottom edge. */
+  @media (hover: none) {
+    .floor {
+      display: block;
+      position: fixed;
+      left: 0; right: 0;
+      top: calc(100svh - var(--lift));
+      height: 40vh;
+      background: #000;
+      z-index: 400;
+      pointer-events: none;
+      /* destination-state transitions: this one governs RETURNING
+         to the landing — fast, so the knife is back before the
+         letters sink into its absence */
+      transition: opacity .2s ease;
+    }
+    /* leaving the landing the knife dissolves softly, mid-transit */
+    body.off-landing .floor {
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+    /* the exhausted stroke, one last time: full-bodied at center,
+       fading at the frame edges. it DRAWS ITSELF as the statement
+       signs off — the floor rules its line, then the name rises
+       against it: two mechanics, one scene. */
+    .floor::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        rgba(243,240,233,0),
+        rgba(243,240,233,.3) 7%,
+        rgba(243,240,233,.3) 93%,
+        rgba(243,240,233,0));
+      opacity: 0;
+      transform: scaleX(.6);
+      transform-origin: 50% 50%;
+      transition: opacity 1.2s ease .5s,
+                  transform 1.9s cubic-bezier(.19, 1, .22, 1) .5s;
+    }
+    body.signed .floor::before {
+      opacity: 1;
+      transform: none;
+    }
   }
+  /* the cut fraction is DESKTOP'S: ~80% of the caps visible, 20%
+     cut. the old deeper mobile cut (43%) existed so the cut depth
+     itself announced intent; the drawn hairline now carries the
+     intent, so the letterforms stay whole (the R keeps its leg).
+     no .land/.wordmark/.snap-2 overrides — mobile shares desktop's
+     math and differs only in --wm, --lift, the floor, the cinema. */
   /* every room keeps its full-screen measure on mobile too */
   .section { padding-top: 66px; padding-bottom: 66px; }
   /* the open room owns the phone's full width: the note and photo
