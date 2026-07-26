@@ -242,23 +242,31 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   });
 })();
 
-// the knife exists only on the landing: its one job is cutting the
-// name. a single rAF-throttled scroll listener covers every scroll
-// path (wheel pager, touch snap, reduced-motion native) — paging
-// down, the letters clear the knife within ~15px of scroll, so by a
-// quarter-viewport the knife's work is done and it dissolves;
-// paging back, the fast fade restores it long before the letters
-// sink. the initial call lets deep links (#events) arrive floorless.
+// the knife lives exactly as long as its job: cutting the name. the
+// letters' painted bottoms sit .29 of the wordmark's height below its
+// CSS top (glyphs reach ~.155em under the fold), so once the page has
+// scrolled past that, the letters have fully cleared the blade and a
+// line with nothing to cut would just float — it dissolves right
+// there, mid-emergence. paging back, it returns on the same boundary,
+// fading in while the letters are still a breath above it. offsetHeight
+// is transform-free, so the measure ignores the reveal's translate.
+// a single rAF-throttled scroll listener covers every scroll path
+// (wheel pager, touch snap, reduced-motion native); the initial call
+// lets deep links (#events) arrive floorless.
 (() => {
   const floor = document.querySelector(".floor");
-  if (!floor) return;
+  const wm = document.querySelector(".wordmark");
+  if (!floor || !wm) return;
   let raf = null;
   const update = () => {
     raf = null;
-    document.body.classList.toggle("off-landing",
-      window.scrollY > window.innerHeight * 0.25);
+    const cleared = wm.offsetHeight * 0.29 + 6;
+    document.body.classList.toggle("off-landing", window.scrollY > cleared);
   };
   window.addEventListener("scroll", () => {
+    if (!raf) raf = requestAnimationFrame(update);
+  }, { passive: true });
+  window.addEventListener("resize", () => {
     if (!raf) raf = requestAnimationFrame(update);
   }, { passive: true });
   update();
@@ -303,3 +311,4 @@ fetch("assets.json")
     observer.observe(event);
   });
 })();
+

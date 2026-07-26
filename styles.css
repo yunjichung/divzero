@@ -544,9 +544,10 @@ img.photo {
       z-index: 400;
       pointer-events: none;
       /* destination-state transitions: this one governs RETURNING
-         to the landing — fast, so the knife is back before the
-         letters sink into its absence */
-      transition: opacity .2s ease;
+         to the landing — near-instant, because the toggle boundary
+         is the letters' own edge and they re-cross it within a few
+         frames of the knife's return */
+      transition: opacity .15s ease;
     }
     /* leaving the landing the knife dissolves softly, mid-transit */
     body.off-landing .floor {
