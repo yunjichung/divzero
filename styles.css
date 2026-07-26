@@ -332,10 +332,18 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
               transform 1.6s cubic-bezier(.16,1,.3,1) .25s;
 }
 
-/* ---- interior sections ---- */
+/* ---- interior sections ----
+   the room measures dvh, not svh: svh is the screen with the phone's
+   toolbar SHOWING, and the toolbar collapses the moment a swipe
+   starts — the room stayed the smaller measure while the glass grew,
+   and the next room leaked up into the bottom of this one. dvh is
+   whatever the glass is RIGHT NOW, in both states. (the manifesto
+   room solves the same problem with lvh; it can afford to overhang
+   because its words are short. a room whose content scrolls inside
+   itself cannot — overhanging would cut its own bottom edge.) */
 .section {
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100dvh;
   padding: 12vh max(24px, env(safe-area-inset-left)) 12vh max(24px, env(safe-area-inset-right));
   display: grid;
   place-items: center;
@@ -535,7 +543,7 @@ img.photo {
 @media (min-width: 1000px) {
   .wall-grid {
     grid-template-columns: repeat(8, minmax(0, 1fr));
-    grid-auto-rows: minmax(120px, calc((100svh - 24vh - 90px) / 4));
+    grid-auto-rows: minmax(120px, calc((100dvh - 24vh - 90px) / 4));
     grid-auto-flow: row;
   }
 
@@ -579,10 +587,14 @@ img.photo {
    map — every cell assigned, the bottom edge flush. the room itself
    is ONE SCREEN: the grid pans inside its frame (native momentum,
    contained), so the page can be four fixed rooms everywhere and
-   the wall's depth lives within its own window. */
+   the wall's depth lives within its own window. the frame measures
+   dvh — the screen as it IS, toolbar shown or collapsed — so the
+   wall always ends exactly at the fold: no leak below it when the
+   bar retracts, no cut row when it returns. the depth the toolbar
+   takes or gives is absorbed by the grid's own scroll. */
 @media (max-width: 1000px) {
   .wall {
-    height: calc(100svh - 24vh);
+    height: calc(100dvh - 24vh);
     display: flex;
     flex-direction: column;
   }
@@ -997,7 +1009,7 @@ img.photo { cursor: zoom-in; }
 .kthumb img.photo { cursor: pointer; }
 
 @media (max-width: 700px) {
-  .wall { height: calc(100svh - 132px); }
+  .wall { height: calc(100dvh - 132px); }
 
 }
 
