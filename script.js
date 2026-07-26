@@ -1,11 +1,95 @@
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// fault isolation: each unit runs alone — one failure cannot halt
+// evaluation and take the layout-critical measures down with it
+const iso = (fn) => { try { fn(); } catch (e) {} };
+
+// the FOLD, measured: --fold falls back to 100svh, but svh is taken
+// against the browser's TALLEST bar config — Safari's compact pill
+// leaves the real resting viewport ~25px taller, and the knife
+// floated above the bar in that gap. pin the fold to the true
+// resting height, measured at load; re-measure only near the top
+// (rotation, window resize), never mid-scroll — a collapsing
+// toolbar fires resize, and the guard keeps the knife dead still.
+iso(() => {
+  // safari's floating pill keeps ~13px of internal air between the
+  // layout viewport's bottom (the farthest any CSS/JS measure
+  // reaches — innerHeight, svh and visualViewport all agree) and
+  // the pill itself. the knife sinks that far into the bar region,
+  // where the page still renders, so the cut lands on the pill's
+  // real top edge. chrome's opaque toolbar sits flush at the
+  // viewport bottom: no nudge there, nor in in-app browsers.
+  // 19 measured on-device: an iOS DESIGN constant (pts), not a
+  // device-size value — the pill keeps the same margin on every
+  // iPhone. if apple redesigns the bar, this one number is the dial.
+  // ALLOWLIST, not blocklist: the nudge applies only when the UA
+  // provably IS real safari (Version/ + Safari/ tokens — in-app
+  // WKWebViews lack both). unknown surfaces get the honest measured
+  // fold, the correct default; only the floating pill earns the air.
+  const PILL_AIR = 19;
+  const ua = navigator.userAgent;
+  const pillAir =
+    /iPhone|iPad/.test(ua) && /Version\/[\d.]+.*Safari\//.test(ua)
+      ? PILL_AIR : 0;
+  const set = () => {
+    const root = document.documentElement.style;
+    root.setProperty("--fold", (window.innerHeight + pillAir) + "px");
+    // the description's TRUE height, measured at the same settled
+    // moment — the block-centering formula stays exact under any
+    // future copy edit, type change, or user text-zoom. nothing is
+    // encoded in constants (the CSS px value is only the no-JS
+    // approximation).
+    const about = document.querySelector(".about-text");
+    if (about) root.setProperty("--desc-h", about.offsetHeight + "px");
+  };
+  // a re-measure is accepted only when the viewport is PROVABLY
+  // settled: the page must rest at the top, the live visual
+  // viewport must agree with the layout value, and two samples
+  // 200ms apart must match. chrome reports a stale innerHeight for
+  // a beat after its toolbar animates — a single sample taken in
+  // that beat pinned the fold ~100px low and the name repositioned
+  // behind the toolbar (present, painted, hidden, forever). any
+  // failed check re-queues, so an unstable moment delays the
+  // measure instead of corrupting it. the never-move-mid-scroll
+  // guarantee stays: nothing is measured away from rest.
+  let settle = null;
+  const vvH = () =>
+    window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const queue = () => {
+    clearTimeout(settle);
+    settle = setTimeout(tryMeasure, 350);
+  };
+  function tryMeasure() {
+    if (window.scrollY > 4) return;
+    const first = window.innerHeight;
+    if (Math.abs(vvH() - first) > 1) { queue(); return; } // bar mid-animation
+    setTimeout(() => {
+      if (window.scrollY > 4) return;
+      if (window.innerHeight !== first || Math.abs(vvH() - first) > 1) {
+        queue(); // moved between samples — not settled, try again
+        return;
+      }
+      set();
+    }, 200);
+  }
+  set(); // load: at rest, bar settled — measure immediately
+  window.addEventListener("resize", queue);
+  window.addEventListener("orientationchange", queue);
+  if (window.visualViewport)
+    window.visualViewport.addEventListener("resize", queue);
+  // the description's height shifts when the real webfont lands a
+  // beat after first paint — re-measure once the faces are in
+  if (document.fonts && document.fonts.ready)
+    document.fonts.ready.then(queue);
+});
+
+
 // the statement types itself — lovefrom-fashion: a near-empty page,
 // one serif voice, a live caret. the thesis is typed; the caret
 // blinks alone through a held pause (the volta, performed in real
 // time); then Enter, and the answer types on its own line. when the
 // statement ends, the name fades up in the floor: the signature.
-(() => {
+iso(() => {
   const land = document.getElementById("manifesto");
   const line1 = land && land.querySelector(".line1");
   const line2 = land && land.querySelector(".line2");
@@ -117,7 +201,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
       });
     }, 1600);
   }, 400);
-})();
+});
 
 // the page MOVES IN ROOMS: one gesture, one section — the landing,
 // the name-with-description reading, the archive — each transit
@@ -125,7 +209,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 // after a page-turn is swallowed until the wheel goes quiet, so a
 // flick turns exactly one page. reduced motion keeps native
 // scrolling entirely; touch pages via CSS snap instead.
-(() => {
+iso(() => {
   if (reducedMotion) return;
   let target = null;
   let raf = null;
@@ -221,11 +305,11 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
     e.preventDefault();
     page(down ? 1 : -1);
   });
-})();
+});
 
 // the accordion: one room open at a time. opening a row closes the
 // others; opening an open row simply closes the ledger back to rest.
-(() => {
+iso(() => {
   const events = document.querySelectorAll(".event");
   events.forEach((ev, i) => {
     const row = ev.querySelector(".row");
@@ -245,71 +329,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
       }
     });
   });
-})();
-
-// the FOLD, measured: --fold falls back to 100svh, but svh is taken
-// against the browser's TALLEST bar config — Safari's compact pill
-// leaves the real resting viewport ~25px taller, and the knife
-// floated above the bar in that gap. pin the fold to the true
-// resting height, measured at load; re-measure only near the top
-// (rotation, window resize), never mid-scroll — a collapsing
-// toolbar fires resize, and the guard keeps the knife dead still.
-(() => {
-  // safari's floating pill keeps ~13px of internal air between the
-  // layout viewport's bottom (the farthest any CSS/JS measure
-  // reaches — innerHeight, svh and visualViewport all agree) and
-  // the pill itself. the knife sinks that far into the bar region,
-  // where the page still renders, so the cut lands on the pill's
-  // real top edge. chrome's opaque toolbar sits flush at the
-  // viewport bottom: no nudge there, nor in in-app browsers.
-  // 19 measured on-device: an iOS DESIGN constant (pts), not a
-  // device-size value — the pill keeps the same margin on every
-  // iPhone. if apple redesigns the bar, this one number is the dial.
-  const PILL_AIR = 19;
-  const ua = navigator.userAgent;
-  const pillAir =
-    /iPhone|iPad/.test(ua) &&
-    !/CriOS|FxiOS|EdgiOS|OPT\/|KAKAOTALK|Instagram|FBAN|FBAV|Line\//i.test(ua)
-      ? PILL_AIR : 0;
-  const set = () => {
-    document.documentElement.style.setProperty("--fold", (window.innerHeight + pillAir) + "px");
-  };
-  // a re-measure is accepted only when the viewport is PROVABLY
-  // settled: the page must rest at the top, the live visual
-  // viewport must agree with the layout value, and two samples
-  // 200ms apart must match. chrome reports a stale innerHeight for
-  // a beat after its toolbar animates — a single sample taken in
-  // that beat pinned the fold ~100px low and the name repositioned
-  // behind the toolbar (present, painted, hidden, forever). any
-  // failed check re-queues, so an unstable moment delays the
-  // measure instead of corrupting it. the never-move-mid-scroll
-  // guarantee stays: nothing is measured away from rest.
-  let settle = null;
-  const vvH = () =>
-    window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const queue = () => {
-    clearTimeout(settle);
-    settle = setTimeout(tryMeasure, 350);
-  };
-  function tryMeasure() {
-    if (window.scrollY > 4) return;
-    const first = window.innerHeight;
-    if (Math.abs(vvH() - first) > 1) { queue(); return; } // bar mid-animation
-    setTimeout(() => {
-      if (window.scrollY > 4) return;
-      if (window.innerHeight !== first || Math.abs(vvH() - first) > 1) {
-        queue(); // moved between samples — not settled, try again
-        return;
-      }
-      set();
-    }, 200);
-  }
-  set(); // load: at rest, bar settled — measure immediately
-  window.addEventListener("resize", queue);
-  window.addEventListener("orientationchange", queue);
-  if (window.visualViewport)
-    window.visualViewport.addEventListener("resize", queue);
-})();
+});
 
 // the knife belongs to the RESTING landing only: the first few px of
 // scroll dissolve it, so no mid-transit frame ever shows a line
@@ -321,7 +341,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 // covers every scroll path (wheel pager, touch snap, reduced-motion
 // native); the initial call lets deep links (#events) arrive
 // floorless.
-(() => {
+iso(() => {
   const floor = document.querySelector(".floor");
   if (!floor) return;
   let raf = null;
@@ -346,7 +366,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   window.addEventListener("scroll", poke, { passive: true });
   window.addEventListener("resize", poke, { passive: true });
   update();
-})();
+});
 
 // photos are proof: when a slot's assets.json url is filled in, the
 // quiet placeholder becomes the documentary photograph
@@ -371,7 +391,7 @@ fetch("assets.json")
 // the ledger's rise, for browsers that can't scroll-drive it in CSS:
 // an observer lifts each entry once as it enters. without JS (or with
 // reduced motion) the ledger simply stands visible.
-(() => {
+iso(() => {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (CSS.supports("animation-timeline: view()")) return;
   if (!("IntersectionObserver" in window)) return;
@@ -386,5 +406,5 @@ fetch("assets.json")
     event.classList.add("pre-reveal");
     observer.observe(event);
   });
-})();
+});
 

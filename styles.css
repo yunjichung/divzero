@@ -118,6 +118,10 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      pins the fold there; mid-scroll bar collapse never re-measures,
      so the knife still never moves. */
   --fold: 100svh;
+  /* the description block's height — script.js overwrites this with
+     the measured truth; the default is only the no-JS approximation
+     (six lines at desktop type + the aim stanza) */
+  --desc-h: 191px;
 }
 /* the FLOOR: mobile's knife. a fixed page-owned black band at the
    screen's bottom, its top edge a drawn hairline — the horizon
@@ -239,19 +243,20 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
 /* the second reading's anchor — ONE composition on every surface:
    the whole lockup (name + gap + description) BLOCK-CENTERED in the
    frame: air above the caps equals air below the description.
-   solved exactly: s = .5·fold − .201·wm + (24 + gap + descH)/2,
-   where descH is DETERMINISTIC because the description is a locked
-   six-line block (desktop 15px/1.7 + aim = 191px; with the desktop
-   gap .18·wm folded in, the formula reduces to the constants below).
-   ⚠ if the description copy or its type ever changes, re-derive
-   descH — the centering constants encode it. */
+   solved exactly: s = .5·fold − .201·wm + (24 + gap + descH)/2.
+   descH is --desc-h: MEASURED by script.js at the same settled
+   moment as --fold, so the centering stays exact under any future
+   copy edit, type change, or user text-zoom — nothing is encoded.
+   (the px default is only the no-JS approximation.) */
 .snap-2 {
   position: absolute;
   left: 0;
   width: 100%;
   height: 1px;
   top: calc(50vh - var(--wm) * .111 + 108px - var(--lift));
-  top: calc(var(--fold) * .5 - var(--wm) * .111 + 108px - var(--lift));
+  top: calc(var(--fold) * .5 - var(--wm) * .201
+       + (24px + max(28px, var(--wm) * .18) + var(--desc-h)) / 2
+       - var(--lift));
   scroll-snap-align: start;
   scroll-snap-stop: always;
   pointer-events: none;
@@ -582,12 +587,9 @@ img.photo {
                 letter-spacing 2.1s cubic-bezier(.19, 1, .22, 1) .35s;
   }
   .land.signed .wordmark { letter-spacing: -.024em; }
-  /* block-centering, mobile constants: 13px caption type and the
-     flat 28px gap make descH 167px — the same equal-air equation,
-     phone numbers. (re-derive with the copy, as above.) */
-  .snap-2 {
-    top: calc(var(--fold) * .5 - var(--wm) * .201 + 110px - var(--lift));
-  }
+  /* (the centering formula is unified in the base rule — mobile
+     only adjusts the no-JS default for its smaller caption type) */
+  :root { --desc-h: 167px; }
   /* THE FIXED KNIFE: a black panel fixed to the screen whose top
      edge is the cut line, anchored to 100svh — a static length, so
      the knife holds dead still while toolbars hide and show. it
@@ -663,6 +665,17 @@ img.photo {
 }
 @media print {
   body::after { display: none; }
+}
+/* SHORT GLASS (landscape phones): the vertical lockup is taller
+   than the frame — centering is geometrically impossible, so the
+   second reading falls back to the flowing name-at-top layout:
+   scrollable, nothing clipped. centering is waived, never broken. */
+@media (max-height: 480px) {
+  .snap-2 {
+    top: calc(95vh - var(--wm) * .565 - var(--lift));
+    top: calc(var(--fold) * .95 - var(--wm) * .565 - var(--lift));
+  }
+  .section.kwae-room { grid-template-rows: 32px auto 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
