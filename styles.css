@@ -185,20 +185,23 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      statement NEVER wraps or overflows, at any screen size or text
      zoom — it just scales down to fit. (100vw - 56px) clears the
      .typed 24px gutters with margin to spare. */
-  font-size: min(clamp(19px, 3vw, 43px), calc((100vw - 56px) / 16));
+  /* desktop max 36, not 43: the same whisper-vs-monument conviction
+     the phone taught — the statement speaks quietly at every size,
+     and the name's scale does the shouting */
+  font-size: min(clamp(19px, 2.5vw, 36px), calc((100vw - 56px) / 16));
   font-weight: 400;
   letter-spacing: .002em;
   line-height: 1.5;
   color: rgba(243,240,233,.93);
-  transition: opacity .4s ease;
 }
-/* the statement belongs to the RESTING landing: away from it the
-   voice falls silent. the fold geometry above SHOULD keep its last
-   line out of the second reading's frame, but production safari
-   proved a bar state where it still peeked — this is the guarantee
-   the geometry can't give. only the statement fades; the landing
-   itself is untouched. */
-body.off-landing .typed { opacity: 0; }
+/* the statement scrolls HONESTLY — visible through every transit,
+   never faded away. (an off-landing fade lived here twice, born of
+   the statement peeking into the second reading when the clearance
+   was ~40px against ~40px of safari bar variance. block-centering
+   scrolls the page further: clearance is now ~89px mobile / ~44px
+   desktop-no-variance, so geometry alone holds and the crutch is
+   retired. if the peek EVER returns, fix the geometry — don't
+   re-hide the voice.) */
 /* both rows hold their height from the start, so the Enter drops
    the caret into space already reserved — nothing shifts. nowrap:
    each line is ONE line, always; the fit-cap on .typed guarantees it
@@ -233,18 +236,22 @@ body.off-landing .typed { opacity: 0; }
 /* the signature: once the statement ends, the name fades up in the
    floor */
 .land.signed .wordmark { opacity: 1; transform: none; }
-/* the second reading's anchor: one scroll lands the page with the
-   name's caps 5vh below the frame's top — placed, not cropped
-   (the cropping story belongs to the landing's fold) — and the
-   description composed beneath. .565 = .71 (box above the fold)
-   minus .148 (em-box air above the caps, pretendard@430). */
+/* the second reading's anchor — ONE composition on every surface:
+   the whole lockup (name + gap + description) BLOCK-CENTERED in the
+   frame: air above the caps equals air below the description.
+   solved exactly: s = .5·fold − .201·wm + (24 + gap + descH)/2,
+   where descH is DETERMINISTIC because the description is a locked
+   six-line block (desktop 15px/1.7 + aim = 191px; with the desktop
+   gap .18·wm folded in, the formula reduces to the constants below).
+   ⚠ if the description copy or its type ever changes, re-derive
+   descH — the centering constants encode it. */
 .snap-2 {
   position: absolute;
   left: 0;
   width: 100%;
   height: 1px;
-  top: calc(95vh - var(--wm) * .565 - var(--lift));
-  top: calc(var(--fold) * .95 - var(--wm) * .565 - var(--lift));
+  top: calc(50vh - var(--wm) * .111 + 108px - var(--lift));
+  top: calc(var(--fold) * .5 - var(--wm) * .111 + 108px - var(--lift));
   scroll-snap-align: start;
   scroll-snap-stop: always;
   pointer-events: none;
@@ -319,13 +326,11 @@ body.off-landing .typed { opacity: 0; }
      content doubles the space above it. one part gap under the
      name, the description, two parts emptiness beneath — the eye's
      center, not the ruler's. */
-  /* .6 : 2.4, not the canon's 1 : 2 — the name region above the room
-     eats into the top share, so on tall phones a 1:2 grid lands the
-     text near dead-center of the screen: floating, not placed. the
-     steeper ratio restores the canon's INTENT as measured on the
-     actual glass — text held high, the long black below a deliberate
-     silence. */
-  grid-template-rows: .6fr auto 2.4fr;
+  /* the lockup gap scales with the name's MASS: 28px against a
+     96px phone name, ~60px against a ~330px desktop name — one
+     formula, the same optical closeness. the rest of the room is
+     held black beneath the composition. */
+  grid-template-rows: max(28px, calc(var(--wm) * .18)) auto 1fr;
   padding-top: 0;
   padding-bottom: 0;
   /* no glow: the room's light once haloed the text (the moon jar),
@@ -577,19 +582,11 @@ img.photo {
                 letter-spacing 2.1s cubic-bezier(.19, 1, .22, 1) .35s;
   }
   .land.signed .wordmark { letter-spacing: -.024em; }
-  /* the SECOND READING, recomposed for portrait: the name and its
-     description read as ONE centered composition — the name's
-     center a hair above the screen's center (41%), the caption a
-     close breath beneath — not a name parked at the ceiling with
-     a caption adrift below. .59·fold − .21·wm lands the name's
-     center at .41 of the glass. */
+  /* block-centering, mobile constants: 13px caption type and the
+     flat 28px gap make descH 167px — the same equal-air equation,
+     phone numbers. (re-derive with the copy, as above.) */
   .snap-2 {
-    top: calc(var(--fold) * .59 - var(--wm) * .21 - var(--lift));
-  }
-  .section.kwae-room {
-    /* a fixed close gap under the name's feet, then the caption;
-       everything after is held black, not leftover space */
-    grid-template-rows: 28px auto 1fr;
+    top: calc(var(--fold) * .5 - var(--wm) * .201 + 110px - var(--lift));
   }
   /* THE FIXED KNIFE: a black panel fixed to the screen whose top
      edge is the cut line, anchored to 100svh — a static length, so
