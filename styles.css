@@ -104,6 +104,14 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      on phones the cut lifts clear of the chrome and a drawn floor
      (.floor) becomes the knife. zero on desktop. */
   --lift: 0px;
+  /* the FOLD: where the knife and the cut live. 100svh is only the
+     fallback — svh is measured against the browser's TALLEST bar
+     config, and Safari's compact pill leaves the real resting
+     viewport ~25px taller, floating the knife above the bar.
+     script.js measures the true resting height once at load and
+     pins the fold there; mid-scroll bar collapse never re-measures,
+     so the knife still never moves. */
+  --fold: 100svh;
 }
 /* the FLOOR: mobile's knife. a fixed page-owned black band at the
    screen's bottom, its top edge a drawn hairline — the horizon
@@ -148,7 +156,12 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      which reads as placed rather than floating high in the upper
      third (36svh looked top-heavy on tall phones). */
   top: 47vh;
-  top: 47svh;
+  /* the SAME ruler as the second reading's scroll (--fold), not svh:
+     two different viewport measures disagree by up to ~40px across
+     bar states, and that disagreement once let the statement's last
+     line peek into the second reading. one ruler → the clearance is
+     deterministic (~35px) on every device. */
+  top: calc(var(--fold) * .47);
   transform: translateY(-50%);
   left: max(24px, env(safe-area-inset-left));
   right: max(24px, env(safe-area-inset-right));
@@ -215,7 +228,7 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   width: 100%;
   height: 1px;
   top: calc(95vh - var(--wm) * .565 - var(--lift));
-  top: calc(95svh - var(--wm) * .565 - var(--lift));
+  top: calc(var(--fold) * .95 - var(--wm) * .565 - var(--lift));
   scroll-snap-align: start;
   scroll-snap-stop: always;
   pointer-events: none;
@@ -233,11 +246,11 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      O overshoots .01em below the baseline. box top .71em above the
      fold puts the cut at 20% of the caps: an 80% preview — the
      fold in svh, stable against phone toolbar collapse */
-  /* svh — the STATIC small viewport: the cut never moves when a
-     phone's toolbar collapses. the floor panel keeps everything
-     below it black, so the cut needs no live tracking. */
+  /* --fold — the measured resting viewport bottom, static: the cut
+     never moves when a phone's toolbar collapses. the floor panel
+     keeps everything below it black. */
   top: calc(100vh - var(--wm) * .71 - var(--lift));
-  top: calc(100svh - var(--wm) * .71 - var(--lift));
+  top: calc(var(--fold) - var(--wm) * .71 - var(--lift));
   z-index: 300;
   /* width-fit on any screen, height-capped for short wide viewports */
   font-size: var(--wm);
@@ -538,10 +551,17 @@ img.photo {
       display: block;
       position: fixed;
       left: 0; right: 0;
-      top: calc(100svh - var(--lift));
+      top: calc(var(--fold) - var(--lift));
       height: 40vh;
       background: #000;
       z-index: 400;
+      /* forces the panel onto its own compositing layer: the
+         wordmark's reveal transform promotes IT to a GPU layer, and
+         Safari paints a composited element above a plain fixed one
+         despite z-index (the classic WebKit layer-order bleed —
+         letters showing through the panel). composited vs composited
+         sorts by z-index correctly. */
+      transform: translateZ(0);
       pointer-events: none;
       /* destination-state transitions: this one governs RETURNING
          to the landing — near-instant, because the toggle boundary
@@ -565,8 +585,8 @@ img.photo {
       height: 1px;
       background: linear-gradient(90deg,
         rgba(243,240,233,0),
-        rgba(243,240,233,.3) 7%,
-        rgba(243,240,233,.3) 93%,
+        rgba(243,240,233,.16) 7%,
+        rgba(243,240,233,.16) 93%,
         rgba(243,240,233,0));
       opacity: 0;
       transform: scaleX(.6);

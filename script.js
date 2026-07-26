@@ -242,33 +242,104 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
   });
 })();
 
-// the knife lives exactly as long as its job: cutting the name. the
-// letters' painted bottoms sit .29 of the wordmark's height below its
-// CSS top (glyphs reach ~.155em under the fold), so once the page has
-// scrolled past that, the letters have fully cleared the blade and a
-// line with nothing to cut would just float — it dissolves right
-// there, mid-emergence. paging back, it returns on the same boundary,
-// fading in while the letters are still a breath above it. offsetHeight
-// is transform-free, so the measure ignores the reveal's translate.
-// a single rAF-throttled scroll listener covers every scroll path
-// (wheel pager, touch snap, reduced-motion native); the initial call
-// lets deep links (#events) arrive floorless.
+// the FOLD, measured: --fold falls back to 100svh, but svh is taken
+// against the browser's TALLEST bar config — Safari's compact pill
+// leaves the real resting viewport ~25px taller, and the knife
+// floated above the bar in that gap. pin the fold to the true
+// resting height, measured at load; re-measure only near the top
+// (rotation, window resize), never mid-scroll — a collapsing
+// toolbar fires resize, and the guard keeps the knife dead still.
+(() => {
+  // safari's floating pill keeps ~13px of internal air between the
+  // layout viewport's bottom (the farthest any CSS/JS measure
+  // reaches — innerHeight, svh and visualViewport all agree) and
+  // the pill itself. the knife sinks that far into the bar region,
+  // where the page still renders, so the cut lands on the pill's
+  // real top edge. chrome's opaque toolbar sits flush at the
+  // viewport bottom: no nudge there, nor in in-app browsers.
+  // 19 measured on-device: an iOS DESIGN constant (pts), not a
+  // device-size value — the pill keeps the same margin on every
+  // iPhone. if apple redesigns the bar, this one number is the dial.
+  const PILL_AIR = 19;
+  const ua = navigator.userAgent;
+  const pillAir =
+    /iPhone|iPad/.test(ua) &&
+    !/CriOS|FxiOS|EdgiOS|OPT\/|KAKAOTALK|Instagram|FBAN|FBAV|Line\//i.test(ua)
+      ? PILL_AIR : 0;
+  const set = () => {
+    document.documentElement.style.setProperty("--fold", (window.innerHeight + pillAir) + "px");
+  };
+  // a re-measure is accepted only when the viewport is PROVABLY
+  // settled: the page must rest at the top, the live visual
+  // viewport must agree with the layout value, and two samples
+  // 200ms apart must match. chrome reports a stale innerHeight for
+  // a beat after its toolbar animates — a single sample taken in
+  // that beat pinned the fold ~100px low and the name repositioned
+  // behind the toolbar (present, painted, hidden, forever). any
+  // failed check re-queues, so an unstable moment delays the
+  // measure instead of corrupting it. the never-move-mid-scroll
+  // guarantee stays: nothing is measured away from rest.
+  let settle = null;
+  const vvH = () =>
+    window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const queue = () => {
+    clearTimeout(settle);
+    settle = setTimeout(tryMeasure, 350);
+  };
+  function tryMeasure() {
+    if (window.scrollY > 4) return;
+    const first = window.innerHeight;
+    if (Math.abs(vvH() - first) > 1) { queue(); return; } // bar mid-animation
+    setTimeout(() => {
+      if (window.scrollY > 4) return;
+      if (window.innerHeight !== first || Math.abs(vvH() - first) > 1) {
+        queue(); // moved between samples — not settled, try again
+        return;
+      }
+      set();
+    }, 200);
+  }
+  set(); // load: at rest, bar settled — measure immediately
+  window.addEventListener("resize", queue);
+  window.addEventListener("orientationchange", queue);
+  if (window.visualViewport)
+    window.visualViewport.addEventListener("resize", queue);
+})();
+
+// the knife belongs to the RESTING landing only: the first few px of
+// scroll dissolve it, so no mid-transit frame ever shows a line
+// floating under freed letters. (the "emerge through the blade"
+// beat is sacrificed on purpose — a frozen half-state mid-scroll
+// reads as broken, and the traded moment lasted three frames.)
+// paging back, it returns only at the very end of the transit, as
+// the page settles home. a single rAF-throttled scroll listener
+// covers every scroll path (wheel pager, touch snap, reduced-motion
+// native); the initial call lets deep links (#events) arrive
+// floorless.
 (() => {
   const floor = document.querySelector(".floor");
-  const wm = document.querySelector(".wordmark");
-  if (!floor || !wm) return;
+  if (!floor) return;
   let raf = null;
+  // 24px: still far ahead of anything the landing hides (the
+  // statement only ever surfaced ~350px into a transit), but loose
+  // enough that iOS snap settling a few fractional px off zero
+  // still counts as HOME — a 4px threshold left the state stuck
+  // and the statement invisible at rest.
   const update = () => {
     raf = null;
-    const cleared = wm.offsetHeight * 0.29 + 6;
-    document.body.classList.toggle("off-landing", window.scrollY > cleared);
+    document.body.classList.toggle("off-landing", window.scrollY > 24);
   };
-  window.addEventListener("scroll", () => {
+  // the settle re-check: snap's last micro-adjustment doesn't always
+  // fire a scroll event, so the final state is confirmed once the
+  // scroll has been quiet for a beat — the class can never strand.
+  let quiet = null;
+  const poke = () => {
     if (!raf) raf = requestAnimationFrame(update);
-  }, { passive: true });
-  window.addEventListener("resize", () => {
-    if (!raf) raf = requestAnimationFrame(update);
-  }, { passive: true });
+    clearTimeout(quiet);
+    quiet = setTimeout(update, 180);
+  };
+  window.addEventListener("scroll", poke, { passive: true });
+  window.addEventListener("resize", poke, { passive: true });
   update();
 })();
 
