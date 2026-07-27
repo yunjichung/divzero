@@ -275,6 +275,19 @@ iso(() => {
   let dur = RATE;
   const span = (dist) =>
     Math.max(550, Math.min(1250, RATE * (dist / window.innerHeight)));
+  // WHO is still on the wheel when a transit lands? a hand that has
+  // kept pushing rides on to the next room; a flick's dead momentum
+  // must not. the two are told apart by SHAPE, not by size: a held
+  // scroll holds near its own peak, while a tail is only ever falling
+  // away from it. an absolute floor of 18 answered this before, and
+  // it was wrong twice over — a gentle deliberate drag (14px a notch)
+  // sat under the floor and died after one room, while a flick's tail
+  // was still over it and stole a second (the 2->4 slip: one gesture,
+  // two rooms). `spent` is the tail's own confession, already kept by
+  // the wheel handler; the ratio is the rest of the answer.
+  const chaining = () =>
+    !spent && performance.now() - lastFlowT < 140 &&
+    flow > Math.max(8, peak * .45);
   function tick(now) {
     // the document can SHRINK mid-transit (a room closing, a resize,
     // a toolbar collapse): the target follows the page's real edge
@@ -293,7 +306,7 @@ iso(() => {
       target = null;
       raf = null;
       acc = 0;
-      if (pageDir !== 0 && performance.now() - lastFlowT < 140 && flow > 18) {
+      if (pageDir !== 0 && chaining()) {
         turn(pageDir); // the held scroll travels on
       }
       return;
@@ -346,7 +359,7 @@ iso(() => {
       k.walk(dir);
       clearTimeout(walkTimer);
       walkTimer = setTimeout(() => {
-        if (performance.now() - lastFlowT < 140 && flow > 18) turn(dir);
+        if (chaining()) turn(dir);
       }, 500);
       return;
     }
@@ -382,16 +395,22 @@ iso(() => {
   window.addEventListener("scroll", pokePlace, { passive: true });
   window.addEventListener("resize", pokePlace, { passive: true });
   placeWall();
+  // a SLIVER of depth is not a room to pan. at common laptop heights
+  // the grid overhangs its frame by only a few dozen px, and taking a
+  // whole gesture to nudge the wall 33px reads as a dead flick — the
+  // page simply refused to turn. below the sill the remainder is
+  // closed at once (nothing stays unreachable) and the gesture goes
+  // on to turn the page, as the hand plainly meant it to.
+  const SILL = 48;
   const wallPan = (dy) => {
     if (!wall || !atEvents) return false;
-    const canDown =
-      wall.scrollTop + wall.clientHeight < wall.scrollHeight - 1;
-    const canUp = wall.scrollTop > 0;
-    if ((dy > 0 && canDown) || (dy < 0 && canUp)) {
-      wall.scrollTop += dy;
-      return true;
-    }
-    return false;
+    const room = dy > 0
+      ? wall.scrollHeight - wall.clientHeight - wall.scrollTop
+      : wall.scrollTop;
+    if (room < 1) return false;
+    if (room < SILL) { wall.scrollTop += dy > 0 ? room : -room; return false; }
+    wall.scrollTop += dy;
+    return true;
   };
   // a gesture that has spent itself panning the wall may not ALSO
   // turn the page when the wall runs out — the leftover momentum of
@@ -447,7 +466,12 @@ iso(() => {
         if (a < Math.max(12, peak * .1)) spent = true;
         return;
       }
-      if (a < 40) return; // sub-push noise after a spent tail
+      // a fresh push after a spent tail, measured against the gesture
+      // that came before it rather than a fixed 40: a slow reader's
+      // whole scroll is quieter than one flick's leftovers, and a flat
+      // 40 locked them out of the page entirely. momentum only ever
+      // falls, so it cannot climb back over its own share.
+      if (a < Math.max(12, peak * .35)) return;
     }
     if (acc * dy < 0) acc = 0;
     acc += dy;
@@ -514,10 +538,12 @@ iso(() => {
       // inside the wall: the grid pans itself while it has room in
       // the gesture's direction; at its edge, the page takes over
       if (wallEl) {
-        const canDown =
-          wallEl.scrollTop + wallEl.clientHeight < wallEl.scrollHeight - 1;
-        const canUp = wallEl.scrollTop > 0;
-        if ((dy > 0 && canDown) || (dy < 0 && canUp)) return;
+        // the same sill the wheel keeps: a sliver left in the grid is
+        // not worth a swipe, and the finger's meaning is the page
+        const room = dy > 0
+          ? wallEl.scrollHeight - wallEl.clientHeight - wallEl.scrollTop
+          : wallEl.scrollTop;
+        if (room >= SILL) return; // the grid has real depth: it pans itself
       }
       e.preventDefault();
       if (used) return;
