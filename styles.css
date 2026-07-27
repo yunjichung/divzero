@@ -728,6 +728,25 @@ a.wplate:focus-visible {
   border-color: rgba(243,240,233,.24);
 }
 
+/* six of the sixteen tiles lead somewhere and nothing said so: a
+   hairline moving to .24 against a #373A44 border is a change only
+   the stylesheet can see. so the PHOTOGRAPH answers instead — the
+   plate's backing lifts a few points, and the tile reads as waking
+   rather than as a control. the still tiles stay inert, which is
+   how the difference is felt. (the .55s filter transition already
+   lives on the base img.photo rule and carries here; the deep
+   grade lifts by the same amount from its own darker floor, so a
+   bright-object still doesn't blow out to match a dim room shot.) */
+a.wplate:hover img.photo,
+a.wplate:focus-visible img.photo {
+  filter: grayscale(1) brightness(.36) contrast(.95);
+}
+
+a.wplate:hover img.photo[data-grade="deep"],
+a.wplate:focus-visible img.photo[data-grade="deep"] {
+  filter: grayscale(1) brightness(.24) contrast(.95);
+}
+
 .plabel {
   font-size: 10px;
   font-weight: 500;
@@ -746,12 +765,20 @@ a.wplate:focus-visible {
   text-wrap: balance;
 }
 
+/* the recap is COUPLED to the plate's backing: these words sit over
+   a photograph graded to brightness(.28) (deeper, .16, where the
+   still is a bright object), and at 12px/300 the old .48 was asking
+   the smallest type on the site to carry the least contrast against
+   the busiest ground. .58 buys the legibility back without touching
+   the size — the wall's density is the point, and a 13px recap
+   would have grown the plates to fix a contrast problem. if the
+   grade above ever lightens, this comes back down with it. */
 .precap {
   font-size: 12px;
   font-weight: 300;
   line-height: 1.5;
   letter-spacing: -.008em;
-  color: rgba(243,240,233,.48);
+  color: rgba(243,240,233,.58);
   text-wrap: pretty;
 }
 
