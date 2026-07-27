@@ -626,9 +626,10 @@ fetch("assets.json")
         el.setAttribute("muted", "");
         el.loop = true;
         el.playsInline = true;
-        // NOTHING is fetched until the frame is on screen — three
-        // autoplaying masters made the archive a very expensive room
-        el.preload = "none";
+        // the headers only: enough that play() is not starting from
+        // a standing stop, cheap enough that arriving costs nothing.
+        // the frames themselves still wait for the room.
+        el.preload = "metadata";
         if (image.poster) el.poster = image.poster;
         players.push(el);
       } else {
@@ -648,6 +649,11 @@ fetch("assets.json")
       players.forEach((v) => { const p = v.play(); if (p) p.catch(() => {}); });
       return;
     }
+    // the footage is woken BEFORE it is looked at: a screen of
+    // margin either side, and any sliver counts. by the time the
+    // frame is actually in view it is already running — waiting for
+    // it to be a fifth visible and only then starting cold read as
+    // a stall every time.
     const watch = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const v = entry.target;
@@ -658,7 +664,7 @@ fetch("assets.json")
           v.pause();
         }
       });
-    }, { threshold: .2 });
+    }, { rootMargin: "100% 0px", threshold: 0 });
     players.forEach((v) => watch.observe(v));
   })
   .catch(() => {});
