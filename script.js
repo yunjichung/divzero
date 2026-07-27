@@ -262,7 +262,19 @@ iso(() => {
     return pts;
   }
   let began = 0;
-  const DUR = 1100;
+  // the transit's clock is PROPORTIONAL to its distance, not fixed: a
+  // fixed span made every room take the same second, so the short hop
+  // into the reading (.58 of a screen) and the long one into the
+  // archive (1.03) ran at different speeds — the hand calibrated on
+  // the first flick and the second lurched at nearly twice the peak.
+  // one velocity for the whole page: a full screen still takes the
+  // old 1100ms, and every other room is timed off that same rate.
+  // the floor keeps a short hop from snapping; the ceiling keeps a
+  // tall screen's long haul from dragging.
+  const RATE = 1100; // ms per screen of travel
+  let dur = RATE;
+  const span = (dist) =>
+    Math.max(550, Math.min(1250, RATE * (dist / window.innerHeight)));
   function tick(now) {
     // the document can SHRINK mid-transit (a room closing, a resize,
     // a toolbar collapse): the target follows the page's real edge
@@ -274,7 +286,7 @@ iso(() => {
     // forced repositioning. a quartic ease-out over a fixed span has
     // the same hand but a REAL end — the machine's clock and the
     // eye's clock agree on when the transit is over.
-    const t = Math.min(1, (now - began) / DUR);
+    const t = Math.min(1, (now - began) / dur);
     const k = 1 - Math.pow(1 - t, 4);
     window.scrollTo(0, from + (target - from) * k);
     if (t === 1) {
@@ -297,7 +309,6 @@ iso(() => {
     peak = 0;
     flow = 0;
     pageDir = dir;
-    began = performance.now();
     from = window.scrollY;
     const pts = points();
     const here = target === null ? window.scrollY : target;
@@ -307,6 +318,10 @@ iso(() => {
     }
     const next = Math.max(0, Math.min(pts.length - 1, cur + dir));
     target = pts[next];
+    // the clock is set once the distance is known — and `began` with
+    // it, so a turn that interrupts a glide starts its own span clean
+    dur = span(Math.abs(target - from));
+    began = performance.now();
     if (!raf) raf = requestAnimationFrame(tick);
   };
   // section 4 is a WALK, not a single stop: while the founders room
