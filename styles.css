@@ -590,7 +590,14 @@ video.photo.in-color {
 }
 
 /* where each crop sits rides with the photograph itself, as
-   `focus` in assets.json — applied inline by script.js */
+   `focus` in assets.json — script.js hands it over as --focus, and
+   the stylesheet spends it. a photograph that needs a different crop
+   in the narrow phone tile carries `focusMobile` too; without one it
+   simply keeps the crop it already had. */
+img.photo,
+video.photo {
+  object-position: var(--focus, 50% 50%);
+}
 
 .wcap {
   position: absolute;
@@ -866,6 +873,13 @@ a.wplate:focus-visible {
      this block: no floor, no pill math — the window edge is their
      knife, desktop-fashion. intentional: their bars are stable and
      their viewports honest, so the desktop composition holds. */
+  /* the wall tiles narrow here, and a crop set for a wide frame can
+     cut the subject out of a tall one. --focus-mobile is that second
+     crop, named per photograph in assets.json. */
+  img.photo,
+  video.photo {
+    object-position: var(--focus-mobile, var(--focus, 50% 50%));
+  }
   /* portrait phones are width-starved, so the name takes the WHOLE
      width: at 24.4vw the word spans 99.8% of the screen — hairline
      margins, edge to edge, and no glyph cropped (a clipped O reads

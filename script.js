@@ -638,7 +638,12 @@ fetch("assets.json")
       }
       if (image.tone === "color") el.classList.add("in-color");
       if (image.grade) el.dataset.grade = image.grade;
-      if (image.focus) el.style.objectPosition = image.focus;
+      // the crop is handed to the stylesheet as a value, not applied as
+      // one: a narrow phone tile is a different frame than a wide desk
+      // one, and `focusMobile` is where a photograph asks for a second
+      // crop there. an inline object-position could not be answered back.
+      if (image.focus) el.style.setProperty("--focus", image.focus);
+      if (image.focusMobile) el.style.setProperty("--focus-mobile", image.focusMobile);
       slot.replaceWith(el);
     });
     // the footage wakes only where it is SEEN: on screen it plays, off

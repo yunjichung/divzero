@@ -24,7 +24,8 @@
       "title": "2026 Opening",
       "url": "assets/2026-opening.jpg",
       "alt": "DivZero 2026 Opening gathering",
-      "focus": "100% 50%"
+      "focus": "100% 50%",
+      "focusMobile": "35% 50%"
     },
     {
       "id": "2025-holiday",
