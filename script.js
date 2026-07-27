@@ -649,6 +649,8 @@ fetch("assets.json")
         players.push(el);
       } else {
         el.alt = image.alt || "";
+        // lazy only until the landing has had its moment: the warm
+        // pass below lifts it. see there for why.
         el.loading = "lazy";
       }
       if (image.tone === "color") el.classList.add("in-color");
@@ -661,6 +663,36 @@ fetch("assets.json")
       if (image.focusMobile) el.style.setProperty("--focus-mobile", image.focusMobile);
       slot.replaceWith(el);
     });
+    // the archive is WARMED, never lazy-loaded on approach. lazy put
+    // every frame's download and decode inside the one gesture that
+    // enters the room — the transit into the wall was where the whole
+    // archive arrived, and a first visit froze there (measured: single
+    // frames of 1.4s, 1.0s, 0.4s inside a 1.1s glide). the bytes are
+    // instead fetched in the quiet AFTER the landing has spoken: the
+    // statement types itself over the first ~2.2s and owns the network
+    // until then, and by the time a hand reaches the archive the
+    // frames are already in hand. (the footage keeps its own rule —
+    // it wakes a screen ahead, below, and is untouched by this.)
+    const warmWall = () => {
+      document.querySelectorAll(".wall img").forEach((img) => {
+        if (img.complete) return;
+        img.loading = "eager";
+        // the attribute flip alone resumes a pending lazy load in
+        // current engines; the standalone request is the guarantee
+        // everywhere else — same URL, so it costs one cache entry
+        new Image().src = img.currentSrc || img.src;
+      });
+    };
+    // whichever comes first: the landing's quiet, or a reader who is
+    // already moving (a deep link, a fast hand) and needs them NOW
+    const warmTimer = setTimeout(warmWall, 2400);
+    const warmOnMove = () => {
+      if (window.scrollY <= 24) return; // a hair off zero is still home
+      window.removeEventListener("scroll", warmOnMove);
+      clearTimeout(warmTimer);
+      warmWall();
+    };
+    window.addEventListener("scroll", warmOnMove, { passive: true });
     // the footage wakes only where it is SEEN: on screen it plays, off
     // screen it stops. a reader who asked motion to stop gets the
     // poster frame and nothing moves at all.
