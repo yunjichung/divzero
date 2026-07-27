@@ -215,10 +215,21 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
      statement NEVER wraps or overflows, at any screen size or text
      zoom — it just scales down to fit. (100vw - 56px) clears the
      .typed 24px gutters with margin to spare. */
-  /* desktop max 36, not 43: the same whisper-vs-monument conviction
-     the phone taught — the statement speaks quietly at every size,
-     and the name's scale does the shouting */
-  font-size: min(clamp(19px, 2.5vw, 36px), calc((100vw - 56px) / 16));
+  /* the whisper-vs-monument conviction, held — but measured rather
+     than assumed. the cap was 36 in the name of the lesson the phone
+     taught, yet the phone never ran that severe: at 390px the name
+     is 90px against the statement (6:1), while 1440px put a 331px
+     name against 36px (9.2:1). desktop had overshot its own rule.
+     and the COEFFICIENT is what sets that ratio, not the cap: the
+     name is 23vw against the statement's vw term, so desktop holds
+     a CONSTANT ratio at every width and the ceiling only ever binds
+     past ~1600px — raising the cap alone changed nothing on the
+     laptops the page is actually read on. 2.75vw sets the ratio
+     itself to 8.4:1, still half again more severe than the phone's
+     5.3:1, the composition the conviction was drawn from. 44 keeps
+     the widest displays from snapping back harsher than the
+     laptops. the name still does the shouting. */
+  font-size: min(clamp(19px, 2.75vw, 44px), calc((100vw - 56px) / 16));
   font-weight: 400;
   letter-spacing: .002em;
   line-height: 1.5;
@@ -905,7 +916,11 @@ a.wplate:focus-visible {
      portrait-native parts: (1) the statement drops to a genuine
      WHISPER, so the full-width name reads monumental by contrast;
      (2) the reveal itself becomes the payoff — see .wordmark below. */
-  .typed { font-size: min(15px, calc((100vw - 56px) / 16)); }
+  /* 17, not 15: the phone's own ratio was the mildest on the site
+     (90px name against 15px — 6:1), so the whisper had room the
+     desktop cap was pretending it didn't. the fit-cap still governs
+     below ~340px, where 17 self-limits and nowrap holds. */
+  .typed { font-size: min(17px, calc((100vw - 56px) / 16)); }
 
   /* the description is the page's SMALLEST voice: the hierarchy
      must read name >> statement > description, unambiguous.
