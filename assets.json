@@ -1,11 +1,30 @@
 {
   "images": [
     {
+      "id": "2024-first-event",
+      "type": "event",
+      "title": "First Event",
+      "url": "assets/2024-first-event.jpg",
+      "alt": "DivZero first event, February 2024",
+      "tone": "color",
+      "focus": "50% 65%"
+    },
+    {
+      "id": "2024-first-event-b",
+      "type": "event",
+      "title": "First Event",
+      "url": "assets/2024-first-event-b.jpg",
+      "alt": "DivZero first event, February 2024, photo two",
+      "tone": "color",
+      "focus": "50% 65%"
+    },
+    {
       "id": "2026-opening",
       "type": "event",
       "title": "2026 Opening",
-      "url": "",
-      "alt": "DivZero 2026 Opening gathering"
+      "url": "assets/2026-opening.jpg",
+      "alt": "DivZero 2026 Opening gathering",
+      "focus": "100% 50%"
     },
     {
       "id": "2025-holiday",
@@ -15,46 +34,79 @@
       "alt": "DivZero 2025 holiday party"
     },
     {
-      "id": "2025-exponential",
-      "type": "event",
-      "title": "Exponential Growth",
-      "url": "",
-      "alt": "Exponential Growth discussion"
-    },
-    {
       "id": "2025-cities",
       "type": "event",
       "title": "Shaped by Cities, Driven by Ambition",
-      "url": "",
-      "alt": "Cities and Ambition panel"
+      "url": "assets/2025-cities.jpg",
+      "alt": "Cities and Ambition panel",
+      "focus": "50% 25%"
     },
     {
       "id": "2025-ai",
+      "type": "video",
+      "title": "The Next Gateway",
+      "url": "assets/2025-next-gateway.mp4",
+      "alt": "The Next Gateway discussion, February 2025",
+      "poster": "assets/2025-next-gateway.jpg"
+    },
+    {
+      "id": "2024-retreat-jul",
+      "type": "video",
+      "title": "Retreat",
+      "url": "assets/2024-retreat-jul.mp4",
+      "alt": "DivZero retreat, July 2024",
+      "poster": "assets/2024-retreat-jul.jpg"
+    },
+    {
+      "id": "2025-june",
       "type": "event",
-      "title": "The Future of AI & Computing",
-      "url": "",
-      "alt": "The Future of AI and Computing discussion"
+      "title": "Driven by Ambition",
+      "url": "assets/2025-june.jpg",
+      "alt": "Shaped by Cities, Driven by Ambition panel, photo two",
+      "focus": "50% 33%"
+    },
+    {
+      "id": "2025-retreat-jul-b",
+      "type": "event",
+      "title": "Retreat",
+      "url": "assets/2025-retreat-jul-b.jpg",
+      "alt": "DivZero retreat, July 2025, photo two",
+      "focus": "50% 65%"
+    },
+    {
+      "id": "2025-retreat-may",
+      "type": "video",
+      "title": "Retreat",
+      "url": "assets/2025-retreat-may.mp4",
+      "alt": "DivZero retreat, May 2025",
+      "poster": "assets/2025-retreat-may.jpg",
+      "tone": "color"
     },
     {
       "id": "2024-holiday",
-      "type": "event",
+      "type": "video",
       "title": "Holiday Party 2024",
-      "url": "",
-      "alt": "DivZero 2024 holiday party"
+      "url": "assets/2024-holiday.mp4",
+      "alt": "DivZero 2024 holiday party",
+      "tone": "color",
+      "focus": "50% 80%",
+      "poster": "assets/2024-holiday.jpg"
     },
     {
       "id": "2024-almanack-2",
       "type": "event",
-      "title": "The Almanack of Naval Ravikant, Continued",
-      "url": "",
-      "alt": "Almanack discussion, part two"
+      "title": "Naval Pt1",
+      "url": "assets/2024-almanack-2.jpg",
+      "alt": "Naval Pt1 discussion, photo two",
+      "focus": "50% 57%"
     },
     {
       "id": "2024-almanack",
       "type": "event",
-      "title": "The Almanack of Naval Ravikant",
-      "url": "",
-      "alt": "The first Almanack book discussion"
+      "title": "Naval Pt1",
+      "url": "assets/2024-almanack.jpg",
+      "alt": "Naval Pt1 discussion",
+      "grade": "deep"
     },
     {
       "id": "founder-hyungwon",
@@ -90,69 +142,6 @@
       "title": "Kyel Ok",
       "url": "",
       "alt": "Kyel Ok, founder of DivZero"
-    },
-    {
-      "id": "2025-exponential-b",
-      "type": "event",
-      "title": "Exponential Growth",
-      "url": "",
-      "alt": "Exponential Growth photograph"
-    },
-    {
-      "id": "2026-opening-b",
-      "type": "event",
-      "title": "2026 Opening",
-      "url": "",
-      "alt": "2026 Opening photograph"
-    },
-    {
-      "id": "2025-cities-b",
-      "type": "event",
-      "title": "Shaped by Cities",
-      "url": "",
-      "alt": "Shaped by Cities photograph"
-    },
-    {
-      "id": "2025-holiday-b",
-      "type": "event",
-      "title": "Holiday Party",
-      "url": "",
-      "alt": "Holiday Party photograph"
-    },
-    {
-      "id": "2025-ai-b",
-      "type": "event",
-      "title": "The Future of AI",
-      "url": "",
-      "alt": "The Future of AI photograph"
-    },
-    {
-      "id": "2024-almanack-b",
-      "type": "event",
-      "title": "The Almanack",
-      "url": "",
-      "alt": "The Almanack photograph"
-    },
-    {
-      "id": "2025-holiday-c",
-      "type": "event",
-      "title": "Holiday Party",
-      "url": "",
-      "alt": "Holiday Party photograph"
-    },
-    {
-      "id": "2024-almanack-2-b",
-      "type": "event",
-      "title": "The Almanack, Continued",
-      "url": "",
-      "alt": "The Almanack, Continued photograph"
-    },
-    {
-      "id": "2024-holiday-b",
-      "type": "event",
-      "title": "Holiday Party",
-      "url": "",
-      "alt": "Holiday Party photograph"
     }
   ]
 }

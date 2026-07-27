@@ -341,8 +341,58 @@ iso(() => {
     if (atFounders && dir > 0) return;
     page(dir);
   };
+  // inside the archive the wheel pans the WALL first — the grid
+  // scrolls while it has room in the gesture's direction, and only
+  // at its edge does the page take over (the same yield the touch
+  // path gives below). without this, a short window hides the
+  // wall's depth: every notch turned the room instead.
+  //
+  // WHERE the archive stands is answered from a cache kept by the
+  // page's own scroll, never measured inside the wheel handler: a
+  // getBoundingClientRect per notch forces layout on the hottest
+  // path there is.
+  const wall = document.querySelector(".wall");
+  let atEvents = false;
+  const placeWall = () => {
+    if (!wall) return;
+    const r = wall.getBoundingClientRect();
+    const mid = window.innerHeight / 2;
+    atEvents = r.top <= mid && r.bottom >= mid;
+  };
+  let placeRaf = null;
+  const pokePlace = () => {
+    if (placeRaf) return;
+    placeRaf = requestAnimationFrame(() => { placeRaf = null; placeWall(); });
+  };
+  window.addEventListener("scroll", pokePlace, { passive: true });
+  window.addEventListener("resize", pokePlace, { passive: true });
+  placeWall();
+  const wallPan = (dy) => {
+    if (!wall || !atEvents) return false;
+    const canDown =
+      wall.scrollTop + wall.clientHeight < wall.scrollHeight - 1;
+    const canUp = wall.scrollTop > 0;
+    if ((dy > 0 && canDown) || (dy < 0 && canUp)) {
+      wall.scrollTop += dy;
+      return true;
+    }
+    return false;
+  };
+  // a gesture that has spent itself panning the wall may not ALSO
+  // turn the page when the wall runs out — the leftover momentum of
+  // a flick would sail straight into the next room. the lock holds
+  // until the input goes quiet or reverses, mirroring the `used`
+  // guard the touch path keeps below.
+  let panned = false;
+  let panDir = 0;
+  const resetQuiet = () => {
+    clearTimeout(quietTimer);
+    quietTimer = setTimeout(() => {
+      tail = false; spent = false; peak = 0; acc = 0; pageDir = 0;
+      panned = false; panDir = 0;
+    }, 250);
+  };
   window.addEventListener("wheel", (e) => {
-    if (window.DZlightOpen) return; // the lightbox holds the page still
     if (e.ctrlKey) return; // pinch-zoom stays native
     e.preventDefault();
     // firefox reports wheel deltas in LINES (deltaMode 1, ~3/notch)
@@ -350,10 +400,24 @@ iso(() => {
     // needed ~10 notches per page-turn there. one delta currency.
     const dy = e.deltaY *
       (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 100 : 1);
-    clearTimeout(quietTimer);
-    quietTimer = setTimeout(() => {
-      tail = false; spent = false; peak = 0; acc = 0; pageDir = 0;
-    }, 250);
+    // pushing the other way is a new intent, not the old gesture's
+    // tail: the wall's lock lifts at once so the room can be left
+    if (panned && dy * panDir < 0) { panned = false; panDir = 0; }
+    // the archive pans under the wheel before the page turns — but
+    // never mid-transit (raf), and never on a page-turn's own tail
+    if (!tail && !raf && wallPan(dy)) {
+      // a pan is not a page-turn: the gesture spends itself in the
+      // grid, and whatever it accumulated toward a turn is void
+      panned = true;
+      panDir = dy > 0 ? 1 : -1;
+      acc = 0;
+      resetQuiet();
+      return;
+    }
+    // spent in the wall and now at its edge: the room holds until a
+    // fresh push arrives — momentum alone never turns the page
+    if (panned) { resetQuiet(); return; }
+    resetQuiet();
     // input against the last turn's direction is always a human, and
     // it pages back at once, even mid-glide. input WITH the turn's
     // direction is one gesture — ramp, peak, decay — and ALL of it
@@ -383,7 +447,6 @@ iso(() => {
   // bypass the wheel's lock; interactive elements keep their keys
   // (Space still opens a focused ledger row).
   window.addEventListener("keydown", (e) => {
-    if (window.DZlightOpen) return; // the lightbox holds the page still
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     // fields own their keys entirely; buttons and links own only the
     // keys that ACTIVATE them (Space, Enter) — after clicking a + or
@@ -400,6 +463,10 @@ iso(() => {
                (e.key === " " && e.shiftKey);
     if (!down && !up) return;
     e.preventDefault();
+    // keys walk the wall's depth too, one measured step at a time —
+    // they carry no momentum, so they need no lock, only the same
+    // courtesy of not fighting a transit already in flight
+    if (!raf && wallPan(down ? 160 : -160)) return;
     turn(down ? 1 : -1);
   });
   // ---- touch, AUTHORED: the desktop grammar by hand ----
@@ -421,10 +488,10 @@ iso(() => {
       sy = e.touches[0].clientY;
       sx = e.touches[0].clientX;
       used = false;
-      wallEl = e.target.closest && e.target.closest(".wall-grid");
+      wallEl = e.target.closest && e.target.closest(".wall");
     }, { passive: true });
     window.addEventListener("touchmove", (e) => {
-      if (sy === null || window.DZlightOpen) return;
+      if (sy === null) return;
       const dy = sy - e.touches[0].clientY;
       const dx = sx - e.touches[0].clientX;
       // taps and sideways stay native (and clickable)
@@ -526,60 +593,72 @@ iso(() => {
   update();
 });
 
-// the lightbox: any photograph opens full-screen in its own light —
-// ungraded, the room's one bright object. click or esc closes; the
-// page behind holds perfectly still. empty frames open nothing.
-iso(() => {
-  const box = document.createElement("div");
-  box.className = "lightbox";
-  box.setAttribute("role", "dialog");
-  box.setAttribute("aria-label", "Photograph");
-  const big = document.createElement("img");
-  big.alt = "";
-  box.appendChild(big);
-  document.body.appendChild(box);
-  const close = () => {
-    box.classList.remove("open");
-    window.DZlightOpen = false;
-  };
-  document.addEventListener("click", (e) => {
-    const im = e.target.closest && e.target.closest("img.photo");
-    if (!im) return;
-    // founder thumbs are selection controls only — they never open
-    // the lightbox; the full-screen light belongs to the wall
-    if (im.closest(".kthumb")) return;
-    big.src = im.src;
-    big.alt = im.alt || "";
-    box.classList.add("open");
-    window.DZlightOpen = true;
-  });
-  box.addEventListener("click", close);
-  box.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, { passive: false });
-  box.addEventListener("touchmove", (e) => { e.preventDefault(); }, { passive: false });
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && box.classList.contains("open")) close();
-  });
-});
-
 // photos are proof: when a slot's assets.json url is filled in, the
-// quiet placeholder becomes the documentary photograph
+// quiet placeholder becomes the documentary photograph.
+//
+// each photograph's own TREATMENT travels with it in assets.json —
+// `tone: "color"` for the few that keep their color, `focus` for
+// where a crop should sit, `grade` for a plate background that needs
+// a deeper dark. the stylesheet holds what those words MEAN; the
+// manifest holds which photograph gets which. (they were once CSS
+// rules keyed to exact alt text, so editing a caption silently broke
+// a crop.)
 fetch("assets.json")
   .then((response) => response.ok ? response.json() : null)
   .then((assets) => {
     if (!assets || !Array.isArray(assets.images)) return;
     const imagesById = new Map(assets.images.map((image) => [image.id, image]));
+    const players = [];
     document.querySelectorAll("div.photo[data-asset-id]").forEach((slot) => {
       const image = imagesById.get(slot.dataset.assetId);
       if (!image || !image.url) return;
-      const img = document.createElement("img");
-      img.className = slot.className; // the slot's dress carries over (photo, f-photo)
-      img.src = image.url;
-      img.alt = image.alt || "";
-      img.loading = "lazy";
-      slot.replaceWith(img);
+      const media = image.type === "video";
+      const el = document.createElement(media ? "video" : "img");
+      el.className = slot.className; // the slot's dress carries over (photo, f-photo)
+      el.src = image.url;
+      if (media) {
+        // a decorative loop: the figcaption already names the event,
+        // and the footage must not announce itself a second time
+        el.setAttribute("aria-hidden", "true");
+        // the property is what the autoplay policy reads; the
+        // attribute is what older WebKit checks at load
+        el.muted = true;
+        el.setAttribute("muted", "");
+        el.loop = true;
+        el.playsInline = true;
+        // NOTHING is fetched until the frame is on screen — three
+        // autoplaying masters made the archive a very expensive room
+        el.preload = "none";
+        if (image.poster) el.poster = image.poster;
+        players.push(el);
+      } else {
+        el.alt = image.alt || "";
+        el.loading = "lazy";
+      }
+      if (image.tone === "color") el.classList.add("in-color");
+      if (image.grade) el.dataset.grade = image.grade;
+      if (image.focus) el.style.objectPosition = image.focus;
+      slot.replaceWith(el);
     });
+    // the footage wakes only where it is SEEN: on screen it plays, off
+    // screen it stops. a reader who asked motion to stop gets the
+    // poster frame and nothing moves at all.
+    if (!players.length || reducedMotion) return;
+    if (!("IntersectionObserver" in window)) {
+      players.forEach((v) => { const p = v.play(); if (p) p.catch(() => {}); });
+      return;
+    }
+    const watch = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const v = entry.target;
+        if (entry.isIntersecting) {
+          const p = v.play();
+          if (p) p.catch(() => {}); // autoplay refused: the poster stands
+        } else if (!v.paused) {
+          v.pause();
+        }
+      });
+    }, { threshold: .2 });
+    players.forEach((v) => watch.observe(v));
   })
   .catch(() => {});

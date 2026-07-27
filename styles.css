@@ -350,6 +350,11 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
   text-align: center;
 }
 
+/* the archive alone sits nearly edge to edge: its breathing room
+   above and below matches the sides, and the wall takes the rest —
+   it scrolls within only when the browser is too short to hold it */
+#events { padding-top: 36px; padding-bottom: 36px; }
+
 .credits {
   /* the box's measure is tuned to the words: at 17px, 516px breaks
      the three sentences into four lines with the last 99% full */
@@ -453,12 +458,13 @@ h1, h2, h3, p { margin: 0; font-size: inherit; font-weight: inherit; }
    the page's cream, dimmed to sit in the black rather than on it —
    one grade for all rooms. opening the room returns its color. */
 .photo,
-img.photo {
+img.photo,
+video.photo {
   width: 100%;
   aspect-ratio: 3 / 2;
   margin: 12px 0 9px;
   border-radius: 3px;
-  border: 1px solid rgba(243,240,233,.09);
+  border: 1px solid #373A44;
 }
 
 /* the empty frame holds the wall quietly — a faint graded surface,
@@ -467,10 +473,19 @@ div.photo {
   background: linear-gradient(160deg, rgba(255,255,255,.03), rgba(255,255,255,.008));
 }
 
-img.photo {
+img.photo,
+video.photo {
   object-fit: cover;
-  filter: grayscale(1) sepia(.22) contrast(.92) brightness(.82);
+  filter: grayscale(1) contrast(.94) brightness(.86);
   transition: filter .55s ease;
+}
+
+/* a few frames keep their color; everything else has faded to the
+   archive's one grade. WHICH ones is declared per photograph in
+   assets.json (`tone: "color"`) — never keyed to caption text. */
+img.photo.in-color,
+video.photo.in-color {
+  filter: none;
 }
 
 /* ---- the wall: the archive hung salon-fashion ----
@@ -480,39 +495,102 @@ img.photo {
    grade and warms to color under the hand; its event signs itself
    only on approach. the wall is bounded to the frame: density grows
    by packing, never by height, so the room stays one fixed stop. */
+/* the WALL is the scroller and the GRID is content-sized: a grid
+   given a definite height will not grow its minmax(length, auto)
+   rows past their base — content only raises the growth limit, and
+   with no free space the rows never take it (words clipped). left
+   indefinite, each row truly grows to its content. */
 .wall {
   width: 100%;
   min-width: 0;
   text-align: left;
+  height: calc(100vh - 72px);
+  height: calc(100dvh - 72px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .wall .tally { margin: 0 0 15px; }
 
+/* the hang, mapped: every tile owns a NAMED AREA and each breakpoint
+   lays the full map explicitly — a flush rectangle by construction,
+   no holes, no ragged edge, at any width. rows are minmax(min, auto):
+   a plate that needs more height for its words takes it, the row
+   stretches, and the wall scrolls within its frame — words are never
+   cut. the key photographs (first event, holiday '24, naval pt1,
+   driven by ambition) hold the large frames; the books and the 2026
+   opening sit small. */
 .wall-grid {
   display: grid;
   gap: 6px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-auto-rows: 22vw;
-  grid-auto-flow: dense;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(15, minmax(30vw, auto));
+  grid-template-areas:
+    "p1 p1 p1"
+    "f1 f1 r4"
+    "f1 f1 r4"
+    "sc sc sc"
+    "p2 p2 p2"
+    "p2 p2 p2"
+    "n2 n2 ng"
+    "n2 n2 ng"
+    "p3 p3 p3"
+    "hv rm rm"
+    "hv rm rm"
+    "hv r5 hp"
+    "f2 r5 op"
+    "p4 p4 p4"
+    "p5 p5 p5";
 }
 
 .wtile {
   position: relative;
   margin: 0;
   overflow: hidden;
-  border-radius: 3px;
+  border-radius: 6px;
+  /* the hairline lives on the TILE, so it rounds with the corner —
+     an inner border on the square photograph broke at the radius */
+  border: 1px solid #373A44;
 }
 
+/* the map's names, pinned to the DOM order */
+.wtile:nth-child(1)  { grid-area: p1; }
+.wtile:nth-child(2)  { grid-area: sc; }
+.wtile:nth-child(3)  { grid-area: p2; }
+.wtile:nth-child(4)  { grid-area: p3; }
+.wtile:nth-child(5)  { grid-area: n2; }
+.wtile:nth-child(6)  { grid-area: op; } /* the unlabeled video, in the opening's old frame */
+.wtile:nth-child(7)  { grid-area: p4; }
+.wtile:nth-child(8)  { grid-area: hp; }
+.wtile:nth-child(9)  { grid-area: hv; }
+.wtile:nth-child(10) { grid-area: ng; } /* the 2026 opening, in the video's old frame */
+.wtile:nth-child(11) { grid-area: f1; }
+.wtile:nth-child(12) { grid-area: f2; }
+.wtile:nth-child(13) { grid-area: r4; }
+.wtile:nth-child(14) { grid-area: r5; }
+.wtile:nth-child(15) { grid-area: rm; }
+.wtile:nth-child(16) { grid-area: p5; }
+
+/* photographs hang ABSOLUTE in their frames: they fill whatever
+   cell the map grants and contribute NO height of their own — only
+   a plate's words may grow a row */
 .wtile .photo,
-.wtile img.photo {
+.wtile img.photo,
+.wtile video.photo {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   margin: 0;
   aspect-ratio: auto;
   border-radius: 0;
-  border: 1px solid rgba(243,240,233,.07);
+  border: 0;
   object-fit: cover;
 }
+
+/* where each crop sits rides with the photograph itself, as
+   `focus` in assets.json — applied inline by script.js */
 
 .wcap {
   position: absolute;
@@ -524,129 +602,57 @@ img.photo {
   letter-spacing: .06em;
   text-transform: uppercase;
   color: rgba(243,240,233,.85);
-  opacity: 0;
+  opacity: .62;
   transition: opacity .35s ease;
 }
 
 @media (hover: hover) {
   .wtile:hover .wcap { opacity: 1; }
 
-  .wtile:hover img.photo {
-    filter: grayscale(0) sepia(0) contrast(1) brightness(.94);
-  }
-
 }
 
-/* the hang, placed: photographs and TEXT PLATES as equal citizens
-   of the wall — the gold (titles, descriptions) stands readable
-   with no hand needed; the photographs surround it */
+/* tablets: the same map re-hung four wide */
+@media (min-width: 700px) {
+  .wall-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(10, minmax(22vw, auto));
+    grid-template-areas:
+      "p1 p1 sc sc"
+      "f1 f1 ng r4"
+      "f1 f1 ng r4"
+      "p2 p2 hv hp"
+      "p2 p2 hv op"
+      "n2 n2 rm rm"
+      "n2 n2 rm rm"
+      "p3 p3 f2 r5"
+      "p4 p4 f2 r5"
+      "p5 p5 p5 p5";
+  }
+}
+
+/* desktop: six wide, seven deep — the key photographs anchor, the
+   plates read whole, the colored stills stand apart, and the bottom
+   edge lands flush */
 @media (min-width: 1000px) {
   .wall-grid {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    grid-auto-rows: minmax(120px, calc((100dvh - 24vh - 90px) / 4));
-    grid-auto-flow: row;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(7, minmax(calc((100vh - 108px) / 7), auto));
+    grid-template-rows: repeat(7, minmax(calc((100dvh - 108px) / 7), auto));
+    grid-template-areas:
+      "p1 p1 sc sc r4 hp"
+      "f1 f1 ng op r4 hv"
+      "f1 f1 ng n2 n2 hv"
+      "p2 p2 p2 n2 n2 hv"
+      "p2 p2 p2 p5 p5 p5"
+      "p3 p3 f2 rm rm r5"
+      "p4 p4 f2 rm rm r5";
   }
-
-  .wtile:nth-child(1)  { grid-column: 1 / span 2; grid-row: 1 / span 2; }
-
-  .wtile:nth-child(2)  { grid-column: 3 / span 2; grid-row: 1; }
-
-  .wtile:nth-child(3)  { grid-column: 5; grid-row: 1; }
-
-  .wtile:nth-child(4)  { grid-column: 6; grid-row: 1 / span 2; }
-
-  .wtile:nth-child(5)  { grid-column: 7 / span 2; grid-row: 1 / span 2; }
-
-  .wtile:nth-child(6)  { grid-column: 3 / span 2; grid-row: 2; }
-
-  .wtile:nth-child(7)  { grid-column: 5; grid-row: 2; }
-
-  .wtile:nth-child(8)  { grid-column: 1; grid-row: 3 / span 2; }
-
-  .wtile:nth-child(9)  { grid-column: 2 / span 2; grid-row: 3; }
-
-  .wtile:nth-child(10) { grid-column: 4 / span 2; grid-row: 3 / span 2; }
-
-  .wtile:nth-child(11) { grid-column: 6; grid-row: 3; }
-
-  .wtile:nth-child(12) { grid-column: 7; grid-row: 3; }
-
-  .wtile:nth-child(13) { grid-column: 8; grid-row: 3 / span 2; }
-
-  .wtile:nth-child(14) { grid-column: 2 / span 2; grid-row: 4; }
-
-  .wtile:nth-child(15) { grid-column: 6; grid-row: 4; }
-
-  .wtile:nth-child(16) { grid-column: 7; grid-row: 4; }
-
-}
-
-/* phones: a denser four-wide weave, anchors kept large; the room
-   scrolls within its stop */
-/* phones and tablets: the wall re-hung on an EXPLICIT four-by-ten
-   map — every cell assigned, the bottom edge flush. the room itself
-   is ONE SCREEN: the grid pans inside its frame (native momentum,
-   contained), so the page can be four fixed rooms everywhere and
-   the wall's depth lives within its own window. the frame measures
-   dvh — the screen as it IS, toolbar shown or collapsed — so the
-   wall always ends exactly at the fold: no leak below it when the
-   bar retracts, no cut row when it returns. the depth the toolbar
-   takes or gives is absorbed by the grid's own scroll. */
-@media (max-width: 1000px) {
-  .wall {
-    height: calc(100dvh - 24vh);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .wall-grid {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-auto-rows: 23vw;
-  }
-
-  .wtile:nth-child(1)  { grid-column: 1 / span 2; grid-row: 1 / span 2; }
-
-  .wtile:nth-child(2)  { grid-column: 3 / span 2; grid-row: 1 / span 2; }
-
-  .wtile:nth-child(3)  { grid-column: 1; grid-row: 3; }
-
-  .wtile:nth-child(4)  { grid-column: 1; grid-row: 4; }
-
-  .wtile:nth-child(5)  { grid-column: 2 / span 2; grid-row: 3 / span 2; }
-
-  .wtile:nth-child(7)  { grid-column: 4; grid-row: 3 / span 2; }
-
-  .wtile:nth-child(6)  { grid-column: 1 / span 2; grid-row: 5 / span 2; }
-
-  .wtile:nth-child(8)  { grid-column: 3; grid-row: 5; }
-
-  .wtile:nth-child(11) { grid-column: 4; grid-row: 5 / span 2; }
-
-  .wtile:nth-child(12) { grid-column: 3; grid-row: 6; }
-
-  .wtile:nth-child(9)  { grid-column: 1 / span 2; grid-row: 7 / span 2; }
-
-  .wtile:nth-child(10) { grid-column: 3 / span 2; grid-row: 7 / span 2; }
-
-  .wtile:nth-child(14) { grid-column: 1 / span 2; grid-row: 9 / span 2; }
-
-  .wtile:nth-child(13) { grid-column: 3; grid-row: 9 / span 2; }
-
-  .wtile:nth-child(15) { grid-column: 4; grid-row: 9; }
-
-  .wtile:nth-child(16) { grid-column: 4; grid-row: 10; }
-
 }
 
 /* the text plates: the archive's words hung AS stills — label,
    title, recap, framed in the same hairline as the photographs */
 .wplate {
-  border: 1px solid rgba(243,240,233,.09);
+  border: 1px solid #373A44;
   padding: 15px;
   display: flex;
   flex-direction: column;
@@ -654,6 +660,54 @@ img.photo {
   gap: 6px;
   text-align: left;
   overflow: hidden;
+}
+
+/* some plates carry their event's photograph BENEATH the words —
+   the image lies flat behind, graded dark enough that the text
+   stands on it the way the captions stand on the stills */
+.wplate .photo,
+.wplate img.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: auto;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.wplate img.photo {
+  filter: grayscale(1) brightness(.28) contrast(.95);
+}
+
+/* some backgrounds are bright objects (a stack of white books) and
+   need a deeper grade than a dim room shot for the words to stand:
+   `grade: "deep"` in assets.json asks for it */
+.wplate img.photo[data-grade="deep"] {
+  filter: grayscale(1) brightness(.16) contrast(.95);
+}
+
+.wplate .plabel,
+.wplate .ptitle,
+.wplate .precap {
+  position: relative;
+  z-index: 1;
+}
+
+/* a plate that links out to its event page keeps the still's manner —
+   no underline, no accent; only the hairline answers the cursor */
+a.wplate {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .3s ease;
+}
+
+a.wplate:hover,
+a.wplate:focus-visible {
+  border-color: rgba(243,240,233,.24);
 }
 
 .plabel {
@@ -739,6 +793,12 @@ img.photo {
   width: 96px;
   aspect-ratio: 1 / 1;
 }
+
+/* the founders' frames: slate hairlines — the chosen one's edge
+   stands a shade lighter (and larger, via the stack's scale) */
+.kthumb .photo { border-color: #373A44; }
+
+.kthumb.active .photo { border-color: #4A4E5B; }
 
 .kthumb.active img.photo {
   filter: grayscale(0) sepia(0) contrast(1) brightness(.94);
@@ -970,46 +1030,6 @@ img.photo {
 
 }
 
-/* ---- the lightbox: the photograph, full-screen, in its own light —
-   ungraded and unframed. it stands BENEATH the hanji grain, so even
-   the page's one bright object is seen through the paper. ---- */
-.lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 8000;
-  display: grid;
-  place-items: center;
-  background: rgba(0,0,0,.94);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .35s ease;
-  cursor: zoom-out;
-}
-
-.lightbox.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.lightbox img {
-  max-width: 92vw;
-  max-height: 92vh;
-  max-height: 92svh;
-  border-radius: 3px;
-  transform: scale(.975);
-  transition: transform .45s cubic-bezier(.22,1,.36,1);
-}
-
-.lightbox.open img { transform: none; }
-
-/* a real photograph invites the hand; empty frames do not — and
-   founder thumbs stay selection controls, not zoom targets */
-img.photo { cursor: zoom-in; }
-
 .kthumb img.photo { cursor: pointer; }
 
-@media (max-width: 700px) {
-  .wall { height: calc(100dvh - 132px); }
-
-}
 
