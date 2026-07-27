@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: "Libre Baskerville"; src: url("fonts/LibreBaskerville-latin.woff2") format("woff2"); font-weight: 400; font-display: block; }
+@font-face { font-family: "Pretendard Std"; src: url("fonts/PretendardStdVariable.woff2") format("woff2-variations"); font-weight: 45 920; font-display: block; }
+* { margin: 0; box-sizing: border-box; }
+html, body { width: 1200px; height: 630px; overflow: hidden; }
+body { background: #000; position: relative; }
+
+/* the card is the landing at rest, held to 1200x630: the statement
+   at its optical center, the name spanning the width and cut by the
+   frame's bottom edge exactly as the fold cuts it on the page. --wm
+   is 23vw there and 276px here, the same proportion. */
+.typed {
+  position: absolute;
+  top: 296px;              /* 630 * .47 */
+  transform: translateY(-50%);
+  left: 24px; right: 24px;
+  text-align: center;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 33px;         /* 2.75vw of 1200 */
+  font-weight: 400;
+  letter-spacing: .002em;
+  line-height: 1.5;
+  color: rgba(243,240,233,.93);
+}
+.tline { display: block; white-space: nowrap; }
+
+.wordmark {
+  position: absolute;
+  left: 0; right: 0;
+  top: 434px;              /* 630 - 276 * .71 */
+  font-family: "Pretendard Std", -apple-system, sans-serif;
+  font-size: 276px;        /* 23% of 1200 */
+  font-weight: 430;
+  letter-spacing: -.024em;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(243,240,233,.93);
+}
+</style></head>
+<body>
+  <h1 class="typed"><span class="tline">Environment shapes ambition.</span><span class="tline">So we built ours.</span></h1>
+  <p class="wordmark">DIVZERO</p>
+</body></html>
