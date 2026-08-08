@@ -793,6 +793,12 @@ a.wplate:focus-visible img.photo[data-grade="deep"] {
   width: min(760px, 100%);
   min-width: 0;
   text-align: center;
+  /* the room seats its guests a touch below true center: the
+     caption reserve under the intro made the cluster read high,
+     all its slack falling into the floor. a visual nudge, not a
+     layout one — the stops measure the rect and follow it down */
+  position: relative;
+  top: min(5vh, 48px);
 }
 
 .kstage .tally { margin: 0 0 27px; }
