@@ -113,7 +113,7 @@
       "id": "founder-hyungwon",
       "type": "founder",
       "title": "Hyung Won Chung",
-      "url": "",
+      "url": "assets/founder-hyungwon.jpg",
       "alt": "Hyung Won Chung, founder of DivZero"
     },
     {
@@ -127,21 +127,21 @@
       "id": "founder-martin",
       "type": "founder",
       "title": "Martin Lee",
-      "url": "",
+      "url": "assets/founder-martin.jpg",
       "alt": "Martin Lee, founder of DivZero"
     },
     {
       "id": "founder-gia",
       "type": "founder",
       "title": "Gia Min",
-      "url": "",
+      "url": "assets/founder-gia.jpg",
       "alt": "Gia Min, founder of DivZero"
     },
     {
       "id": "founder-kyel",
       "type": "founder",
       "title": "Kyel Ok",
-      "url": "",
+      "url": "assets/founder-kyel.jpg",
       "alt": "Kyel Ok, founder of DivZero"
     }
   ]

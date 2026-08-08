@@ -257,7 +257,13 @@ iso(() => {
       const bottom = cap ? cap.getBoundingClientRect().bottom : r.bottom;
       const centered = (r.top + bottom) / 2 + window.scrollY
         - window.innerHeight / 2;
-      pts.push(Math.max(0, Math.min(centered, maxScroll())));
+      // the stop has a FLOOR at the room's own threshold: on a tall
+      // window, true centering would land the scroll a little above
+      // the section and the wall's last row bled into the room —
+      // the founders stand alone, so the stop never climbs past the
+      // section's top edge
+      const threshold = founders.getBoundingClientRect().top + window.scrollY;
+      pts.push(Math.max(0, Math.min(Math.max(centered, threshold), maxScroll())));
     }
     return pts;
   }
@@ -342,14 +348,19 @@ iso(() => {
   // same gesture discipline as a page) and the room releases only
   // past its ends. a HELD scroll keeps stepping on its own beat.
   let walkTimer = null;
-  const turn = (dir) => {
-    const k = window.DZfounders;
+  // one question, asked from two places (the wheel's turn and the
+  // horizontal keys): is the founders' room the one on stage?
+  const founderRoomStands = () => {
     const f = document.getElementById("founders");
     const block = f && (f.querySelector(".kstage") || f);
     const br = block && block.getBoundingClientRect();
-    const atFounders = br &&
+    return !!(br &&
       Math.abs(br.top + br.height / 2 - window.innerHeight / 2) <
-        window.innerHeight * .35;
+        window.innerHeight * .35);
+  };
+  const turn = (dir) => {
+    const k = window.DZfounders;
+    const atFounders = founderRoomStands();
     if (k && atFounders && k.can(dir)) {
       tail = true;
       spent = false;
@@ -496,6 +507,17 @@ iso(() => {
     const onControl = e.target && e.target.closest &&
         e.target.closest("button, a");
     if (onControl && e.key === " ") return;
+    // the founders' row answers to the HORIZONTAL keys: while that
+    // room stands, left and right walk the line of five
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      const k = window.DZfounders;
+      const d = e.key === "ArrowRight" ? 1 : -1;
+      if (k && founderRoomStands() && k.can(d)) {
+        e.preventDefault();
+        k.walk(d);
+      }
+      return;
+    }
     const down = e.key === "ArrowDown" || e.key === "PageDown" ||
                  (e.key === " " && !e.shiftKey);
     const up = e.key === "ArrowUp" || e.key === "PageUp" ||
@@ -559,11 +581,12 @@ iso(() => {
   }
 });
 
-// the founders, kalinsky-fashion: a centered stack of five — the
-// standing portrait scales and takes the light, the bracketed name
-// and introduction swap in place beneath. clicking selects
-// directly; the page's own scroll walks the stack (the pager routes
-// its turns here while this room stands, via DZfounders).
+// the founders: five abreast, every name and post in view at a
+// glance — the standing portrait takes the light and only the
+// introduction swaps in place beneath. clicking selects directly;
+// the arrow keys walk the row, and the page's own scroll steps it
+// too (the pager routes its turns here while this room stands,
+// via DZfounders).
 iso(() => {
   const stage = document.querySelector(".kstage");
   if (!stage) return;
