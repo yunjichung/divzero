@@ -29,10 +29,12 @@
     },
     {
       "id": "2025-holiday",
-      "type": "event",
+      "type": "video",
       "title": "Holiday Party 2025",
-      "url": "",
-      "alt": "DivZero 2025 holiday party"
+      "url": "assets/2025-holiday.mp4",
+      "alt": "DivZero 2025 holiday party",
+      "poster": "assets/2025-holiday.jpg",
+      "focus": "50% 92%"
     },
     {
       "id": "2025-cities",
@@ -65,6 +67,22 @@
       "url": "assets/2025-june.jpg",
       "alt": "Shaped by Cities, Driven by Ambition panel, photo two",
       "focus": "50% 33%"
+    },
+    {
+      "id": "2025-cities-wide",
+      "type": "event",
+      "title": "Shaped by Cities, Driven by Ambition",
+      "url": "assets/2025-cities-wide.jpg",
+      "alt": "Shaped by Cities, Driven by Ambition panel, wide view",
+      "focus": "50% 25%"
+    },
+    {
+      "id": "2026-korea-ai",
+      "type": "event",
+      "title": "Korea's Next Move in AI",
+      "url": "assets/2026-korea-ai.jpg",
+      "alt": "Korea's Next Move in AI panel, August 2026",
+      "focus": "50% 25%"
     },
     {
       "id": "2025-retreat-jul-b",
