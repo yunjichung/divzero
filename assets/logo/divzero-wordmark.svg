@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-7.0 -176.9 770.7 208.8">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-7.0 -176.9 770.7 201.1">
   <path fill="#111116" transform="translate(0.00,0) scale(0.098194)" d="M151 0V-1440H656Q913 -1440 1076.5 -1355.0Q1240 -1270 1318.5 -1110.0Q1397 -950 1397 -727Q1397 -484 1309.5 -322.5Q1222 -161 1054.5 -80.5Q887 0 647 0ZM410 -217H620Q1122 -217 1122 -720Q1122 -877 1070.5 -989.5Q1019 -1102 910.5 -1162.5Q802 -1223 629 -1223H410Z"/>
   <path fill="#111116" transform="translate(146.03,0) scale(0.098194)" d="M151 0V-1080H398V0ZM274 -1229Q197 -1229 148.0 -1278.0Q99 -1327 99 -1404Q99 -1482 148.0 -1530.5Q197 -1579 274 -1579Q352 -1579 400.5 -1530.5Q449 -1482 449 -1404Q449 -1327 400.5 -1278.0Q352 -1229 274 -1229Z"/>
   <path fill="#111116" transform="translate(200.94,0) scale(0.098194)" d="M449 0 42 -1080H318L614 -167H585L880 -1080H1156L750 0Z"/>
   <path fill="#111116" transform="translate(319.58,0) scale(0.098194)" d="M54 0V-161L865 -1219H121V-1440H1191V-1276L383 -221H1202V0Z"/>
-  <g transform="translate(599.55,-53.02)">
+  <g transform="translate(599.55,-60.75)">
   <path d="M 54.19 -41.72 A 48.20 51.44 0 1 1 54.19 41.72" fill="none" stroke="#111116" stroke-width="23.52" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M -54.19 -41.72 A 48.20 51.44 0 1 0 -54.19 41.72" fill="none" stroke="#111116" stroke-width="23.52" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M -54.19 41.72 L 54.19 -41.72" fill="none" stroke="#111116" stroke-width="23.06" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M -54.19 -41.72 L -31.13 -23.97" fill="none" stroke="#111116" stroke-width="23.06" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M 31.13 23.97 L 54.19 41.72" fill="none" stroke="#111116" stroke-width="23.06" stroke-linecap="round" stroke-linejoin="round"/>
-  <path fill="#111116" d="M -11.76 0 H 11.76 V 53.02 H -11.76 Z"/>
+  <path fill="#111116" d="M -11.76 0 H 11.76 V 60.75 H -11.76 Z"/>
   <path d="M -130.59 -2.12 L -37.08 -2.12" fill="none" stroke="#111116" stroke-width="21.67" stroke-linecap="butt" stroke-linejoin="round"/>
   </g>
 </svg>

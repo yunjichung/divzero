@@ -6,7 +6,8 @@ schibsted-600-glyphs.json. Letterforms: Schibsted Grotesk SemiBold
 (SIL Open Font License 1.1). The ero-infinity knot is custom geometry:
 two elliptical loops joined by internal-tangent diagonals through the
 crossing, woven behind the r-stem, with the e-crossbar tucked into the
-left loop.
+left loop. The knot's loop bottoms are baseline-aligned to the o's
+overshoot line; oversize overflows upward only.
 
 Run:  python3 generate.py   (writes SVGs into the parent directory)
 """
@@ -119,8 +120,9 @@ def load_metrics():
     return m
 
 
-def knot_elems(m, color, w_scale=1.0):
-    """Returns (list of element strings in knot-local coords, half_w, top, bottom, w_arc)."""
+def knot_elems(m, color, w_scale=1.0, stem_bottom=None):
+    """Returns (list of element strings in knot-local coords, half_w, top, bottom, w_arc).
+    stem_bottom: local y where the r-stem foot ends (default: baseline at -O_CY)."""
     w = m['STEM'] * 0.98 * LIG_W_MULT * w_scale
     w_arc = w * 1.02
     stem_w = m['STEM'] * 0.97 * w_scale
@@ -141,13 +143,14 @@ def knot_elems(m, color, w_scale=1.0):
     ux, uy = math.cos(phi), math.sin(phi)
     g.append(stroke(f'M {Lup[0]:.2f} {Lup[1]:.2f} L {-t_cut*ux:.2f} {-t_cut*uy:.2f}', w, color))
     g.append(stroke(f'M {t_cut*ux:.2f} {t_cut*uy:.2f} L {Rdn[0]:.2f} {Rdn[1]:.2f}', w, color))
+    sb = stem_bottom if stem_bottom is not None else -m['O_CY']
     g.append(f'  <path fill="{color}" d="M {-stem_w/2:.2f} 0 H {stem_w/2:.2f} '
-             f'V {-m["O_CY"]:.2f} H {-stem_w/2:.2f} Z"/>')
+             f'V {sb:.2f} H {-stem_w/2:.2f} Z"/>')
     bar_y = -0.02 * m['XH']
     g.append(stroke(f'M {-c-r:.2f} {bar_y:.2f} L {-c+r*0.94:.2f} {bar_y:.2f}', w * 0.94, color, cap='butt'))
     half_w = c + r + w_arc / 2
     top = -(r * q + w_arc / 2)
-    bottom = max(r * q + w_arc / 2, -m['O_CY'])
+    bottom = r * q + w_arc / 2
     return g, half_w, top, bottom, w_arc
 
 
@@ -159,10 +162,14 @@ def wordmark(out, color):
     glyphs = [(f'  <path fill="{color}" transform="translate({gx:.2f},0) '
                f'scale({m["S"]:.6f})" d="{m["d"]["glyphs"][ch]["path"]}"/>')
               for ch, gx in zip('DivZ', xs_)]
-    knot, half_w, ktop, kbot, w_arc = knot_elems(m, color)
+    _, half_w, ktop, kbot, w_arc = knot_elems(m, color)   # geometry pass
     gap_ze = 19.57 * GAP_MULT
     cx = xs_[3] + m['Z_INKR'] + gap_ze + TRACK + half_w
-    cy = m['O_CY']
+    # baseline-align: loop bottoms sit on the o's own overshoot line; the
+    # oversized loops overflow upward (ascender-like), never below baseline
+    o_bottom = m['bounds']['o'][3]
+    cy = o_bottom - kbot
+    knot, _, _, _, _ = knot_elems(m, color, stem_bottom=-cy)
     body = "\n".join(glyphs) + (f'\n  <g transform="translate({cx:.2f},{cy:.2f})">\n'
                                 + "\n".join(knot) + '\n  </g>')
     # ink bbox (baseline y=0, up negative)
@@ -170,7 +177,7 @@ def wordmark(out, color):
     x1 = cx + half_w
     tops = [m['bounds'][ch][1] + 0 for ch in 'DiZ'] + [cy + ktop]
     y0 = min(min(tops), -m['CAP'])
-    y1 = max(cy + kbot, 2.0)
+    y1 = max(o_bottom, 2.0)
     pad = (x1 - x0) * 0.03
     vb = (x0 - pad, y0 - pad, (x1 - x0) + 2 * pad, (y1 - y0) + 2 * pad)
     doc = (f'<svg xmlns="http://www.w3.org/2000/svg" '
