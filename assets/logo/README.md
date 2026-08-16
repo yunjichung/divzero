@@ -12,6 +12,7 @@ loops, the r's stem stands at the crossing with the diagonals woven behind it.
 | `divzero-wordmark.svg` | Primary wordmark, near-black ink — light backgrounds |
 | `divzero-wordmark-dark.svg` | Warm off-white `#f3f0e9` ink — the site / dark backgrounds |
 | `divzero-mark.svg` / `divzero-mark-dark.svg` | Standalone ∞ monogram (chunkier stroke) — avatars, small placements, embroidery |
+| `divzero-wordmark-white.svg` / `.png`, `divzero-mark-white.svg` / `.png` | Pure-white variants for merch/embroidery on dark garments |
 | `favicon.svg` | Square-viewBox monogram; ink auto-switches with `prefers-color-scheme` |
 | `divzero-wordmark.png` / `-dark.png` | 2400 px transparent PNG exports |
 | `divzero-mark.png` / `-dark.png` | 1024 px transparent PNG exports |
