@@ -9,6 +9,7 @@ loops, the r's stem stands at the crossing with the diagonals woven behind it.
 
 | File | Use |
 | --- | --- |
+| `divzero-smallcaps.svg` / `-dark` / `-white` (+ `.png`) | **DivZero small-caps logotype** — D and Z full caps, `iv`/`ero` as weight-compensated small caps (74% of cap height, wght 599) |
 | `divzero-logotype.svg` / `-dark` / `-white` (+ `.png`) | **DIVZERO logotype** — the site's own all-caps wordmark, Pretendard 430 at −0.024em tracking, outlined |
 | `divzero-wordmark.svg` | Primary wordmark, near-black ink — light backgrounds |
 | `divzero-wordmark-dark.svg` | Warm off-white `#f3f0e9` ink — the site / dark backgrounds |
@@ -17,6 +18,7 @@ loops, the r's stem stands at the crossing with the diagonals woven behind it.
 | `favicon.svg` | Square-viewBox monogram; ink auto-switches with `prefers-color-scheme` |
 | `divzero-wordmark.png` / `-dark.png` | 2400 px transparent PNG exports |
 | `divzero-mark.png` / `-dark.png` | 1024 px transparent PNG exports |
+| `src/generate-smallcaps.py` | Rebuilds the small-caps lockup; ratio/weight/tracking are parameters |
 | `src/generate-logotype.py` | Rebuilds the DIVZERO logotype from `src/pretendard-430-caps.json` |
 | `src/generate.py` | Rebuilds every SVG from `src/schibsted-600-glyphs.json` — all geometry is parametric |
 
