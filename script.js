@@ -374,7 +374,7 @@ iso(() => {
       }, 500);
       return;
     }
-    // the fifth founder is the page's floor: downward input past the
+    // the last founder is the page's floor: downward input past the
     // last of the stack goes nowhere at all — no drift, no no-op
     // glide. only upward, past the first, does the room release.
     if (atFounders && dir > 0) return;
@@ -508,7 +508,7 @@ iso(() => {
         e.target.closest("button, a");
     if (onControl && e.key === " ") return;
     // the founders' row answers to the HORIZONTAL keys: while that
-    // room stands, left and right walk the line of five
+    // room stands, left and right walk the line of four
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       const k = window.DZfounders;
       const d = e.key === "ArrowRight" ? 1 : -1;
@@ -581,7 +581,7 @@ iso(() => {
   }
 });
 
-// the founders: five abreast, every name and post in view at a
+// the founders: four abreast, every name and post in view at a
 // glance — the standing portrait takes the light and only the
 // introduction swaps in place beneath. clicking selects directly;
 // the arrow keys walk the row, and the page's own scroll steps it
