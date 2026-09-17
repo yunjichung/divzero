@@ -12,7 +12,7 @@
      change to a korean name, or the new syllable falls back alone:
        pyftsubset PretendardVariable.woff2 \
          --output-file=fonts/PretendardStdVariable-ko.woff2 \
-         --flavor=woff2 --text='정윤지민아형원이승옥결' \
+         --flavor=woff2 --text='정윤지민아형원이승결' \
          --layout-features='*' --no-hinting --desubroutinize
    swapping premium in = replace the two files below and the first
    name in each font list (--serif / body); a premium latin face
