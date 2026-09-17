@@ -130,37 +130,37 @@
     {
       "id": "founder-hyungwon",
       "type": "founder",
-      "title": "Hyung Won Chung",
+      "title": "정형원",
       "url": "assets/founder-hyungwon.jpg",
-      "alt": "Hyung Won Chung, founder of DivZero"
+      "alt": "정형원, founder of DivZero"
     },
     {
       "id": "founder-yunji",
       "type": "founder",
-      "title": "Yun Ji Chung",
+      "title": "정윤지",
       "url": "assets/founder-yunji.jpg",
-      "alt": "Yun Ji Chung, founder of DivZero"
+      "alt": "정윤지, founder of DivZero"
     },
     {
       "id": "founder-martin",
       "type": "founder",
-      "title": "Martin Lee",
+      "title": "이승민",
       "url": "assets/founder-martin.jpg",
-      "alt": "Martin Lee, founder of DivZero"
+      "alt": "이승민, founder of DivZero"
     },
     {
       "id": "founder-gia",
       "type": "founder",
-      "title": "Gia Min",
+      "title": "민지아",
       "url": "assets/founder-gia.jpg",
-      "alt": "Gia Min, founder of DivZero"
+      "alt": "민지아, founder of DivZero"
     },
     {
       "id": "founder-kyel",
       "type": "founder",
-      "title": "Kyel Ok",
+      "title": "옥결",
       "url": "assets/founder-kyel.jpg",
-      "alt": "Kyel Ok, founder of DivZero"
+      "alt": "옥결, founder of DivZero"
     }
   ]
 }

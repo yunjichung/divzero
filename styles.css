@@ -2,11 +2,21 @@
    · statement serif: Libre Baskerville (OFL, 33KB latin) — high
      contrast, generous x-height. premium swap target: Klim Signifier.
    · everything sans: Pretendard Std variable (OFL, 292KB, wght
-     45–920) — built on Inter's bones, so the future 한글 layer
-     (full Pretendard's dynamic subsets) will share one voice.
-     premium swap target: Söhne / Suisse Int'l.
+     45–920) — built on Inter's bones, so the 한글 layer below
+     shares one voice. premium swap target: Söhne / Suisse Int'l.
+   · the 한글 layer: the SAME Pretendard, subset to the syllables
+     the page actually sets (the founders' names, 4KB). the latin
+     file carries no hangul, so a name would otherwise drop to
+     whatever the OS hands back — a second typeface in the one
+     place five names stand side by side. regenerate after ANY
+     change to a korean name, or the new syllable falls back alone:
+       pyftsubset PretendardVariable.woff2 \
+         --output-file=fonts/PretendardStdVariable-ko.woff2 \
+         --flavor=woff2 --text='정윤지민아형원이승옥결' \
+         --layout-features='*' --no-hinting --desubroutinize
    swapping premium in = replace the two files below and the first
-   name in each font list (--serif / body). */
+   name in each font list (--serif / body); a premium latin face
+   still leaves the 한글 layer to Pretendard. */
 @font-face {
   font-family: "Libre Baskerville";
   src: url("fonts/LibreBaskerville-latin.woff2") format("woff2");
@@ -19,6 +29,16 @@
   src: url("fonts/PretendardStdVariable.woff2") format("woff2-variations");
   font-weight: 45 920;
   font-display: swap;
+}
+
+/* the 한글 layer, same family and same axis — the unicode-range
+   keeps this off the wire for anything the latin file can set */
+@font-face {
+  font-family: "Pretendard Std";
+  src: url("fonts/PretendardStdVariable-ko.woff2") format("woff2-variations");
+  font-weight: 45 920;
+  font-display: swap;
+  unicode-range: U+AC00-D7A3;
 }
 
 * { box-sizing: border-box; }
